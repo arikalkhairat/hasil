@@ -116,6 +116,12 @@ def calculate_metrics(original_docx_path, stego_docx_path):
         # Rata-rata PSNR (hindari ZeroDivisionError jika daftar kosong)
         final_psnr = sum(all_psnr_values) / len(all_psnr_values) if all_psnr_values else 0
 
+        # Convert infinite values to string for JSON serialization
+        if final_psnr == float('inf'):
+            final_psnr = "Infinity"
+        elif final_psnr == float('-inf'):
+            final_psnr = "-Infinity"
+
         # Bersihkan direktori sementara
         if os.path.exists(original_images_dir):
             shutil.rmtree(original_images_dir)

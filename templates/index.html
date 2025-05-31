@@ -1778,15 +1778,24 @@
                             `${result.mse ? result.mse.toFixed(6) : 'N/A'}`
                         );
                         
+                        // Format PSNR value (handle both numbers and strings like "Infinity")
+                        const formatPSNR = (psnr) => {
+                            if (!psnr) return 'N/A';
+                            if (typeof psnr === 'string') return psnr;
+                            return psnr.toFixed(3);
+                        };
+                        
                         addCalculationStep('calculationDetails',
                             '📈 Peak Signal-to-Noise Ratio (PSNR)',
                             'PSNR = 20 × log₁₀(MAX² / MSE)',
-                            `${result.psnr ? result.psnr.toFixed(3) : 'N/A'} dB`
+                            `${formatPSNR(result.psnr)} dB`
                         );
                         
-                        if (result.psnr > 30) {
+                        // Check PSNR quality (handle string values)
+                        const psnrValue = typeof result.psnr === 'string' ? (result.psnr === 'Infinity' ? Infinity : parseFloat(result.psnr)) : result.psnr;
+                        if (psnrValue > 30 || psnrValue === Infinity) {
                             addLogEntry('embedLog', '✅ Kualitas watermark: SANGAT BAIK (PSNR > 30 dB)', 'success');
-                        } else if (result.psnr > 20) {
+                        } else if (psnrValue > 20) {
                             addLogEntry('embedLog', '✅ Kualitas watermark: BAIK (PSNR > 20 dB)', 'warning');
                         } else {
                             addLogEntry('embedLog', '⚠️ Kualitas watermark: RENDAH (PSNR < 20 dB)', 'warning');
@@ -1800,13 +1809,20 @@
                     
                     let metricsHtml = '';
                     if (result.mse !== undefined && result.psnr !== undefined) {
+                        // Format PSNR for display
+                        const formatPSNRDisplay = (psnr) => {
+                            if (!psnr) return 'N/A';
+                            if (typeof psnr === 'string') return psnr;
+                            return psnr.toFixed(2);
+                        };
+                        
                         metricsHtml = `
                             <div class="metric">
                                 <div class="metric-value">${result.mse ? result.mse.toFixed(4) : 'N/A'}</div>
                                 <div class="metric-label">MSE</div>
                             </div>
                             <div class="metric">
-                                <div class="metric-value">${result.psnr ? result.psnr.toFixed(2) : 'N/A'}</div>
+                                <div class="metric-value">${formatPSNRDisplay(result.psnr)}</div>
                                 <div class="metric-label">PSNR (dB)</div>
                             </div>
                         `;
