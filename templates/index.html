@@ -1,0 +1,1950 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Watermarking Tool - by Arikal Sayangg</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --primary-dark: #5a67d8;
+            --secondary-color: #764ba2;
+            --accent-color: #f093fb;
+            --success-color: #48bb78;
+            --error-color: #f56565;
+            --warning-color: #ed8936;
+            --background: #f7fafc;
+            --card-background: #ffffff;
+            --text-primary: #2d3748;
+            --text-secondary: #718096;
+            --border-color: #e2e8f0;
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .header .creator {
+            font-size: 1rem;
+            opacity: 0.8;
+            font-style: italic;
+        }
+
+        .tab-navigation {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 8px;
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-btn {
+            flex: 1;
+            max-width: 200px;
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            padding: 15px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 0 4px;
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            background: var(--card-background);
+            color: var(--primary-color);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .tab-btn i {
+            font-size: 1.1rem;
+        }
+
+        .tab-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .tab-pane {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .single-card {
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: var(--card-background);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .card-icon.generate {
+            background: linear-gradient(135deg, var(--success-color), #38a169);
+        }
+
+        .card-icon.embed {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        }
+
+        .card-icon.validate {
+            background: linear-gradient(135deg, var(--warning-color), #dd6b20);
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .card-description {
+            color: var(--text-secondary);
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .file-upload {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-upload-input {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-upload-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            border: 2px dashed var(--border-color);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f8f9ff;
+            color: var(--text-secondary);
+        }
+
+        .file-upload-label:hover {
+            border-color: var(--primary-color);
+            background: #f0f4ff;
+            color: var(--primary-color);
+        }
+
+        .file-upload-label i {
+            margin-right: 10px;
+            font-size: 1.5rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            min-height: 48px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success-color), #38a169);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(72, 187, 120, 0.3);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning-color), #dd6b20);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(237, 137, 54, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn i {
+            margin-right: 8px;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .alert-success {
+            background: #f0fff4;
+            border: 1px solid #9ae6b4;
+            color: #276749;
+        }
+
+        .alert-error {
+            background: #fed7d7;
+            border: 1px solid #feb2b2;
+            color: #c53030;
+        }
+
+        .alert-info {
+            background: #ebf8ff;
+            border: 1px solid #90cdf4;
+            color: #2c5282;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--border-color);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .result-area {
+            margin-top: 25px;
+            padding: 20px;
+            background: #f8f9ff;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .qr-preview {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .qr-preview img {
+            max-width: 200px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .download-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .download-link {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            background: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .download-link:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .download-link i {
+            margin-right: 6px;
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .metric {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+
+        .extracted-qrs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .extracted-qr {
+            text-align: center;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .extracted-qr img {
+            max-width: 100px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .extracted-qr-data {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            word-break: break-all;
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            opacity: 0.8;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .header h1 {
+                font-size: 2.5rem;
+            }
+
+            .tab-navigation {
+                flex-direction: column;
+                gap: 8px;
+                padding: 15px;
+            }
+
+            .tab-btn {
+                max-width: none;
+                width: 100%;
+                padding: 12px 15px;
+                margin: 0;
+            }
+
+            .tab-btn span {
+                display: inline;
+            }
+
+            .tab-content {
+                padding: 0 10px;
+            }
+
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .metrics {
+                grid-template-columns: 1fr;
+            }
+
+            .image-comparison {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .qr-info-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .tab-btn {
+                font-size: 0.85rem;
+                padding: 10px 12px;
+            }
+
+            .card {
+                padding: 15px;
+            }
+
+            .qr-info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .process-details {
+            margin-top: 25px;
+            padding: 20px;
+            background: #f8f9ff;
+            border-radius: 10px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .process-details h4 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .process-log {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+        }
+
+        .log-entry {
+            margin-bottom: 8px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+        }
+
+        .log-entry.info {
+            background: #f0f8ff;
+            border-left: 3px solid #3182ce;
+        }
+
+        .log-entry.success {
+            background: #f0fff4;
+            border-left: 3px solid #38a169;
+        }
+
+        .log-entry.warning {
+            background: #fffaf0;
+            border-left: 3px solid #ed8936;
+        }
+
+        .log-entry.error {
+            background: #fed7d7;
+            border-left: 3px solid #e53e3e;
+        }
+
+        .log-timestamp {
+            color: #666;
+            margin-right: 10px;
+            font-size: 0.8rem;
+        }
+
+        .calculation-details {
+            margin-top: 15px;
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+        }
+
+        .calculation-step {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #f8f9ff;
+            border-radius: 6px;
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .calculation-step h5 {
+            color: var(--primary-color);
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        .calculation-formula {
+            background: #f1f5f9;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin: 5px 0;
+        }
+
+        .calculation-result {
+            background: #e6fffa;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-weight: 500;
+            color: #1a202c;
+        }
+
+        .processed-images {
+            margin-top: 20px;
+        }
+
+        .image-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .image-item {
+            text-align: center;
+        }
+
+        .image-item h6 {
+            margin-bottom: 10px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        .image-item img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .step-indicator {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .step-number {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-right: 10px;
+        }
+
+        .step-number.completed {
+            background: var(--success-color);
+        }
+
+        .step-number.current {
+            background: var(--warning-color);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .qr-analysis {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border: 1px solid var(--border-color);
+        }
+
+        .qr-analysis h5 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .qr-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+        }
+
+        .qr-info-item {
+            background: #f8f9ff;
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .qr-info-value {
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+
+        .qr-info-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .detailed-process {
+            margin-top: 20px;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .detailed-process h5 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .process-step {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9ff;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .step-badge {
+            background: var(--primary-color);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .step-title {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .bit-visualization {
+            background: #f1f5f9;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .bit-row {
+            display: flex;
+            align-items: center;
+            margin: 8px 0;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .bit-label {
+            min-width: 120px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .bit-value {
+            font-family: 'Courier New', monospace;
+            background: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        .bit-value.original {
+            background: #e6f3ff;
+            border-color: #3182ce;
+        }
+
+        .bit-value.modified {
+            background: #e6fffa;
+            border-color: #38a169;
+        }
+
+        .bit-value.header {
+            background: #fff5e6;
+            border-color: #ed8936;
+        }
+
+        .capacity-analysis {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .capacity-item {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .capacity-value {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .capacity-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .formula-explanation {
+            background: #f8f9ff;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 12px;
+            margin: 10px 0;
+        }
+
+        .formula-title {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+        }
+
+        .formula-content {
+            font-family: 'Courier New', monospace;
+            background: white;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .example-pixel {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .pixel-channel {
+            text-align: center;
+            padding: 10px;
+            border-radius: 6px;
+            border: 2px solid;
+        }
+
+        .pixel-channel.red {
+            background: #fef2f2;
+            border-color: #f87171;
+        }
+
+        .pixel-channel.green {
+            background: #f0fdf4;
+            border-color: #4ade80;
+        }
+
+        .pixel-channel.blue {
+            background: #eff6ff;
+            border-color: #60a5fa;
+        }
+
+        .pixel-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .pixel-binary {
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .lsb-highlight {
+            background: yellow;
+            padding: 2px;
+            border-radius: 2px;
+            font-weight: bold;
+        }
+
+        .resize-info {
+            background: #fffbeb;
+            border: 1px solid #fed7aa;
+            border-radius: 6px;
+            padding: 12px;
+            margin: 10px 0;
+        }
+
+        .resize-info .title {
+            font-weight: 600;
+            color: #c2410c;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-qrcode"></i> QR Watermarking Tool</h1>
+            <p>LSB Steganography untuk Dokumen DOCX</p>
+            <div class="creator">Created by Arikal Sayangg ❤️</div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="tab-navigation">
+            <button class="tab-btn active" data-tab="generate">
+                <i class="fas fa-plus-circle"></i>
+                <span>Buat QR Code</span>
+            </button>
+            <button class="tab-btn" data-tab="embed">
+                <i class="fas fa-shield-alt"></i>
+                <span>Embed Watermark</span>
+            </button>
+            <button class="tab-btn" data-tab="validate">
+                <i class="fas fa-search"></i>
+                <span>Validasi Dokumen</span>
+            </button>
+        </div>
+
+        <!-- Tab Content -->
+        <div class="tab-content">
+            <!-- Generate QR Code Tab -->
+            <div class="tab-pane active" id="generate-tab">
+                <div class="card single-card">
+                    <div class="card-header">
+                        <div class="card-icon generate">
+                            <i class="fas fa-plus-circle"></i>
+                        </div>
+                        <div>
+                            <div class="card-title">Buat QR Code</div>
+                        </div>
+                    </div>
+                    <div class="card-description">
+                        Buat QR Code baru dengan data teks yang dapat langsung digunakan untuk watermarking.
+                    </div>
+                    
+                    <form id="generateForm">
+                        <div class="form-group">
+                            <label class="form-label" for="qrData">Data QR Code</label>
+                            <input type="text" id="qrData" name="qrData" class="form-input" 
+                                   placeholder="Masukkan teks untuk QR Code..." required>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success" style="width: 100%;">
+                            <i class="fas fa-magic"></i> Buat QR Code
+                        </button>
+                    </form>
+
+                    <div class="progress-bar" id="generateProgress">
+                        <div class="progress-fill"></div>
+                    </div>
+
+                    <div class="alert" id="generateAlert"></div>
+                    
+                    <div class="result-area" id="generateResult">
+                        <div class="qr-preview" id="qrPreview"></div>
+                        <div class="download-links" id="qrDownload"></div>
+                    </div>
+
+                    <!-- Process Details for Generate -->
+                    <div class="process-details" id="generateProcess" style="display: none;">
+                        <h4><i class="fas fa-cogs"></i> Detail Proses</h4>
+                        <div class="process-log" id="generateLog"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Embed Watermark Tab -->
+            <div class="tab-pane" id="embed-tab">
+                <div class="card single-card">
+                    <div class="card-header">
+                        <div class="card-icon embed">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div>
+                            <div class="card-title">Embed Watermark</div>
+                        </div>
+                    </div>
+                    <div class="card-description">
+                        Sisipkan watermark QR Code ke dalam gambar di dokumen DOCX menggunakan LSB steganography.
+                    </div>
+                    
+                    <form id="embedForm">
+                        <div class="form-group">
+                            <label class="form-label">Dokumen DOCX</label>
+                            <div class="file-upload">
+                                <input type="file" id="docxFileEmbed" name="docxFileEmbed" 
+                                       accept=".docx" class="file-upload-input" required>
+                                <label for="docxFileEmbed" class="file-upload-label">
+                                    <i class="fas fa-file-word"></i>
+                                    <span>Pilih dokumen DOCX...</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">QR Code PNG</label>
+                            <div class="file-upload">
+                                <input type="file" id="qrFileEmbed" name="qrFileEmbed" 
+                                       accept=".png" class="file-upload-input" required>
+                                <label for="qrFileEmbed" class="file-upload-label">
+                                    <i class="fas fa-qrcode"></i>
+                                    <span>Pilih QR Code PNG...</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">
+                            <i class="fas fa-lock"></i> Sisipkan Watermark
+                        </button>
+                    </form>
+
+                    <div class="progress-bar" id="embedProgress">
+                        <div class="progress-fill"></div>
+                    </div>
+
+                    <div class="alert" id="embedAlert"></div>
+                    
+                    <div class="result-area" id="embedResult">
+                        <div class="metrics" id="embedMetrics"></div>
+                        <div class="download-links" id="embedDownload"></div>
+                        <div class="processed-images" id="processedImages"></div>
+                    </div>
+
+                    <!-- Process Details for Embed -->
+                    <div class="process-details" id="embedProcess" style="display: none;">
+                        <h4><i class="fas fa-cogs"></i> Detail Proses Watermarking</h4>
+                        <div class="process-log" id="embedLog"></div>
+                        <div class="detailed-process" id="detailedProcess" style="display: none;">
+                            <h5><i class="fas fa-microscope"></i> Analisis Mendalam - Contoh Gambar Pertama</h5>
+                            <div id="detailedSteps"></div>
+                        </div>
+                        <div class="calculation-details" id="calculationDetails"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Validate Document Tab -->
+            <div class="tab-pane" id="validate-tab">
+                <div class="card single-card">
+                    <div class="card-header">
+                        <div class="card-icon validate">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <div>
+                            <div class="card-title">Validasi Dokumen</div>
+                        </div>
+                    </div>
+                    <div class="card-description">
+                        Ekstrak dan validasi watermark QR Code dari dokumen DOCX untuk verifikasi keaslian.
+                    </div>
+                    
+                    <form id="validateForm">
+                        <div class="form-group">
+                            <label class="form-label">Dokumen DOCX</label>
+                            <div class="file-upload">
+                                <input type="file" id="docxFileValidate" name="docxFileValidate" 
+                                       accept=".docx" class="file-upload-input" required>
+                                <label for="docxFileValidate" class="file-upload-label">
+                                    <i class="fas fa-file-word"></i>
+                                    <span>Pilih dokumen untuk validasi...</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-warning" style="width: 100%;">
+                            <i class="fas fa-shield-alt"></i> Validasi Dokumen
+                        </button>
+                    </form>
+
+                    <div class="progress-bar" id="validateProgress">
+                        <div class="progress-fill"></div>
+                    </div>
+
+                    <div class="alert" id="validateAlert"></div>
+                    
+                    <div class="result-area" id="validateResult">
+                        <div class="extracted-qrs" id="extractedQRs"></div>
+                    </div>
+
+                    <!-- Process Details for Validate -->
+                    <div class="process-details" id="validateProcess" style="display: none;">
+                        <h4><i class="fas fa-cogs"></i> Detail Proses Validasi</h4>
+                        <div class="process-log" id="validateLog"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2024 QR Code Watermarking Tool. Dibuat dengan ❤️ oleh Arikal Sayangg</p>
+            <p><i class="fas fa-code"></i> LSB Steganography Technology</p>
+        </div>
+    </div>
+
+    <script>
+        // Utility functions
+        function showAlert(elementId, message, type) {
+            const alert = document.getElementById(elementId);
+            alert.className = `alert alert-${type}`;
+            alert.innerHTML = message;
+            alert.style.display = 'block';
+            
+            if (type === 'success') {
+                setTimeout(() => {
+                    alert.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        function showProgress(elementId) {
+            const progress = document.getElementById(elementId);
+            progress.style.display = 'block';
+            const fill = progress.querySelector('.progress-fill');
+            fill.style.width = '100%';
+        }
+
+        function hideProgress(elementId) {
+            const progress = document.getElementById(elementId);
+            progress.style.display = 'none';
+            const fill = progress.querySelector('.progress-fill');
+            fill.style.width = '0%';
+        }
+
+        function showResult(elementId) {
+            const result = document.getElementById(elementId);
+            result.style.display = 'block';
+        }
+
+        function hideResult(elementId) {
+            const result = document.getElementById(elementId);
+            result.style.display = 'none';
+        }
+
+        function showProcessDetails(processId) {
+            const processDetails = document.getElementById(processId);
+            processDetails.style.display = 'block';
+        }
+
+        function hideProcessDetails(processId) {
+            const processDetails = document.getElementById(processId);
+            processDetails.style.display = 'none';
+        }
+
+        function addLogEntry(logId, message, type = 'info') {
+            const log = document.getElementById(logId);
+            const timestamp = new Date().toLocaleTimeString();
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.innerHTML = `
+                <span class="log-timestamp">[${timestamp}]</span>
+                <span>${message}</span>
+            `;
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function clearLog(logId) {
+            const log = document.getElementById(logId);
+            log.innerHTML = '';
+        }
+
+        function addCalculationStep(containerId, title, formula, result) {
+            const container = document.getElementById(containerId);
+            const step = document.createElement('div');
+            step.className = 'calculation-step';
+            step.innerHTML = `
+                <h5>${title}</h5>
+                <div class="calculation-formula">${formula}</div>
+                <div class="calculation-result">Hasil: ${result}</div>
+            `;
+            container.appendChild(step);
+        }
+
+        function displayQRAnalysis(containerId, qrInfo) {
+            const container = document.getElementById(containerId);
+            const analysis = document.createElement('div');
+            analysis.className = 'qr-analysis';
+            analysis.innerHTML = `
+                <h5><i class="fas fa-chart-bar"></i> Analisis QR Code</h5>
+                <div class="qr-info-grid">
+                    <div class="qr-info-item">
+                        <div class="qr-info-value">${qrInfo.width || 'N/A'}</div>
+                        <div class="qr-info-label">Lebar (px)</div>
+                    </div>
+                    <div class="qr-info-item">
+                        <div class="qr-info-value">${qrInfo.height || 'N/A'}</div>
+                        <div class="qr-info-label">Tinggi (px)</div>
+                    </div>
+                    <div class="qr-info-item">
+                        <div class="qr-info-value">${qrInfo.data ? qrInfo.data.length : 'N/A'}</div>
+                        <div class="qr-info-label">Panjang Data</div>
+                    </div>
+                    <div class="qr-info-item">
+                        <div class="qr-info-value">${(qrInfo.width * qrInfo.height) || 'N/A'}</div>
+                        <div class="qr-info-label">Total Pixel</div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(analysis);
+        }
+
+        function displayImageComparison(containerId, processedImages) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '<h5><i class="fas fa-images"></i> Perbandingan Gambar</h5>';
+            
+            processedImages.forEach((img, index) => {
+                const comparison = document.createElement('div');
+                comparison.className = 'image-comparison';
+                comparison.innerHTML = `
+                    <div class="image-item">
+                        <h6>Gambar Asli ${index + 1}</h6>
+                        <img src="/static/generated/${img.original}" alt="Original ${index + 1}">
+                    </div>
+                    <div class="image-item">
+                        <h6>Gambar Watermark ${index + 1}</h6>
+                        <img src="/static/generated/${img.watermarked}" alt="Watermarked ${index + 1}">
+                    </div>
+                `;
+                container.appendChild(comparison);
+            });
+        }
+
+        function displayDetailedProcess(logData, qrInfo, processedImages) {
+            const container = document.getElementById('detailedSteps');
+            
+            // Parse log data to extract detailed information
+            const lines = logData.split('\n');
+            let currentImageIndex = 0;
+            let imageCapacity = 0;
+            let qrWidth = 290, qrHeight = 290; // Default QR size
+            let resizedQR = false;
+            let newQRSize = { width: qrWidth, height: qrHeight };
+            let bitsEmbedded = 0;
+            
+            // Extract information from log
+            lines.forEach(line => {
+                if (line.includes('Menyisipkan watermark QR Code ke gambar 1/')) {
+                    currentImageIndex = 1;
+                }
+                if (line.includes('QR code diresize dari') && currentImageIndex === 1) {
+                    const match = line.match(/diresize dari (\d+)x(\d+) ke (\d+)x(\d+)/);
+                    if (match) {
+                        resizedQR = true;
+                        newQRSize = { width: parseInt(match[3]), height: parseInt(match[4]) };
+                    }
+                }
+                if (line.includes('Kapasitas citra penampung') && currentImageIndex === 1) {
+                    const match = line.match(/(\d+) bits/);
+                    if (match) {
+                        imageCapacity = parseInt(match[1]);
+                    }
+                }
+                if (line.includes('Total bit untuk disisipkan:') && currentImageIndex === 1) {
+                    const match = line.match(/(\d+)/);
+                    if (match) {
+                        bitsEmbedded = parseInt(match[1]);
+                    }
+                }
+                if (line.includes('Ukuran QR Code:') && currentImageIndex === 1) {
+                    const match = line.match(/(\d+)x(\d+)/);
+                    if (match) {
+                        newQRSize = { width: parseInt(match[1]), height: parseInt(match[2]) };
+                    }
+                }
+            });
+            
+            // Calculate estimated dimensions from capacity
+            const estimatedDim = Math.floor(Math.sqrt(imageCapacity));
+            
+            container.innerHTML = '';
+            
+            // Step 1: Image Analysis
+            const step1 = document.createElement('div');
+            step1.className = 'process-step';
+            step1.innerHTML = `
+                <div class="step-header">
+                    <span class="step-badge">STEP 1</span>
+                    <span class="step-title">Analisis Gambar Cover</span>
+                </div>
+                <p>Menganalisis gambar yang akan dijadikan media penyimpanan watermark.</p>
+                
+                <div class="capacity-analysis">
+                    <div class="capacity-item">
+                        <div class="capacity-value">RGB</div>
+                        <div class="capacity-label">Format Warna</div>
+                    </div>
+                    <div class="capacity-item">
+                        <div class="capacity-value">${estimatedDim}</div>
+                        <div class="capacity-label">Est. Lebar (px)</div>
+                    </div>
+                    <div class="capacity-item">
+                        <div class="capacity-value">${estimatedDim}</div>
+                        <div class="capacity-label">Est. Tinggi (px)</div>
+                    </div>
+                    <div class="capacity-item">
+                        <div class="capacity-value">${imageCapacity.toLocaleString()}</div>
+                        <div class="capacity-label">Kapasitas (bit)</div>
+                    </div>
+                </div>
+                
+                <div class="formula-explanation">
+                    <div class="formula-title">📐 Kapasitas Penyimpanan</div>
+                    <div class="formula-content">
+                        Kapasitas = Lebar × Tinggi × 1 bit (LSB Blue channel)<br>
+                        Kapasitas = ${estimatedDim} × ${estimatedDim} = ${imageCapacity.toLocaleString()} bit<br>
+                        <br>
+                        Hanya menggunakan Blue channel LSB untuk steganography<br>
+                        Sehingga kapasitas = jumlah pixel = lebar × tinggi
+                    </div>
+                </div>
+            `;
+            container.appendChild(step1);
+            
+            // Step 2: QR Code Analysis
+            const step2 = document.createElement('div');
+            step2.className = 'process-step';
+            let resizeHtml = '';
+            if (resizedQR) {
+                resizeHtml = `
+                    <div class="resize-info">
+                        <div class="title">⚠️ QR Code Diresize Otomatis</div>
+                        <p>QR Code diresize dari ${qrWidth}×${qrHeight} menjadi ${newQRSize.width}×${newQRSize.height} untuk menyesuaikan kapasitas gambar cover.</p>
+                        <p><strong>Alasan:</strong> Total bit yang dibutuhkan (${(qrWidth * qrHeight) + 40}) melebihi kapasitas gambar (${imageCapacity}).</p>
+                    </div>
+                `;
+            }
+            
+            step2.innerHTML = `
+                <div class="step-header">
+                    <span class="step-badge">STEP 2</span>
+                    <span class="step-title">Persiapan QR Code</span>
+                </div>
+                <p>Menganalisis dan mempersiapkan QR Code untuk disisipkan.</p>
+                
+                ${resizeHtml}
+                
+                <div class="capacity-analysis">
+                    <div class="capacity-item">
+                        <div class="capacity-value">${newQRSize.width}</div>
+                        <div class="capacity-label">Lebar QR (px)</div>
+                    </div>
+                    <div class="capacity-item">
+                        <div class="capacity-value">${newQRSize.height}</div>
+                        <div class="capacity-label">Tinggi QR (px)</div>
+                    </div>
+                    <div class="capacity-item">
+                        <div class="capacity-value">${(newQRSize.width * newQRSize.height).toLocaleString()}</div>
+                        <div class="capacity-label">Bit QR Data</div>
+                    </div>
+                    <div class="capacity-item">
+                        <div class="capacity-value">40</div>
+                        <div class="capacity-label">Bit Header</div>
+                    </div>
+                </div>
+                
+                <div class="formula-explanation">
+                    <div class="formula-title">📊 Kebutuhan Bit Total</div>
+                    <div class="formula-content">
+                        Bit QR = Lebar × Tinggi = ${newQRSize.width} × ${newQRSize.height} = ${(newQRSize.width * newQRSize.height).toLocaleString()} bit<br>
+                        Bit Header = 40 bit (informasi dimensi QR)<br>
+                        <br>
+                        <strong>Total Bit = ${(newQRSize.width * newQRSize.height).toLocaleString()} + 40 = ${((newQRSize.width * newQRSize.height) + 40).toLocaleString()} bit</strong><br>
+                        <br>
+                        Rasio Penggunaan = ${(((newQRSize.width * newQRSize.height) + 40) / imageCapacity * 100).toFixed(1)}% dari kapasitas
+                    </div>
+                </div>
+            `;
+            container.appendChild(step2);
+            
+            // Step 3: Header Creation
+            const step3 = document.createElement('div');
+            step3.className = 'process-step';
+            step3.innerHTML = `
+                <div class="step-header">
+                    <span class="step-badge">STEP 3</span>
+                    <span class="step-title">Pembuatan Header</span>
+                </div>
+                <p>Membuat header yang berisi informasi dimensi QR Code untuk ekstraksi.</p>
+                
+                <div class="bit-visualization">
+                    <div class="bit-row">
+                        <span class="bit-label">Lebar QR (dec):</span>
+                        <span class="bit-value">${newQRSize.width}</span>
+                    </div>
+                    <div class="bit-row">
+                        <span class="bit-label">Lebar QR (bin):</span>
+                        <span class="bit-value header">${newQRSize.width.toString(2).padStart(20, '0')}</span>
+                        <span>(20 bit)</span>
+                    </div>
+                    <div class="bit-row">
+                        <span class="bit-label">Tinggi QR (dec):</span>
+                        <span class="bit-value">${newQRSize.height}</span>
+                    </div>
+                    <div class="bit-row">
+                        <span class="bit-label">Tinggi QR (bin):</span>
+                        <span class="bit-value header">${newQRSize.height.toString(2).padStart(20, '0')}</span>
+                        <span>(20 bit)</span>
+                    </div>
+                    <div class="bit-row">
+                        <span class="bit-label">Total Header:</span>
+                        <span class="bit-value header">40 bit</span>
+                    </div>
+                </div>
+                
+                <div class="formula-explanation">
+                    <div class="formula-title">📋 Format Header</div>
+                    <div class="formula-content">
+                        Header disimpan di awal untuk memberitahu decoder:<br>
+                        • Bit 1-20: Lebar QR Code (20 bit)<br>
+                        • Bit 21-40: Tinggi QR Code (20 bit)<br>
+                        <br>
+                        Format: [20-bit width][20-bit height][QR data bits...]
+                    </div>
+                </div>
+            `;
+            container.appendChild(step3);
+            
+            // Step 4: LSB Embedding
+            const step4 = document.createElement('div');
+            step4.className = 'process-step';
+            step4.innerHTML = `
+                <div class="step-header">
+                    <span class="step-badge">STEP 4</span>
+                    <span class="step-title">Proses LSB Embedding</span>
+                </div>
+                <p>Menyisipkan bit watermark ke dalam LSB (Least Significant Bit) channel biru.</p>
+                
+                <div class="formula-explanation">
+                    <div class="formula-title">🔧 Contoh Modifikasi Pixel</div>
+                    <div class="formula-content">
+                        <strong>Algoritma LSB:</strong><br>
+                        1. Ambil pixel asli dari gambar cover<br>
+                        2. Konversi nilai Blue ke biner<br>
+                        3. Ganti bit terakhir (LSB) dengan bit watermark<br>
+                        4. Konversi kembali ke desimal<br>
+                        <br>
+                        <strong>Contoh:</strong><br>
+                        Pixel Asli: R=120, G=85, B=200<br>
+                        Bit watermark: 1<br>
+                        <br>
+                        Blue: 200 → 11001000₂<br>
+                        LSB lama: <span class="lsb-highlight">0</span><br>
+                        LSB baru: <span class="lsb-highlight">1</span><br>
+                        Blue baru: 11001001₂ → 201<br>
+                        <br>
+                        Pixel Hasil: R=120, G=85, B=201
+                    </div>
+                </div>
+                
+                <div class="example-pixel">
+                    <div class="pixel-channel red">
+                        <div class="pixel-value">Red: 120</div>
+                        <div class="pixel-binary">01111000</div>
+                        <small>Tidak diubah</small>
+                    </div>
+                    <div class="pixel-channel green">
+                        <div class="pixel-value">Green: 85</div>
+                        <div class="pixel-binary">01010101</div>
+                        <small>Tidak diubah</small>
+                    </div>
+                    <div class="pixel-channel blue">
+                        <div class="pixel-value">Blue: 200→201</div>
+                        <div class="pixel-binary">1100100<span class="lsb-highlight">0→1</span></div>
+                        <small>LSB dimodifikasi</small>
+                    </div>
+                </div>
+                
+                <div class="formula-explanation">
+                    <div class="formula-title">📊 Statistik Embedding</div>
+                    <div class="formula-content">
+                        Total bit diproses: ${bitsEmbedded.toLocaleString()} bit<br>
+                        Pixel dimodifikasi: ${bitsEmbedded.toLocaleString()} pixel<br>
+                        Perubahan maksimum per pixel: ±1 (sangat kecil)<br>
+                        <br>
+                        Dampak visual: Hampir tidak terdeteksi mata manusia
+                    </div>
+                </div>
+            `;
+            container.appendChild(step4);
+            
+            // Step 5: Quality Analysis
+            const step5 = document.createElement('div');
+            step5.className = 'process-step';
+            step5.innerHTML = `
+                <div class="step-header">
+                    <span class="step-badge">STEP 5</span>
+                    <span class="step-title">Analisis Kualitas</span>
+                </div>
+                <p>Mengukur dampak penyisipan terhadap kualitas gambar menggunakan MSE dan PSNR.</p>
+                
+                <div class="formula-explanation">
+                    <div class="formula-title">📊 Mean Squared Error (MSE)</div>
+                    <div class="formula-content">
+                        MSE = (1/N) × Σ(Original - Watermarked)²<br>
+                        <br>
+                        N = Total pixel dalam gambar<br>
+                        Untuk setiap pixel: (R₁-R₂)² + (G₁-G₂)² + (B₁-B₂)²<br>
+                        <br>
+                        <strong>Contoh perhitungan 1 pixel:</strong><br>
+                        Original: R=120, G=85, B=200<br>
+                        Watermarked: R=120, G=85, B=201<br>
+                        <br>
+                        MSE pixel = [(120-120)² + (85-85)² + (200-201)²] / 3<br>
+                        MSE pixel = [0 + 0 + 1] / 3 = 0.333
+                    </div>
+                </div>
+                
+                <div class="formula-explanation">
+                    <div class="formula-title">📈 Peak Signal-to-Noise Ratio (PSNR)</div>
+                    <div class="formula-content">
+                        PSNR = 20 × log₁₀(MAX²/MSE)<br>
+                        MAX = 255 (nilai maksimum pixel)<br>
+                        <br>
+                        PSNR = 20 × log₁₀(255²/MSE)<br>
+                        PSNR = 20 × log₁₀(65025/MSE)<br>
+                        <br>
+                        <strong>Interpretasi Kualitas:</strong><br>
+                        • PSNR > 40 dB: Excellent (Sangat Baik Sekali)<br>
+                        • PSNR > 30 dB: Very Good (Sangat Baik)<br>
+                        • PSNR > 20 dB: Good (Baik)<br>
+                        • PSNR < 20 dB: Poor (Kurang Baik)
+                    </div>
+                </div>
+            `;
+            container.appendChild(step5);
+            
+            // Show the detailed process
+            document.getElementById('detailedProcess').style.display = 'block';
+        }
+
+        // File upload label updates
+        document.querySelectorAll('.file-upload-input').forEach(input => {
+            input.addEventListener('change', function() {
+                const label = this.nextElementSibling.querySelector('span');
+                if (this.files[0]) {
+                    label.textContent = this.files[0].name;
+                } else {
+                    label.textContent = this.dataset.placeholder || 'Pilih file...';
+                }
+            });
+        });
+
+        // Tab Switching Functionality
+        function initializeTabs() {
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabPanes = document.querySelectorAll('.tab-pane');
+
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const targetTab = btn.getAttribute('data-tab');
+                    
+                    // Remove active class from all buttons and panes
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    tabPanes.forEach(p => p.classList.remove('active'));
+                    
+                    // Add active class to clicked button and corresponding pane
+                    btn.classList.add('active');
+                    document.getElementById(targetTab + '-tab').classList.add('active');
+                    
+                    // Clear any previous results and processes when switching tabs
+                    clearTabResults(targetTab);
+                });
+            });
+        }
+
+        function clearTabResults(tabName) {
+            // Don't clear results, just hide process details when switching
+            const processDetailsMap = {
+                'generate': 'generateProcess',
+                'embed': 'embedProcess', 
+                'validate': 'validateProcess'
+            };
+            
+            // Hide process details for other tabs, but keep current tab's results
+            Object.keys(processDetailsMap).forEach(tab => {
+                if (tab !== tabName) {
+                    hideProcessDetails(processDetailsMap[tab]);
+                }
+            });
+        }
+
+        // Initialize tabs when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeTabs();
+        });
+
+        // Generate QR Code Form
+        document.getElementById('generateForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<span class="loading"></span> Membuat QR Code...';
+            submitBtn.disabled = true;
+            
+            showProgress('generateProgress');
+            hideResult('generateResult');
+            showProcessDetails('generateProcess');
+            clearLog('generateLog');
+            
+            const formData = new FormData(this);
+            const qrData = document.getElementById('qrData').value;
+            
+            // Add process steps
+            addLogEntry('generateLog', '🚀 Memulai proses pembuatan QR Code...', 'info');
+            addLogEntry('generateLog', `📝 Data input: "${qrData}"`, 'info');
+            addLogEntry('generateLog', `📏 Panjang data: ${qrData.length} karakter`, 'info');
+            
+            try {
+                const response = await fetch('/generate_qr', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    addLogEntry('generateLog', '✅ QR Code berhasil dibuat!', 'success');
+                    addLogEntry('generateLog', `💾 File tersimpan: ${result.qr_filename}`, 'success');
+                    
+                    showAlert('generateAlert', `
+                        <i class="fas fa-check-circle"></i> 
+                        ${result.message}
+                    `, 'success');
+                    
+                    document.getElementById('qrPreview').innerHTML = `
+                        <img src="${result.qr_url}" alt="QR Code">
+                        <p><strong>Data:</strong> ${qrData}</p>
+                    `;
+                    
+                    document.getElementById('qrDownload').innerHTML = `
+                        <a href="${result.qr_url}" download="${result.qr_filename}" class="download-link">
+                            <i class="fas fa-download"></i> Download QR Code
+                        </a>
+                    `;
+                    
+                    showResult('generateResult');
+                } else {
+                    addLogEntry('generateLog', `❌ Error: ${result.message}`, 'error');
+                    showAlert('generateAlert', `
+                        <i class="fas fa-exclamation-circle"></i> 
+                        ${result.message}
+                    `, 'error');
+                }
+            } catch (error) {
+                addLogEntry('generateLog', `❌ Error tidak terduga: ${error.message}`, 'error');
+                showAlert('generateAlert', `
+                    <i class="fas fa-exclamation-triangle"></i> 
+                    Error: ${error.message}
+                `, 'error');
+            } finally {
+                hideProgress('generateProgress');
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Embed Watermark Form
+        document.getElementById('embedForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<span class="loading"></span> Menyisipkan Watermark...';
+            submitBtn.disabled = true;
+            
+            showProgress('embedProgress');
+            hideResult('embedResult');
+            showProcessDetails('embedProcess');
+            clearLog('embedLog');
+            document.getElementById('calculationDetails').innerHTML = '';
+            
+            const formData = new FormData(this);
+            const docxFile = document.getElementById('docxFileEmbed').files[0];
+            const qrFile = document.getElementById('qrFileEmbed').files[0];
+            
+            // Add process steps
+            addLogEntry('embedLog', '🚀 Memulai proses embedding watermark...', 'info');
+            addLogEntry('embedLog', `📄 Dokumen: ${docxFile.name} (${(docxFile.size / 1024).toFixed(1)} KB)`, 'info');
+            addLogEntry('embedLog', `🔳 QR Code: ${qrFile.name} (${(qrFile.size / 1024).toFixed(1)} KB)`, 'info');
+            addLogEntry('embedLog', '🔍 Mengekstrak gambar dari dokumen...', 'info');
+            
+            try {
+                const response = await fetch('/embed_docx', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    addLogEntry('embedLog', '✅ Proses embedding berhasil!', 'success');
+                    addLogEntry('embedLog', `📊 Jumlah gambar diproses: ${result.processed_images ? result.processed_images.length : 0}`, 'success');
+                    
+                    // Display QR analysis if available
+                    if (result.qr_info) {
+                        displayQRAnalysis('embedLog', result.qr_info);
+                    }
+                    
+                    // Display calculations
+                    if (result.mse !== undefined && result.psnr !== undefined) {
+                        addLogEntry('embedLog', '🧮 Menghitung metrik kualitas...', 'info');
+                        
+                        addCalculationStep('calculationDetails', 
+                            '📊 Mean Squared Error (MSE)',
+                            'MSE = (1/N) × Σ(original - watermarked)²',
+                            `${result.mse ? result.mse.toFixed(6) : 'N/A'}`
+                        );
+                        
+                        addCalculationStep('calculationDetails',
+                            '📈 Peak Signal-to-Noise Ratio (PSNR)',
+                            'PSNR = 20 × log₁₀(MAX² / MSE)',
+                            `${result.psnr ? result.psnr.toFixed(3) : 'N/A'} dB`
+                        );
+                        
+                        if (result.psnr > 30) {
+                            addLogEntry('embedLog', '✅ Kualitas watermark: SANGAT BAIK (PSNR > 30 dB)', 'success');
+                        } else if (result.psnr > 20) {
+                            addLogEntry('embedLog', '✅ Kualitas watermark: BAIK (PSNR > 20 dB)', 'warning');
+                        } else {
+                            addLogEntry('embedLog', '⚠️ Kualitas watermark: RENDAH (PSNR < 20 dB)', 'warning');
+                        }
+                    }
+                    
+                    showAlert('embedAlert', `
+                        <i class="fas fa-check-circle"></i> 
+                        ${result.message}
+                    `, 'success');
+                    
+                    let metricsHtml = '';
+                    if (result.mse !== undefined && result.psnr !== undefined) {
+                        metricsHtml = `
+                            <div class="metric">
+                                <div class="metric-value">${result.mse ? result.mse.toFixed(4) : 'N/A'}</div>
+                                <div class="metric-label">MSE</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">${result.psnr ? result.psnr.toFixed(2) : 'N/A'}</div>
+                                <div class="metric-label">PSNR (dB)</div>
+                            </div>
+                        `;
+                    }
+                    document.getElementById('embedMetrics').innerHTML = metricsHtml;
+                    
+                    document.getElementById('embedDownload').innerHTML = `
+                        <a href="${result.download_url}" class="download-link">
+                            <i class="fas fa-download"></i> Download Dokumen Watermark
+                        </a>
+                    `;
+                    
+                    // Display image comparisons
+                    if (result.processed_images) {
+                        displayImageComparison('processedImages', result.processed_images);
+                    }
+                    
+                    // Display detailed process explanation for first image
+                    addLogEntry('embedLog', '🔬 Generating detailed process analysis...', 'info');
+                    displayDetailedProcess(result.log, result.qr_info, result.processed_images);
+                    
+                    showResult('embedResult');
+                } else {
+                    if (result.error_type === 'NO_IMAGES_FOUND') {
+                        addLogEntry('embedLog', '⚠️ Dokumen tidak mengandung gambar', 'warning');
+                        showAlert('embedAlert', `
+                            <i class="fas fa-info-circle"></i> 
+                            ${result.message}
+                        `, 'info');
+                    } else {
+                        addLogEntry('embedLog', `❌ Error: ${result.message}`, 'error');
+                        showAlert('embedAlert', `
+                            <i class="fas fa-exclamation-circle"></i> 
+                            ${result.message}
+                        `, 'error');
+                    }
+                }
+            } catch (error) {
+                addLogEntry('embedLog', `❌ Error tidak terduga: ${error.message}`, 'error');
+                showAlert('embedAlert', `
+                    <i class="fas fa-exclamation-triangle"></i> 
+                    Error: ${error.message}
+                `, 'error');
+            } finally {
+                hideProgress('embedProgress');
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Validate Document Form
+        document.getElementById('validateForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<span class="loading"></span> Memvalidasi Dokumen...';
+            submitBtn.disabled = true;
+            
+            showProgress('validateProgress');
+            hideResult('validateResult');
+            showProcessDetails('validateProcess');
+            clearLog('validateLog');
+            
+            const formData = new FormData(this);
+            const docxFile = document.getElementById('docxFileValidate').files[0];
+            
+            // Add process steps
+            addLogEntry('validateLog', '🚀 Memulai proses validasi dokumen...', 'info');
+            addLogEntry('validateLog', `📄 Dokumen: ${docxFile.name} (${(docxFile.size / 1024).toFixed(1)} KB)`, 'info');
+            addLogEntry('validateLog', '🔍 Mengekstrak gambar dari dokumen...', 'info');
+            addLogEntry('validateLog', '🔓 Mencari watermark QR Code tersembunyi...', 'info');
+            
+            try {
+                const response = await fetch('/extract_docx', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    addLogEntry('validateLog', '✅ Proses validasi berhasil!', 'success');
+                    addLogEntry('validateLog', `🔍 QR Code ditemukan: ${result.extracted_qrs ? result.extracted_qrs.length : 0}`, 'success');
+                    
+                    showAlert('validateAlert', `
+                        <i class="fas fa-check-circle"></i> 
+                        ${result.message}
+                    `, 'success');
+                    
+                    let qrsHtml = '';
+                    if (result.extracted_qrs && result.extracted_qrs.length > 0) {
+                        result.extracted_qrs.forEach((qr, index) => {
+                            addLogEntry('validateLog', `📋 QR Code ${index + 1}: ${qr.filename}`, 'success');
+                            qrsHtml += `
+                                <div class="extracted-qr">
+                                    <img src="${qr.url}" alt="Extracted QR ${index + 1}">
+                                    <div class="extracted-qr-data">QR Code ${index + 1}</div>
+                                    <a href="${qr.url}" download="${qr.filename}" class="download-link" style="margin-top: 10px;">
+                                        <i class="fas fa-download"></i> Download
+                                    </a>
+                                </div>
+                            `;
+                        });
+                    } else {
+                        addLogEntry('validateLog', '⚠️ Tidak ada QR Code watermark yang ditemukan', 'warning');
+                        qrsHtml = '<p style="text-align: center; color: var(--text-secondary);">Tidak ada QR Code watermark yang ditemukan.</p>';
+                    }
+                    
+                    document.getElementById('extractedQRs').innerHTML = qrsHtml;
+                    showResult('validateResult');
+                } else {
+                    if (result.error_type === 'NO_IMAGES_FOUND') {
+                        addLogEntry('validateLog', '⚠️ Dokumen tidak mengandung gambar', 'warning');
+                        showAlert('validateAlert', `
+                            <i class="fas fa-info-circle"></i> 
+                            ${result.message}
+                        `, 'info');
+                    } else {
+                        addLogEntry('validateLog', `❌ Error: ${result.message}`, 'error');
+                        showAlert('validateAlert', `
+                            <i class="fas fa-exclamation-circle"></i> 
+                            ${result.message}
+                        `, 'error');
+                    }
+                }
+            } catch (error) {
+                addLogEntry('validateLog', `❌ Error tidak terduga: ${error.message}`, 'error');
+                showAlert('validateAlert', `
+                    <i class="fas fa-exclamation-triangle"></i> 
+                    Error: ${error.message}
+                `, 'error');
+            } finally {
+                hideProgress('validateProgress');
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html> 
