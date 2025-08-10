@@ -5,6 +5,8 @@ import qrcode
 import cv2
 from PIL import Image
 import os
+import zlib
+import time
 
 def generate_qr(data: str, output_path: str):
     """
@@ -89,5 +91,54 @@ def read_qr(image_path: str) -> list[str]:
         # Menangani potensi error saat membuka citra atau proses decoding
         print(f"[!] Error saat membaca QR Code: {e}")
         raise # Melempar kembali error
+
+def add_crc32_checksum(data: str) -> dict:
+    """
+    Menambahkan CRC32 checksum untuk validasi integritas data QR Code.
+    
+    Args:
+        data (str): Data asli QR Code
+        
+    Returns:
+        dict: Data dengan checksum
+    """
+    try:
+        checksum = zlib.crc32(data.encode('utf-8')) & 0xffffffff
+        
+        return {
+            "data": data,
+            "crc32": checksum,
+            "timestamp": int(time.time()) if 'time' in globals() else None
+        }
+    except Exception as e:
+        print(f"[!] Error menambahkan CRC32: {e}")
+        return {"data": data, "crc32": None}
+
+def verify_crc32_checksum(qr_data_with_checksum: dict) -> bool:
+    """
+    Memverifikasi integritas data menggunakan CRC32 checksum.
+    
+    Args:
+        qr_data_with_checksum (dict): Data QR dengan checksum
+        
+    Returns:
+        bool: True jika valid, False jika tidak
+    """
+    try:
+        if not isinstance(qr_data_with_checksum, dict):
+            return False
+            
+        original_data = qr_data_with_checksum.get("data")
+        stored_checksum = qr_data_with_checksum.get("crc32")
+        
+        if not original_data or stored_checksum is None:
+            return False
+            
+        calculated_checksum = zlib.crc32(original_data.encode('utf-8')) & 0xffffffff
+        return calculated_checksum == stored_checksum
+        
+    except Exception as e:
+        print(f"[!] Error verifikasi CRC32: {e}")
+        return False
 
 # --- End of qr_utils.py ---

@@ -1138,6 +1138,38 @@
                         </button>
                     </form>
 
+                    <!-- CRC32 Integrity Validation Section -->
+                    <hr style="margin: 30px 0; border: 1px solid var(--border-color);">
+                    
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="color: var(--primary-color); margin-bottom: 10px;">
+                            <i class="fas fa-shield-alt"></i> Validasi Integritas CRC32
+                        </h4>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                            Validasi integritas QR Code menggunakan CRC32 checksum untuk memastikan data tidak rusak atau dimodifikasi.
+                        </p>
+                    </div>
+
+                    <form id="integrityForm">
+                        <div class="form-group">
+                            <label class="form-label">QR Code untuk Validasi CRC32</label>
+                            <div class="file-upload">
+                                <input type="file" id="qrIntegrityFile" name="qrIntegrityFile" 
+                                       accept=".png" class="file-upload-input" required>
+                                <label for="qrIntegrityFile" class="file-upload-label">
+                                    <i class="fas fa-shield-alt"></i>
+                                    <span>Pilih QR Code untuk validasi CRC32...</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="width: 100%; margin-bottom: 15px;">
+                            <i class="fas fa-check-shield"></i> Validasi Integritas CRC32
+                        </button>
+                    </form>
+
+                    <div class="alert" id="integrityAlert"></div>
+
                     <div class="progress-bar" id="validateProgress">
                         <div class="progress-fill"></div>
                     </div>
@@ -1957,6 +1989,67 @@
                 `, 'error');
             } finally {
                 hideProgress('validateProgress');
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        // CRC32 Integrity Validation Form
+        document.getElementById('integrityForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<span class="loading"></span> Memvalidasi...';
+            submitBtn.disabled = true;
+            
+            const qrFile = document.getElementById('qrIntegrityFile').files[0];
+            if (!qrFile) {
+                showAlert('integrityAlert', 'Pilih file QR Code terlebih dahulu', 'error');
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('qrFile', qrFile);
+            
+            try {
+                const response = await fetch('/validate_qr_integrity', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    if (result.integrity_check) {
+                        const status = result.data_valid ? 'success' : 'error';
+                        const icon = result.data_valid ? 'check-circle' : 'exclamation-triangle';
+                        
+                        showAlert('integrityAlert', `
+                            <i class="fas fa-${icon}"></i> 
+                            ${result.message}<br>
+                            <small><strong>Data:</strong> "${result.data}"</small><br>
+                            <small><strong>CRC32:</strong> ${result.crc32_info.stored_checksum} (${result.crc32_info.status})</small>
+                            ${result.crc32_info.timestamp ? `<br><small><strong>Timestamp:</strong> ${new Date(result.crc32_info.timestamp * 1000).toLocaleString()}</small>` : ''}
+                        `, status);
+                    } else {
+                        showAlert('integrityAlert', `
+                            <i class="fas fa-info-circle"></i> 
+                            ${result.message}<br>
+                            <small><strong>Data:</strong> "${result.data}"</small>
+                        `, 'info');
+                    }
+                } else {
+                    showAlert('integrityAlert', `
+                        <i class="fas fa-exclamation-circle"></i> 
+                        ${result.message}
+                    `, 'error');
+                }
+            } catch (error) {
+                showAlert('integrityAlert', `Error: ${error.message}`, 'error');
+            } finally {
                 submitBtn.innerHTML = originalText;
                 submitBtn.disabled = false;
             }

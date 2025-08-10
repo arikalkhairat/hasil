@@ -8,6 +8,8 @@ import shutil
 from flask import Flask, render_template, request, jsonify, send_from_directory
 from PIL import Image
 import numpy as np
+import json
+import time
 
 from main import extract_images_from_docx, embed_watermark_to_docx
 from qr_utils import read_qr
@@ -149,22 +151,44 @@ def generate_qr_route():
     qr_filename = f"qr_{uuid.uuid4().hex}.png"
     qr_output_path = os.path.join(app.config['GENERATED_FOLDER'], qr_filename)
 
-    args = ['generate_qr', '--data', data, '--output', qr_output_path]
-    result = run_main_script(args)
+    # Import fungsi CRC32
+    from qr_utils import add_crc32_checksum
+    
+    try:
+        # Tambahkan CRC32 checksum
+        data_with_checksum = add_crc32_checksum(data)
+        
+        # Konversi ke JSON
+        qr_data_json = json.dumps(data_with_checksum, separators=(',', ':'))
+        
+        # Generate QR Code dengan checksum
+        args = ['generate_qr', '--data', qr_data_json, '--output', qr_output_path]
+        result = run_main_script(args)
 
-    if result["success"] and os.path.exists(qr_output_path):
-        return jsonify({
-            "success": True,
-            "message": "QR Code berhasil dibuat!",
-            "qr_url": f"/static/generated/{qr_filename}",
-            "qr_filename": qr_filename,
-            "log": result["stdout"]
-        })
-    else:
+        if result["success"] and os.path.exists(qr_output_path):
+            return jsonify({
+                "success": True,
+                "message": "QR Code berhasil dibuat dengan CRC32 checksum!",
+                "qr_url": f"/static/generated/{qr_filename}",
+                "qr_filename": qr_filename,
+                "log": result["stdout"],
+                "crc32_info": {
+                    "checksum": data_with_checksum.get('crc32'),
+                    "data_length": len(data),
+                    "integrity_protected": True
+                }
+            })
+        else:
+            return jsonify({
+                "success": False,
+                "message": "Gagal membuat QR Code.",
+                "log": result["stderr"] or result.get("error", "Error tidak diketahui")
+            }), 500
+            
+    except Exception as e:
         return jsonify({
             "success": False,
-            "message": "Gagal membuat QR Code.",
-            "log": result["stderr"] or result.get("error", "Error tidak diketahui")
+            "message": f"Error menambahkan CRC32: {str(e)}"
         }), 500
 
 
@@ -388,6 +412,76 @@ def extract_docx_route():
             "message": "Gagal mengekstrak watermark.",
             "log": result["stderr"] or result.get("error", "Error tidak diketahui")
         }), 500
+
+
+@app.route('/validate_qr_integrity', methods=['POST'])
+def validate_qr_integrity():
+    """Validasi integritas QR Code menggunakan CRC32"""
+    if 'qrFile' not in request.files:
+        return jsonify({"success": False, "message": "File QR Code diperlukan"}), 400
+    
+    qr_file = request.files['qrFile']
+    if qr_file.filename == '':
+        return jsonify({"success": False, "message": "Nama file tidak boleh kosong"}), 400
+    
+    # Simpan file sementara
+    temp_filename = f"validate_qr_{uuid.uuid4().hex}.png"
+    temp_path = os.path.join(app.config['UPLOAD_FOLDER'], temp_filename)
+    qr_file.save(temp_path)
+    
+    try:
+        # Baca QR Code
+        qr_data_list = read_qr(temp_path)
+        
+        if not qr_data_list:
+            return jsonify({
+                "success": False,
+                "message": "Tidak dapat membaca QR Code"
+            }), 400
+        
+        qr_data_raw = qr_data_list[0]
+        
+        # Parse JSON data
+        try:
+            qr_data_parsed = json.loads(qr_data_raw)
+        except json.JSONDecodeError:
+            # QR Code lama tanpa CRC32
+            return jsonify({
+                "success": True,
+                "integrity_check": False,
+                "message": "QR Code tidak memiliki CRC32 checksum (format lama)",
+                "data": qr_data_raw
+            })
+        
+        # Import fungsi verifikasi
+        from qr_utils import verify_crc32_checksum
+        
+        # Verifikasi CRC32
+        is_valid = verify_crc32_checksum(qr_data_parsed)
+        
+        return jsonify({
+            "success": True,
+            "integrity_check": True,
+            "data_valid": is_valid,
+            "message": "Data valid dan tidak rusak" if is_valid else "Data rusak atau dimodifikasi",
+            "data": qr_data_parsed.get("data", ""),
+            "crc32_info": {
+                "stored_checksum": qr_data_parsed.get("crc32"),
+                "timestamp": qr_data_parsed.get("timestamp"),
+                "status": "VALID" if is_valid else "INVALID"
+            }
+        })
+        
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "message": f"Error validasi: {str(e)}"
+        }), 500
+        
+    finally:
+        # Hapus file sementara
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
 
 
 @app.route('/download_generated/<filename>')

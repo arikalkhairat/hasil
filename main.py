@@ -7,6 +7,8 @@ import docx
 from io import BytesIO
 import uuid
 import shutil
+import json
+import time
 
 # Import modul lokal
 from qr_utils import generate_qr, read_qr
@@ -43,18 +45,23 @@ def parse_arguments():
 
 def generate_qr_code(data: str, output_path: str) -> bool:
     """
-    Generate QR Code and save it to the specified path.
-
-    Args:
-        data: Text data to encode in the QR Code
-        output_path: Path to save the generated QR Code
-
-    Returns:
-        bool: True if successful, False otherwise
+    Generate QR Code with CRC32 checksum and save it to the specified path.
     """
     try:
-        generate_qr(data, output_path)
+        # Import fungsi baru
+        from qr_utils import add_crc32_checksum
+        
+        # Tambahkan CRC32 checksum
+        data_with_checksum = add_crc32_checksum(data)
+        
+        # Konversi ke JSON untuk disimpan dalam QR
+        qr_data_json = json.dumps(data_with_checksum, separators=(',', ':'))
+        
+        # Generate QR dengan data yang sudah ada checksum
+        generate_qr(qr_data_json, output_path)
+        
         print(f"[*] QR Code berhasil dibuat dengan data: '{data}'")
+        print(f"[*] CRC32 Checksum: {data_with_checksum.get('crc32', 'N/A')}")
         print(f"[*] Tersimpan di: {output_path}")
         return True
     except Exception as e:
