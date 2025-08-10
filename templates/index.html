@@ -671,6 +671,187 @@
             border: 1px solid var(--border-color);
         }
 
+        /* Pixel Analysis Styles */
+        .pixel-analysis {
+            margin-top: 20px;
+        }
+
+        .analysis-section {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .analysis-section h6 {
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .pixel-stats {
+            display: grid;
+            gap: 15px;
+        }
+
+        .stat-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+
+        .stat-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .rgb-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .rgb-channel {
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .channel-name {
+            font-weight: bold;
+            color: #666;
+        }
+
+        .rgb-stats-mini {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            font-size: 0.8rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        .rgb-stats-mini > div {
+            background: #f0f0f0;
+            padding: 4px 6px;
+            border-radius: 3px;
+            text-align: center;
+        }
+
+        .samples-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .pixel-sample {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        .position {
+            font-family: 'Courier New', monospace;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .rgb-value {
+            padding: 4px 8px;
+            border-radius: 3px;
+            color: white;
+            font-family: 'Courier New', monospace;
+            text-shadow: 1px 1px 1px rgba(0,0,0,0.5);
+            border: 1px solid #ccc;
+        }
+
+        .image-analysis-comparison {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+
+        .comparison-header h7 {
+            font-weight: 600;
+            color: var(--primary-color);
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .comparison-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .image-data h8 {
+            font-weight: 500;
+            color: #333;
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .metric-detail {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .metric-header {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .metric-values {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .metric-value {
+            text-align: center;
+        }
+
+        .metric-value .value {
+            display: block;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .metric-value .label {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
         .image-item {
             text-align: center;
         }
@@ -1090,6 +1271,7 @@
                         <div class="metrics" id="embedMetrics"></div>
                         <div class="download-links" id="embedDownload"></div>
                         <div class="processed-images" id="processedImages"></div>
+                        <div class="pixel-analysis" id="pixelAnalysisContainer"></div>
                     </div>
 
                     <!-- Process Details for Embed -->
@@ -1321,6 +1503,169 @@
                 `;
                 container.appendChild(comparison);
             });
+        }
+
+        function displayPixelAnalysis(containerId, analysis) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '<h5><i class="fas fa-search"></i> Analisis Pixel dan Metrik</h5>';
+            
+            // QR Code Analysis
+            if (analysis.qr_analysis && analysis.qr_analysis.success) {
+                const qrData = analysis.qr_analysis;
+                const qrSection = document.createElement('div');
+                qrSection.className = 'analysis-section';
+                qrSection.innerHTML = `
+                    <h6><i class="fas fa-qrcode"></i> Analisis QR Code</h6>
+                    <div class="pixel-stats">
+                        <div class="stat-group">
+                            <div class="stat-item">
+                                <div class="stat-value">${qrData.image_info.width} × ${qrData.image_info.height}</div>
+                                <div class="stat-label">Dimensi</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">${qrData.image_info.total_pixels.toLocaleString()}</div>
+                                <div class="stat-label">Total Pixel</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">${qrData.image_info.file_size_kb} KB</div>
+                                <div class="stat-label">Ukuran File</div>
+                            </div>
+                        </div>
+                        <div class="stat-group">
+                            <h7>Statistik Pixel RGB:</h7>
+                            <div class="rgb-stats">
+                                <div class="rgb-channel">
+                                    <span class="channel-name">R:</span>
+                                    <span>μ=${qrData.pixel_statistics.mean_rgb[0].toFixed(1)} σ=${qrData.pixel_statistics.std_rgb[0].toFixed(1)}</span>
+                                </div>
+                                <div class="rgb-channel">
+                                    <span class="channel-name">G:</span>
+                                    <span>μ=${qrData.pixel_statistics.mean_rgb[1].toFixed(1)} σ=${qrData.pixel_statistics.std_rgb[1].toFixed(1)}</span>
+                                </div>
+                                <div class="rgb-channel">
+                                    <span class="channel-name">B:</span>
+                                    <span>μ=${qrData.pixel_statistics.mean_rgb[2].toFixed(1)} σ=${qrData.pixel_statistics.std_rgb[2].toFixed(1)}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pixel-samples">
+                            <h7>Sample Pixel Values:</h7>
+                            <div class="samples-grid">
+                                ${qrData.pixel_samples.slice(0, 10).map(sample => `
+                                    <div class="pixel-sample">
+                                        <span class="position">(${sample.position[0]},${sample.position[1]})</span>
+                                        <span class="rgb-value" style="background-color: rgb(${sample.rgb[0]},${sample.rgb[1]},${sample.rgb[2]})">${sample.rgb[0]},${sample.rgb[1]},${sample.rgb[2]}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(qrSection);
+            }
+            
+            // Image Analysis
+            if (analysis.image_analyses && analysis.image_analyses.length > 0) {
+                const imageSection = document.createElement('div');
+                imageSection.className = 'analysis-section';
+                imageSection.innerHTML = '<h6><i class="fas fa-images"></i> Analisis Gambar Dokumen</h6>';
+                
+                analysis.image_analyses.forEach((imgAnalysis, index) => {
+                    if (imgAnalysis.original.success && imgAnalysis.watermarked.success) {
+                        const originalData = imgAnalysis.original;
+                        const watermarkedData = imgAnalysis.watermarked;
+                        
+                        const comparison = document.createElement('div');
+                        comparison.className = 'image-analysis-comparison';
+                        comparison.innerHTML = `
+                            <div class="comparison-header">
+                                <h7>Gambar ${index + 1}</h7>
+                            </div>
+                            <div class="comparison-content">
+                                <div class="image-data">
+                                    <h8>Gambar Asli</h8>
+                                    <div class="pixel-stats">
+                                        <div class="stat-item">
+                                            <div class="stat-value">${originalData.image_info.width} × ${originalData.image_info.height}</div>
+                                            <div class="stat-label">Dimensi</div>
+                                        </div>
+                                        <div class="stat-item">
+                                            <div class="stat-value">${originalData.image_info.file_size_kb} KB</div>
+                                            <div class="stat-label">Ukuran</div>
+                                        </div>
+                                    </div>
+                                    <div class="rgb-stats-mini">
+                                        <div>R: μ=${originalData.pixel_statistics.mean_rgb[0].toFixed(1)}</div>
+                                        <div>G: μ=${originalData.pixel_statistics.mean_rgb[1].toFixed(1)}</div>
+                                        <div>B: μ=${originalData.pixel_statistics.mean_rgb[2].toFixed(1)}</div>
+                                    </div>
+                                </div>
+                                <div class="image-data">
+                                    <h8>Gambar Watermarked</h8>
+                                    <div class="pixel-stats">
+                                        <div class="stat-item">
+                                            <div class="stat-value">${watermarkedData.image_info.width} × ${watermarkedData.image_info.height}</div>
+                                            <div class="stat-label">Dimensi</div>
+                                        </div>
+                                        <div class="stat-item">
+                                            <div class="stat-value">${watermarkedData.image_info.file_size_kb} KB</div>
+                                            <div class="stat-label">Ukuran</div>
+                                        </div>
+                                    </div>
+                                    <div class="rgb-stats-mini">
+                                        <div>R: μ=${watermarkedData.pixel_statistics.mean_rgb[0].toFixed(1)}</div>
+                                        <div>G: μ=${watermarkedData.pixel_statistics.mean_rgb[1].toFixed(1)}</div>
+                                        <div>B: μ=${watermarkedData.pixel_statistics.mean_rgb[2].toFixed(1)}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        imageSection.appendChild(comparison);
+                    }
+                });
+                container.appendChild(imageSection);
+            }
+            
+            // Detailed Metrics per Image
+            if (analysis.detailed_metrics && analysis.detailed_metrics.length > 0) {
+                const metricsSection = document.createElement('div');
+                metricsSection.className = 'analysis-section';
+                metricsSection.innerHTML = '<h6><i class="fas fa-chart-line"></i> Metrik MSE/PSNR per Gambar</h6>';
+                
+                analysis.detailed_metrics.forEach((metric, index) => {
+                    if (metric.metrics.success) {
+                        const metricData = metric.metrics;
+                        const qualityColor = metricData.psnr === Infinity ? '#28a745' : 
+                                           metricData.psnr > 40 ? '#28a745' :
+                                           metricData.psnr > 30 ? '#17a2b8' :
+                                           metricData.psnr > 20 ? '#ffc107' : '#dc3545';
+                        
+                        const metricItem = document.createElement('div');
+                        metricItem.className = 'metric-detail';
+                        metricItem.innerHTML = `
+                            <div class="metric-header">Gambar ${index + 1}</div>
+                            <div class="metric-values">
+                                <div class="metric-value">
+                                    <span class="value">${metricData.mse.toExponential(3)}</span>
+                                    <span class="label">MSE</span>
+                                </div>
+                                <div class="metric-value">
+                                    <span class="value" style="color: ${qualityColor}">
+                                        ${metricData.psnr === Infinity ? '∞' : metricData.psnr.toFixed(2)} dB
+                                    </span>
+                                    <span class="label">PSNR</span>
+                                </div>
+                                <div class="metric-value">
+                                    <span class="value" style="color: ${qualityColor}">${metricData.quality}</span>
+                                    <span class="label">Kualitas</span>
+                                </div>
+                            </div>
+                        `;
+                        metricsSection.appendChild(metricItem);
+                    }
+                });
+                container.appendChild(metricsSection);
+            }
         }
 
         function displayDetailedProcess(logData, qrInfo, processedImages) {
@@ -1875,6 +2220,12 @@
                     // Display detailed process explanation for first image
                     addLogEntry('embedLog', '🔬 Generating detailed process analysis...', 'info');
                     displayDetailedProcess(result.log, result.qr_info, result.processed_images);
+                    
+                    // Display pixel analysis if available
+                    if (result.analysis) {
+                        addLogEntry('embedLog', '🔍 Analyzing pixel values and image metrics...', 'info');
+                        displayPixelAnalysis('pixelAnalysisContainer', result.analysis);
+                    }
                     
                     showResult('embedResult');
                 } else {

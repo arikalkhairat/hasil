@@ -282,6 +282,39 @@ def embed_docx_route():
         # Hitung MSE dan PSNR
         metrics = calculate_metrics(docx_temp_path, stego_docx_output_path)
         print(f"[*] Metrik MSE: {metrics['mse']}, PSNR: {metrics['psnr']}")
+        
+        # Analisis pixel gambar QR
+        from qr_utils import analyze_image_pixels, calculate_mse_psnr
+        qr_analysis = analyze_image_pixels(qr_temp_path)
+        print(f"[*] Analisis QR Code: {qr_analysis.get('success', False)}")
+        
+        # Analisis gambar yang diproses (jika ada)
+        image_analyses = []
+        detailed_metrics = []
+        if processed_images:
+            for i, img_info in enumerate(processed_images[:3]):  # Analisis maksimal 3 gambar pertama
+                if "original_path" in img_info and "watermarked_path" in img_info:
+                    # Analisis pixel gambar asli
+                    original_analysis = analyze_image_pixels(img_info["original_path"])
+                    
+                    # Analisis pixel gambar watermarked
+                    watermarked_analysis = analyze_image_pixels(img_info["watermarked_path"])
+                    
+                    # MSE/PSNR detail per gambar
+                    img_metrics = calculate_mse_psnr(img_info["original_path"], img_info["watermarked_path"])
+                    
+                    image_analyses.append({
+                        "image_index": i,
+                        "original": original_analysis,
+                        "watermarked": watermarked_analysis
+                    })
+                    
+                    detailed_metrics.append({
+                        "image_index": i,
+                        "metrics": img_metrics
+                    })
+        
+        print(f"[*] Selesai analisis {len(image_analyses)} gambar")
 
         # Salin dokumen hasil ke folder documents untuk akses permanen
         try:
@@ -319,7 +352,12 @@ def embed_docx_route():
             "qr_image": qr_image_url,
             "public_dir": public_dir,
             "qr_info": qr_info,
-            "qr_data": qr_data
+            "qr_data": qr_data,
+            "analysis": {
+                "qr_analysis": qr_analysis,
+                "image_analyses": image_analyses,
+                "detailed_metrics": detailed_metrics
+            }
         })
     else:
         # Hapus file temporary jika terjadi error
