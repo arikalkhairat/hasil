@@ -33,7 +33,7 @@ app.config['GENERATED_FOLDER'] = GENERATED_FOLDER
 app.config['DOCUMENTS_FOLDER'] = DOCUMENTS_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # Batas unggah 16MB
 
-ALLOWED_DOCX_EXTENSIONS = {'docx'}
+ALLOWED_DOCX_EXTENSIONS = {'docx', 'pdf'}
 ALLOWED_IMAGE_EXTENSIONS = {'png'}
 
 
@@ -210,7 +210,7 @@ def embed_docx_route():
         return jsonify({"success": False, "message": error_msg}), 400
 
     if not (docx_file and allowed_file(docx_file.filename, ALLOWED_DOCX_EXTENSIONS)):
-        error_msg = "Format Dokumen harus .docx"
+        error_msg = "Format Dokumen harus .docx atau .pdf"
         print(f"[ERROR] /embed_docx: {error_msg}")
         return jsonify({"success": False, "message": error_msg}), 400
     if not (qr_file and allowed_file(qr_file.filename, ALLOWED_IMAGE_EXTENSIONS)):
@@ -225,96 +225,227 @@ def embed_docx_route():
     docx_file.save(docx_temp_path)
     qr_file.save(qr_temp_path)
 
-    stego_docx_filename = f"stego_doc_{uuid.uuid4().hex}.docx"
+    file_extension = docx_file.filename.rsplit('.', 1)[1].lower()
+    stego_docx_filename = f"stego_doc_{uuid.uuid4().hex}.{file_extension}"
     stego_docx_output_path = os.path.join(app.config['GENERATED_FOLDER'], stego_docx_filename)
     
     # Juga siapkan path untuk dokumen hasil di folder documents
-    documents_filename = f"watermarked_{uuid.uuid4().hex}.docx"
+    documents_filename = f"watermarked_{uuid.uuid4().hex}.{file_extension}"
     documents_output_path = os.path.join(app.config['DOCUMENTS_FOLDER'], documents_filename)
-
-    args = ['embed_docx', '--docx', docx_temp_path, '--qr', qr_temp_path, '--output', stego_docx_output_path]
-    print("[*] Memulai proses embed_docx")
-    result = run_main_script(args)
+    
+    # Cek apakah file adalah PDF
+    is_pdf = file_extension == 'pdf'
+    
+    if is_pdf:
+        # Proses PDF menggunakan pdf_utils
+        from pdf_utils import embed_watermark_to_pdf_images, create_watermarked_pdf
+        print("[*] Memulai proses embed watermark ke PDF")
+        
+        # Buat direktori untuk proses PDF
+        pdf_process_dir = os.path.join(app.config['GENERATED_FOLDER'], f"pdf_process_{uuid.uuid4().hex}")
+        os.makedirs(pdf_process_dir, exist_ok=True)
+        
+        # Embed watermark ke halaman PDF
+        pdf_result = embed_watermark_to_pdf_images(docx_temp_path, qr_temp_path, pdf_process_dir)
+        
+        if not pdf_result.get("success"):
+            return jsonify({
+                "success": False,
+                "message": pdf_result.get("message", "Gagal memproses PDF"),
+                "error_type": pdf_result.get("error_type", "PDF_PROCESSING_ERROR")
+            }), 500
+        
+        # Buat PDF baru dari gambar watermarked
+        watermarked_pdf_created = create_watermarked_pdf(
+            docx_temp_path, 
+            pdf_result["output_directories"]["watermarked_pages"], 
+            stego_docx_output_path
+        )
+        
+        if not watermarked_pdf_created:
+            return jsonify({
+                "success": False,
+                "message": "Gagal membuat PDF watermarked",
+                "error_type": "PDF_CREATION_ERROR"
+            }), 500
+        
+        result = {"success": True, "stdout": "PDF watermarking berhasil", "stderr": ""}
+        process_result = pdf_result
+        
+    else:
+        # Proses DOCX seperti biasa
+        args = ['embed_docx', '--docx', docx_temp_path, '--qr', qr_temp_path, '--output', stego_docx_output_path]
+        print("[*] Memulai proses embed_docx")
+        result = run_main_script(args)
+        process_result = None
 
     if result["success"]:
         print("[*] Proses embed_docx berhasil")
         
-        # Run the embed_watermark_to_docx function directly to get the processed images
-        try:
-            print("[*] Mendapatkan informasi gambar yang diproses")
-            process_result = embed_watermark_to_docx(docx_temp_path, qr_temp_path, stego_docx_output_path)
+        # Get processed images info
+        if is_pdf and process_result:
+            # Untuk PDF, konversi path ke format relatif yang benar
+            raw_processed_images = process_result.get("processed_images", [])
+            processed_images = []
             
-            # Get processed images info if available
-            processed_images = []
-            qr_image_url = ""
-            public_dir = ""
-            qr_info = None
+            # Ambil nama direktori dari path output PDF
+            pdf_dir_name = os.path.basename(pdf_process_dir)
             
-            if isinstance(process_result, dict) and process_result.get("success"):
-                processed_images = process_result.get("processed_images", [])
-                qr_image_url = process_result.get("qr_image", "")
-                public_dir = process_result.get("public_dir", "")
-                qr_info = process_result.get("qr_info", None)
-                print(f"[*] Mendapatkan {len(processed_images)} gambar yang diproses")
-            else:
-                print("[!] Tidak mendapatkan detail gambar yang diproses")
-        except ValueError as ve:
-            if str(ve) == "NO_IMAGES_FOUND":
-                # Handle no images case
-                return jsonify({
-                    "success": False,
-                    "message": "Dokumen ini tidak mengandung gambar",
-                    "log": result["stderr"],
-                    "error_type": "NO_IMAGES_FOUND"
-                }), 400
-            print(f"[!] Error saat mendapatkan informasi gambar: {str(ve)}")
-            processed_images = []
-            qr_image_url = ""
-            public_dir = ""
+            for img_info in raw_processed_images:
+                # Salin file ke direktori public untuk akses web
+                page_num = img_info.get("page_number", 1) - 1
+                original_filename = f"original_{page_num}.png"
+                watermarked_filename = f"watermarked_{page_num}.png"
+                
+                # Path untuk public access
+                original_public_path = os.path.join(app.config['GENERATED_FOLDER'], pdf_dir_name, original_filename)
+                watermarked_public_path = os.path.join(app.config['GENERATED_FOLDER'], pdf_dir_name, watermarked_filename)
+                
+                # Salin file dari direktori proses PDF ke direktori public
+                try:
+                    if "original_path" in img_info and os.path.exists(img_info["original_path"]):
+                        shutil.copy(img_info["original_path"], original_public_path)
+                    if "watermarked_path" in img_info and os.path.exists(img_info["watermarked_path"]):
+                        shutil.copy(img_info["watermarked_path"], watermarked_public_path)
+                        
+                    # Tambahkan ke processed_images dengan path relatif yang benar
+                    processed_images.append({
+                        "index": page_num,
+                        "original": f"generated/{pdf_dir_name}/{original_filename}",
+                        "watermarked": f"generated/{pdf_dir_name}/{watermarked_filename}"
+                    })
+                except Exception as e:
+                    print(f"[!] Error menyalin file untuk halaman {page_num + 1}: {e}")
+            
+            # Salin QR Code ke direktori public juga
+            qr_filename = "watermark_qr.png"
+            qr_public_path = os.path.join(app.config['GENERATED_FOLDER'], pdf_dir_name, qr_filename)
+            try:
+                shutil.copy(qr_temp_path, qr_public_path)
+                qr_image_url = f"generated/{pdf_dir_name}/{qr_filename}"
+            except Exception as e:
+                print(f"[!] Error menyalin QR Code: {e}")
+                qr_image_url = ""
+                
+            public_dir = pdf_dir_name
             qr_info = None
-        except Exception as e:
-            print(f"[!] Error saat mendapatkan informasi gambar: {str(e)}")
-            processed_images = []
-            qr_image_url = ""
-            public_dir = ""
-            qr_info = None
+            pdf_info = process_result.get("pdf_info", {})
+            print(f"[*] PDF berhasil diproses: {len(processed_images)} halaman")
+        else:
+            # Run the embed_watermark_to_docx function directly to get the processed images
+            try:
+                print("[*] Mendapatkan informasi gambar yang diproses")
+                process_result = embed_watermark_to_docx(docx_temp_path, qr_temp_path, stego_docx_output_path)
+                
+                # Get processed images info if available
+                processed_images = []
+                qr_image_url = ""
+                public_dir = ""
+                qr_info = None
+                pdf_info = None
+                
+                if isinstance(process_result, dict) and process_result.get("success"):
+                    processed_images = process_result.get("processed_images", [])
+                    qr_image_url = process_result.get("qr_image", "")
+                    public_dir = process_result.get("public_dir", "")
+                    qr_info = process_result.get("qr_info", None)
+                    print(f"[*] Mendapatkan {len(processed_images)} gambar yang diproses")
+                else:
+                    print("[!] Tidak mendapatkan detail gambar yang diproses")
+            except ValueError as ve:
+                if str(ve) == "NO_IMAGES_FOUND":
+                    # Handle no images case
+                    return jsonify({
+                        "success": False,
+                        "message": "Dokumen ini tidak mengandung gambar",
+                        "log": result["stderr"],
+                        "error_type": "NO_IMAGES_FOUND"
+                    }), 400
+                print(f"[!] Error saat mendapatkan informasi gambar: {str(ve)}")
+                processed_images = []
+                qr_image_url = ""
+                public_dir = ""
+                qr_info = None
+                pdf_info = None
+            except Exception as e:
+                print(f"[!] Error saat mendapatkan informasi gambar: {str(e)}")
+                processed_images = []
+                qr_image_url = ""
+                public_dir = ""
+                qr_info = None
+                pdf_info = None
         
         # Hitung MSE dan PSNR
-        metrics = calculate_metrics(docx_temp_path, stego_docx_output_path)
-        print(f"[*] Metrik MSE: {metrics['mse']}, PSNR: {metrics['psnr']}")
+        if not is_pdf:
+            metrics = calculate_metrics(docx_temp_path, stego_docx_output_path)
+            print(f"[*] Metrik MSE: {metrics['mse']}, PSNR: {metrics['psnr']}")
+        else:
+            # Untuk PDF, gunakan rata-rata dari semua halaman
+            metrics = {"mse": 0, "psnr": 0}
+            if process_result and "analysis" in process_result and "page_analyses" in process_result["analysis"]:
+                page_metrics = [p["metrics"] for p in process_result["analysis"]["page_analyses"] if p["metrics"].get("success")]
+                if page_metrics:
+                    avg_mse = sum(m["mse"] for m in page_metrics) / len(page_metrics)
+                    avg_psnr = sum(m["psnr"] for m in page_metrics if m["psnr"] != float('inf')) / len([m for m in page_metrics if m["psnr"] != float('inf')]) if any(m["psnr"] != float('inf') for m in page_metrics) else float('inf')
+                    metrics = {"mse": avg_mse, "psnr": avg_psnr}
+                    print(f"[*] Metrik rata-rata PDF - MSE: {avg_mse}, PSNR: {avg_psnr}")
         
-        # Analisis pixel gambar QR
-        from qr_utils import analyze_image_pixels, calculate_mse_psnr
-        qr_analysis = analyze_image_pixels(qr_temp_path)
-        print(f"[*] Analisis QR Code: {qr_analysis.get('success', False)}")
+        # Analisis pixel gambar QR dengan detail
+        from qr_utils import analyze_image_pixels, calculate_mse_psnr, get_detailed_pixel_info
         
-        # Analisis gambar yang diproses (jika ada)
-        image_analyses = []
-        detailed_metrics = []
-        if processed_images:
-            for i, img_info in enumerate(processed_images[:3]):  # Analisis maksimal 3 gambar pertama
-                if "original_path" in img_info and "watermarked_path" in img_info:
-                    # Analisis pixel gambar asli
-                    original_analysis = analyze_image_pixels(img_info["original_path"])
-                    
-                    # Analisis pixel gambar watermarked
-                    watermarked_analysis = analyze_image_pixels(img_info["watermarked_path"])
-                    
-                    # MSE/PSNR detail per gambar
-                    img_metrics = calculate_mse_psnr(img_info["original_path"], img_info["watermarked_path"])
-                    
-                    image_analyses.append({
-                        "image_index": i,
-                        "original": original_analysis,
-                        "watermarked": watermarked_analysis
-                    })
-                    
-                    detailed_metrics.append({
-                        "image_index": i,
-                        "metrics": img_metrics
-                    })
+        if is_pdf and process_result and "analysis" in process_result:
+            # Untuk PDF, gunakan analisis QR dari hasil PDF processing
+            qr_analysis = process_result["analysis"].get("qr_analysis", {})
+            print(f"[*] Analisis QR Code (PDF): {qr_analysis.get('success', False)}")
+            
+            # Gunakan analisis yang sudah ada dari PDF processing
+            image_analyses = []
+            detailed_metrics = []
+            
+            # Konversi format analisis PDF ke format yang diharapkan frontend
+            for page_analysis in process_result["analysis"].get("page_analyses", []):
+                page_num = page_analysis.get("page_number", 0) - 1  # Convert to 0-based index
+                image_analyses.append({
+                    "image_index": page_num,
+                    "original": page_analysis.get("original", {}),
+                    "watermarked": page_analysis.get("watermarked", {})
+                })
+                
+                detailed_metrics.append({
+                    "image_index": page_num,
+                    "metrics": page_analysis.get("metrics", {})
+                })
+        else:
+            qr_analysis = get_detailed_pixel_info(qr_temp_path)
+            print(f"[*] Analisis QR Code: {qr_analysis.get('success', False)}")
+            
+            # Analisis gambar yang diproses (jika ada)
+            image_analyses = []
+            detailed_metrics = []
+            if processed_images:
+                for i, img_info in enumerate(processed_images[:3]):  # Analisis maksimal 3 gambar pertama
+                    if "original_path" in img_info and "watermarked_path" in img_info:
+                        # Analisis pixel gambar asli dengan detail
+                        original_analysis = get_detailed_pixel_info(img_info["original_path"])
+                        
+                        # Analisis pixel gambar watermarked dengan detail
+                        watermarked_analysis = get_detailed_pixel_info(img_info["watermarked_path"])
+                        
+                        # MSE/PSNR detail per gambar
+                        img_metrics = calculate_mse_psnr(img_info["original_path"], img_info["watermarked_path"])
+                        
+                        image_analyses.append({
+                            "image_index": i,
+                            "original": original_analysis,
+                            "watermarked": watermarked_analysis
+                        })
+                        
+                        detailed_metrics.append({
+                            "image_index": i,
+                            "metrics": img_metrics
+                        })
         
-        print(f"[*] Selesai analisis {len(image_analyses)} gambar")
+        print(f"[*] Selesai analisis {len(image_analyses)} {'halaman' if is_pdf else 'gambar'}")
 
         # Salin dokumen hasil ke folder documents untuk akses permanen
         try:
@@ -339,9 +470,9 @@ def embed_docx_route():
         if os.path.exists(qr_temp_path):
             os.remove(qr_temp_path)
 
-        return jsonify({
+        response_data = {
             "success": True,
-            "message": "Watermark berhasil disisipkan ke dokumen!",
+            "message": f"Watermark berhasil disisipkan ke {'PDF' if is_pdf else 'dokumen'}!",
             "download_url": f"/download_generated/{stego_docx_filename}",
             "documents_url": f"/download_documents/{documents_filename}",
             "documents_filename": documents_filename,
@@ -357,8 +488,22 @@ def embed_docx_route():
                 "qr_analysis": qr_analysis,
                 "image_analyses": image_analyses,
                 "detailed_metrics": detailed_metrics
-            }
-        })
+            },
+            "file_type": "pdf" if is_pdf else "docx",
+            "original_filename": docx_file.filename
+        }
+        
+        # Tambahkan informasi ukuran file jika tersedia dari process_result
+        if process_result and "file_size_info" in process_result:
+            response_data["file_size_info"] = process_result["file_size_info"]
+        
+        # Tambahkan informasi PDF jika relevan
+        if is_pdf and 'pdf_info' in locals():
+            response_data["pdf_info"] = pdf_info
+            response_data["total_pages"] = pdf_info.get("pages", 0)
+            response_data["processed_pages"] = len(processed_images)
+            
+        return jsonify(response_data)
     else:
         # Hapus file temporary jika terjadi error
         if os.path.exists(docx_temp_path):
@@ -392,9 +537,10 @@ def extract_docx_route():
     if docx_file.filename == '':
         return jsonify({"success": False, "message": "Nama file tidak boleh kosong."}), 400
     if not (docx_file and allowed_file(docx_file.filename, ALLOWED_DOCX_EXTENSIONS)):
-        return jsonify({"success": False, "message": "Format Dokumen harus .docx"}), 400
+        return jsonify({"success": False, "message": "Format Dokumen harus .docx atau .pdf"}), 400
 
-    docx_validate_filename = f"doc_extract_in_{uuid.uuid4().hex}.docx"
+    file_extension = docx_file.filename.rsplit('.', 1)[1].lower()
+    docx_validate_filename = f"doc_extract_in_{uuid.uuid4().hex}.{file_extension}"
     docx_temp_path = os.path.join(app.config['UPLOAD_FOLDER'], docx_validate_filename)
     docx_file.save(docx_temp_path)
 
@@ -402,19 +548,41 @@ def extract_docx_route():
     output_extraction_dir_name = f"extraction_{extraction_id}"
     output_extraction_dir_path = os.path.join(app.config['GENERATED_FOLDER'], output_extraction_dir_name)
 
-    args = ['extract_docx', '--docx', docx_temp_path, '--output_dir', output_extraction_dir_path]
-    print("[*] Memulai proses extract_docx")
-    result = run_main_script(args)
+    # Cek apakah file adalah PDF
+    is_pdf = file_extension == 'pdf'
+    
+    if is_pdf:
+        # Proses PDF menggunakan pdf_utils
+        from pdf_utils import extract_watermark_from_pdf
+        print("[*] Memulai proses extract watermark dari PDF")
+        
+        pdf_result = extract_watermark_from_pdf(docx_temp_path, output_extraction_dir_path)
+        
+        if pdf_result.get("success"):
+            result = {"success": True, "stdout": "PDF extraction berhasil", "stderr": ""}
+            extracted_qrs_info = pdf_result.get("extracted_qrs", [])
+        else:
+            result = {"success": False, "stdout": "", "stderr": pdf_result.get("message", "PDF extraction gagal")}
+            extracted_qrs_info = []
+    else:
+        # Proses DOCX seperti biasa
+        args = ['extract_docx', '--docx', docx_temp_path, '--output_dir', output_extraction_dir_path]
+        print("[*] Memulai proses extract_docx")
+        result = run_main_script(args)
+        extracted_qrs_info = []
 
     if result["success"]:
-        extracted_qrs_info = []
-        if os.path.exists(output_extraction_dir_path) and os.path.isdir(output_extraction_dir_path):
-            for filename in os.listdir(output_extraction_dir_path):
-                if filename.lower().endswith('.png'):
-                    extracted_qrs_info.append({
-                        "filename": filename,
-                        "url": f"/static/generated/{output_extraction_dir_name}/{filename}"
-                    })
+        if not is_pdf:
+            # Untuk DOCX, scan direktori output
+            extracted_qrs_info = []
+            if os.path.exists(output_extraction_dir_path) and os.path.isdir(output_extraction_dir_path):
+                for filename in os.listdir(output_extraction_dir_path):
+                    if filename.lower().endswith('.png'):
+                        extracted_qrs_info.append({
+                            "filename": filename,
+                            "url": f"/static/generated/{output_extraction_dir_name}/{filename}"
+                        })
+        # Untuk PDF, extracted_qrs_info sudah diset dari pdf_result
 
         if not extracted_qrs_info and "Tidak ada gambar yang ditemukan" not in result["stdout"]:
             pass
@@ -423,13 +591,22 @@ def extract_docx_route():
         if os.path.exists(docx_temp_path):
             os.remove(docx_temp_path)
 
-        print("[*] Proses extract_docx berhasil")
-        return jsonify({
+        print(f"[*] Proses extract {'PDF' if is_pdf else 'DOCX'} berhasil")
+        response_data = {
             "success": True,
-            "message": "Proses ekstraksi selesai.",
+            "message": f"Proses ekstraksi {'PDF' if is_pdf else 'dokumen'} selesai.",
             "extracted_qrs": extracted_qrs_info,
-            "log": result["stdout"]
-        })
+            "log": result["stdout"],
+            "file_type": "pdf" if is_pdf else "docx"
+        }
+        
+        # Tambahkan informasi PDF jika relevan
+        if is_pdf and 'pdf_result' in locals():
+            response_data["pdf_info"] = pdf_result.get("pdf_info", {})
+            response_data["total_pages"] = pdf_result.get("total_pages", 0)
+            response_data["qr_found"] = pdf_result.get("qr_found", 0)
+            
+        return jsonify(response_data)
     else:
         # Hapus file temporary jika terjadi error
         if os.path.exists(docx_temp_path):

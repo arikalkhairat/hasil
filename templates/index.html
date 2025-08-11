@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Code Watermarking Tool - by Arikal Sayangg</title>
+    <title>QR Code Watermarking Tool - by Arikal </title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -463,6 +463,259 @@
             font-size: 0.8rem;
             color: var(--text-secondary);
             word-break: break-all;
+        }
+
+        /* QR Slider Styles */
+        .qr-slider-container {
+            position: relative;
+            max-width: 100%;
+            margin: 20px 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .qr-slider-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+        }
+
+        .qr-slider-header h5 {
+            margin: 0;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .qr-slider-content {
+            position: relative;
+            background: #f8f9ff;
+        }
+
+        .qr-slider-wrapper {
+            overflow: hidden;
+            position: relative;
+        }
+
+        .qr-slider-track {
+            display: flex;
+            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .qr-slide {
+            min-width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px 20px;
+            box-sizing: border-box;
+        }
+
+        .qr-slide img {
+            max-width: 250px;
+            max-height: 250px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            margin-bottom: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .qr-slide img:hover {
+            transform: scale(1.05);
+        }
+
+        .qr-slide-info {
+            text-align: center;
+            max-width: 400px;
+        }
+
+        .qr-slide-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+        }
+
+        .qr-slide-description {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+        }
+
+        .qr-download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--success-color), #38a169);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(72, 187, 120, 0.3);
+        }
+
+        .qr-download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(72, 187, 120, 0.4);
+        }
+
+        .qr-slider-nav {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background: white;
+            gap: 15px;
+        }
+
+        .qr-nav-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 45px;
+            height: 45px;
+            border: none;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .qr-nav-btn:hover {
+            transform: translateY(-2px);
+            background: var(--primary-dark);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .qr-nav-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .qr-slider-indicators {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .qr-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #ddd;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .qr-indicator.active {
+            background: var(--primary-color);
+            transform: scale(1.3);
+        }
+
+        .qr-counter {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin: 0 15px;
+            font-weight: 500;
+        }
+
+        .qr-slider-empty {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+
+        .qr-slider-empty i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        .qr-slider-empty p {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .qr-slide {
+                padding: 20px 15px;
+            }
+
+            .qr-slide img {
+                max-width: 200px;
+                max-height: 200px;
+            }
+
+            .qr-nav-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+
+            .qr-slider-header {
+                padding: 12px 15px;
+            }
+
+            .qr-slider-header h5 {
+                font-size: 1rem;
+            }
+        }
+
+        /* PDF Info Styling */
+        .pdf-info-header {
+            margin-bottom: 20px;
+        }
+
+        .pdf-info-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 20px;
+            color: white;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .pdf-info-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .pdf-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .pdf-info-item {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .pdf-info-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .pdf-info-value {
+            font-size: 1.1rem;
+            font-weight: 600;
         }
 
         .footer {
@@ -1149,7 +1402,7 @@
         <div class="header">
             <h1><i class="fas fa-qrcode"></i> QR Watermarking Tool</h1>
             <p>LSB Steganography untuk Dokumen DOCX</p>
-            <div class="creator">Created by Arikal Sayangg ❤️</div>
+            <div class="creator">Created by Arikal </div>
         </div>
 
         <!-- Tab Navigation -->
@@ -1228,18 +1481,18 @@
                         </div>
                     </div>
                     <div class="card-description">
-                        Sisipkan watermark QR Code ke dalam gambar di dokumen DOCX menggunakan LSB steganography.
+                        Sisipkan watermark QR Code ke dalam gambar di dokumen DOCX atau halaman PDF menggunakan LSB steganography.
                     </div>
                     
                     <form id="embedForm">
                         <div class="form-group">
-                            <label class="form-label">Dokumen DOCX</label>
+                            <label class="form-label">Dokumen DOCX atau PDF</label>
                             <div class="file-upload">
                                 <input type="file" id="docxFileEmbed" name="docxFileEmbed" 
-                                       accept=".docx" class="file-upload-input" required>
+                                       accept=".docx,.pdf" class="file-upload-input" required>
                                 <label for="docxFileEmbed" class="file-upload-label">
-                                    <i class="fas fa-file-word"></i>
-                                    <span>Pilih dokumen DOCX...</span>
+                                    <i class="fas fa-file-alt"></i>
+                                    <span>Pilih dokumen DOCX atau PDF...</span>
                                 </label>
                             </div>
                         </div>
@@ -1299,17 +1552,17 @@
                         </div>
                     </div>
                     <div class="card-description">
-                        Ekstrak dan validasi watermark QR Code dari dokumen DOCX untuk verifikasi keaslian.
+                        Ekstrak dan validasi watermark QR Code dari dokumen DOCX atau halaman PDF untuk verifikasi keaslian.
                     </div>
                     
                     <form id="validateForm">
                         <div class="form-group">
-                            <label class="form-label">Dokumen DOCX</label>
+                            <label class="form-label">Dokumen DOCX atau PDF</label>
                             <div class="file-upload">
                                 <input type="file" id="docxFileValidate" name="docxFileValidate" 
-                                       accept=".docx" class="file-upload-input" required>
+                                       accept=".docx,.pdf" class="file-upload-input" required>
                                 <label for="docxFileValidate" class="file-upload-label">
-                                    <i class="fas fa-file-word"></i>
+                                    <i class="fas fa-file-alt"></i>
                                     <span>Pilih dokumen untuk validasi...</span>
                                 </label>
                             </div>
@@ -1372,7 +1625,7 @@
         </div>
 
         <div class="footer">
-            <p>&copy; 2024 QR Code Watermarking Tool. Dibuat dengan ❤️ oleh Arikal Sayangg</p>
+            <p>&copy; 2024 QR Code Watermarking Tool. Dibuat dengan ❤️ oleh Arikal </p>
             <p><i class="fas fa-code"></i> LSB Steganography Technology</p>
         </div>
     </div>
@@ -1486,189 +1739,84 @@
 
         function displayImageComparison(containerId, processedImages) {
             const container = document.getElementById(containerId);
-            container.innerHTML = '<h5><i class="fas fa-images"></i> Perbandingan Gambar</h5>';
             
-            processedImages.forEach((img, index) => {
-                const comparison = document.createElement('div');
-                comparison.className = 'image-comparison';
-                comparison.innerHTML = `
-                    <div class="image-item">
-                        <h6>Gambar Asli ${index + 1}</h6>
-                        <img src="/static/generated/${img.original}" alt="Original ${index + 1}">
-                    </div>
-                    <div class="image-item">
-                        <h6>Gambar Watermark ${index + 1}</h6>
-                        <img src="/static/generated/${img.watermarked}" alt="Watermarked ${index + 1}">
-                    </div>
-                `;
-                container.appendChild(comparison);
-            });
-        }
-
-        function displayPixelAnalysis(containerId, analysis) {
-            const container = document.getElementById(containerId);
-            container.innerHTML = '<h5><i class="fas fa-search"></i> Analisis Pixel dan Metrik</h5>';
-            
-            // QR Code Analysis
-            if (analysis.qr_analysis && analysis.qr_analysis.success) {
-                const qrData = analysis.qr_analysis;
-                const qrSection = document.createElement('div');
-                qrSection.className = 'analysis-section';
-                qrSection.innerHTML = `
-                    <h6><i class="fas fa-qrcode"></i> Analisis QR Code</h6>
-                    <div class="pixel-stats">
-                        <div class="stat-group">
-                            <div class="stat-item">
-                                <div class="stat-value">${qrData.image_info.width} × ${qrData.image_info.height}</div>
-                                <div class="stat-label">Dimensi</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-value">${qrData.image_info.total_pixels.toLocaleString()}</div>
-                                <div class="stat-label">Total Pixel</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-value">${qrData.image_info.file_size_kb} KB</div>
-                                <div class="stat-label">Ukuran File</div>
-                            </div>
+            if (!processedImages || processedImages.length === 0) {
+                container.innerHTML = `
+                    <div class="qr-slider-container">
+                        <div class="qr-slider-header">
+                            <h5><i class="fas fa-images"></i> Perbandingan Gambar</h5>
                         </div>
-                        <div class="stat-group">
-                            <h7>Statistik Pixel RGB:</h7>
-                            <div class="rgb-stats">
-                                <div class="rgb-channel">
-                                    <span class="channel-name">R:</span>
-                                    <span>μ=${qrData.pixel_statistics.mean_rgb[0].toFixed(1)} σ=${qrData.pixel_statistics.std_rgb[0].toFixed(1)}</span>
-                                </div>
-                                <div class="rgb-channel">
-                                    <span class="channel-name">G:</span>
-                                    <span>μ=${qrData.pixel_statistics.mean_rgb[1].toFixed(1)} σ=${qrData.pixel_statistics.std_rgb[1].toFixed(1)}</span>
-                                </div>
-                                <div class="rgb-channel">
-                                    <span class="channel-name">B:</span>
-                                    <span>μ=${qrData.pixel_statistics.mean_rgb[2].toFixed(1)} σ=${qrData.pixel_statistics.std_rgb[2].toFixed(1)}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="pixel-samples">
-                            <h7>Sample Pixel Values:</h7>
-                            <div class="samples-grid">
-                                ${qrData.pixel_samples.slice(0, 10).map(sample => `
-                                    <div class="pixel-sample">
-                                        <span class="position">(${sample.position[0]},${sample.position[1]})</span>
-                                        <span class="rgb-value" style="background-color: rgb(${sample.rgb[0]},${sample.rgb[1]},${sample.rgb[2]})">${sample.rgb[0]},${sample.rgb[1]},${sample.rgb[2]}</span>
-                                    </div>
-                                `).join('')}
-                            </div>
+                        <div class="qr-slider-empty">
+                            <i class="fas fa-images"></i>
+                            <p>Tidak ada gambar yang diproses</p>
                         </div>
                     </div>
                 `;
-                container.appendChild(qrSection);
+                return;
             }
             
-            // Image Analysis
-            if (analysis.image_analyses && analysis.image_analyses.length > 0) {
-                const imageSection = document.createElement('div');
-                imageSection.className = 'analysis-section';
-                imageSection.innerHTML = '<h6><i class="fas fa-images"></i> Analisis Gambar Dokumen</h6>';
-                
-                analysis.image_analyses.forEach((imgAnalysis, index) => {
-                    if (imgAnalysis.original.success && imgAnalysis.watermarked.success) {
-                        const originalData = imgAnalysis.original;
-                        const watermarkedData = imgAnalysis.watermarked;
-                        
-                        const comparison = document.createElement('div');
-                        comparison.className = 'image-analysis-comparison';
-                        comparison.innerHTML = `
-                            <div class="comparison-header">
-                                <h7>Gambar ${index + 1}</h7>
-                            </div>
-                            <div class="comparison-content">
-                                <div class="image-data">
-                                    <h8>Gambar Asli</h8>
-                                    <div class="pixel-stats">
-                                        <div class="stat-item">
-                                            <div class="stat-value">${originalData.image_info.width} × ${originalData.image_info.height}</div>
-                                            <div class="stat-label">Dimensi</div>
-                                        </div>
-                                        <div class="stat-item">
-                                            <div class="stat-value">${originalData.image_info.file_size_kb} KB</div>
-                                            <div class="stat-label">Ukuran</div>
-                                        </div>
-                                    </div>
-                                    <div class="rgb-stats-mini">
-                                        <div>R: μ=${originalData.pixel_statistics.mean_rgb[0].toFixed(1)}</div>
-                                        <div>G: μ=${originalData.pixel_statistics.mean_rgb[1].toFixed(1)}</div>
-                                        <div>B: μ=${originalData.pixel_statistics.mean_rgb[2].toFixed(1)}</div>
-                                    </div>
-                                </div>
-                                <div class="image-data">
-                                    <h8>Gambar Watermarked</h8>
-                                    <div class="pixel-stats">
-                                        <div class="stat-item">
-                                            <div class="stat-value">${watermarkedData.image_info.width} × ${watermarkedData.image_info.height}</div>
-                                            <div class="stat-label">Dimensi</div>
-                                        </div>
-                                        <div class="stat-item">
-                                            <div class="stat-value">${watermarkedData.image_info.file_size_kb} KB</div>
-                                            <div class="stat-label">Ukuran</div>
-                                        </div>
-                                    </div>
-                                    <div class="rgb-stats-mini">
-                                        <div>R: μ=${watermarkedData.pixel_statistics.mean_rgb[0].toFixed(1)}</div>
-                                        <div>G: μ=${watermarkedData.pixel_statistics.mean_rgb[1].toFixed(1)}</div>
-                                        <div>B: μ=${watermarkedData.pixel_statistics.mean_rgb[2].toFixed(1)}</div>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                        imageSection.appendChild(comparison);
-                    }
-                });
-                container.appendChild(imageSection);
-            }
+            const slidesHtml = processedImages.map((img, index) => `
+                <div class="qr-slide">
+                    <div class="image-comparison" style="margin: 0; background: transparent; border: none; padding: 0;">
+                        <div class="image-item">
+                            <h6>Gambar Asli ${index + 1}</h6>
+                            <img src="/static/${img.original}" alt="Original ${index + 1}" style="max-width: 200px; max-height: 200px;">
+                        </div>
+                        <div class="image-item">
+                            <h6>Gambar Watermark ${index + 1}</h6>
+                            <img src="/static/${img.watermarked}" alt="Watermarked ${index + 1}" style="max-width: 200px; max-height: 200px;">
+                        </div>
+                    </div>
+                    <div class="qr-slide-info">
+                        <div class="qr-slide-title">Perbandingan Gambar ${index + 1}</div>
+                        <div class="qr-slide-description">
+                            Hasil watermarking menggunakan LSB steganography
+                            ${index === 0 && img.dimensions ? `<br><strong>Dimensi:</strong> ${img.dimensions.width} × ${img.dimensions.height} pixel (${(img.dimensions.width * img.dimensions.height).toLocaleString()} total pixel)` : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
             
-            // Detailed Metrics per Image
-            if (analysis.detailed_metrics && analysis.detailed_metrics.length > 0) {
-                const metricsSection = document.createElement('div');
-                metricsSection.className = 'analysis-section';
-                metricsSection.innerHTML = '<h6><i class="fas fa-chart-line"></i> Metrik MSE/PSNR per Gambar</h6>';
-                
-                analysis.detailed_metrics.forEach((metric, index) => {
-                    if (metric.metrics.success) {
-                        const metricData = metric.metrics;
-                        const qualityColor = metricData.psnr === Infinity ? '#28a745' : 
-                                           metricData.psnr > 40 ? '#28a745' :
-                                           metricData.psnr > 30 ? '#17a2b8' :
-                                           metricData.psnr > 20 ? '#ffc107' : '#dc3545';
-                        
-                        const metricItem = document.createElement('div');
-                        metricItem.className = 'metric-detail';
-                        metricItem.innerHTML = `
-                            <div class="metric-header">Gambar ${index + 1}</div>
-                            <div class="metric-values">
-                                <div class="metric-value">
-                                    <span class="value">${metricData.mse.toExponential(3)}</span>
-                                    <span class="label">MSE</span>
-                                </div>
-                                <div class="metric-value">
-                                    <span class="value" style="color: ${qualityColor}">
-                                        ${metricData.psnr === Infinity ? '∞' : metricData.psnr.toFixed(2)} dB
-                                    </span>
-                                    <span class="label">PSNR</span>
-                                </div>
-                                <div class="metric-value">
-                                    <span class="value" style="color: ${qualityColor}">${metricData.quality}</span>
-                                    <span class="label">Kualitas</span>
-                                </div>
+            const indicatorsHtml = processedImages.map((_, index) => 
+                `<div class="qr-indicator ${index === 0 ? 'active' : ''}" data-slide="${index}"></div>`
+            ).join('');
+            
+            container.innerHTML = `
+                <div class="qr-slider-container" tabindex="0">
+                    <div class="qr-slider-header">
+                        <h5><i class="fas fa-images"></i> Perbandingan Gambar (${processedImages.length} gambar diproses)</h5>
+                    </div>
+                    <div class="qr-slider-content">
+                        <div class="qr-slider-wrapper">
+                            <div class="qr-slider-track">
+                                ${slidesHtml}
                             </div>
-                        `;
-                        metricsSection.appendChild(metricItem);
-                    }
-                });
-                container.appendChild(metricsSection);
+                        </div>
+                        <div class="qr-slider-nav">
+                            <button class="qr-nav-btn qr-prev-btn" ${processedImages.length <= 1 ? 'disabled' : ''}>
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <div class="qr-slider-indicators">
+                                ${indicatorsHtml}
+                            </div>
+                            <div class="qr-counter">1 / ${processedImages.length}</div>
+                            <button class="qr-nav-btn qr-next-btn" ${processedImages.length <= 1 ? 'disabled' : ''}>
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Initialize the slider if there are multiple slides
+            if (processedImages.length > 1) {
+                const sliderContainer = container.querySelector('.qr-slider-container');
+                new QRSlider(sliderContainer);
             }
         }
 
-        function displayDetailedProcess(logData, qrInfo, processedImages) {
+
+        function displayDetailedProcess(logData, qrInfo, processedImages, fileType, pdfInfo) {
             const container = document.getElementById('detailedSteps');
             
             // Parse log data to extract detailed information
@@ -1716,6 +1864,38 @@
             const estimatedDim = Math.floor(Math.sqrt(imageCapacity));
             
             container.innerHTML = '';
+            
+            // PDF Info Header (jika file adalah PDF)
+            if (fileType === 'pdf' && pdfInfo) {
+                const pdfHeader = document.createElement('div');
+                pdfHeader.className = 'pdf-info-header';
+                pdfHeader.innerHTML = `
+                    <div class="pdf-info-card">
+                        <div class="pdf-info-title">
+                            <i class="fas fa-file-pdf"></i> Informasi PDF
+                        </div>
+                        <div class="pdf-info-grid">
+                            <div class="pdf-info-item">
+                                <div class="pdf-info-label">Total Halaman</div>
+                                <div class="pdf-info-value">${pdfInfo.pages || 'N/A'}</div>
+                            </div>
+                            <div class="pdf-info-item">
+                                <div class="pdf-info-label">Ukuran File</div>
+                                <div class="pdf-info-value">${pdfInfo.file_size_mb ? pdfInfo.file_size_mb + ' MB' : 'N/A'}</div>
+                            </div>
+                            <div class="pdf-info-item">
+                                <div class="pdf-info-label">Ukuran Halaman</div>
+                                <div class="pdf-info-value">${pdfInfo.page_size || 'N/A'}</div>
+                            </div>
+                            <div class="pdf-info-item">
+                                <div class="pdf-info-label">Jumlah Diproses</div>
+                                <div class="pdf-info-value">${processedImages ? processedImages.length : 0} halaman</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(pdfHeader);
+            }
             
             // Step 1: Image Analysis
             const step1 = document.createElement('div');
@@ -1926,15 +2106,15 @@
             `;
             container.appendChild(step4);
             
-            // Step 5: Quality Analysis
+            // Step 5: Quality Analysis & File Size Impact
             const step5 = document.createElement('div');
             step5.className = 'process-step';
             step5.innerHTML = `
                 <div class="step-header">
                     <span class="step-badge">STEP 5</span>
-                    <span class="step-title">Analisis Kualitas</span>
+                    <span class="step-title">Analisis Kualitas & Dampak Ukuran File</span>
                 </div>
-                <p>Mengukur dampak penyisipan terhadap kualitas gambar menggunakan MSE dan PSNR.</p>
+                <p>Mengukur dampak penyisipan terhadap kualitas gambar dan ukuran file menggunakan MSE, PSNR, dan analisis size.</p>
                 
                 <div class="formula-explanation">
                     <div class="formula-title">📊 Mean Squared Error (MSE)</div>
@@ -1967,6 +2147,26 @@
                         • PSNR > 30 dB: Very Good (Sangat Baik)<br>
                         • PSNR > 20 dB: Good (Baik)<br>
                         • PSNR < 20 dB: Poor (Kurang Baik)
+                    </div>
+                </div>
+                
+                <div class="formula-explanation">
+                    <div class="formula-title">📁 Analisis Dampak Ukuran File</div>
+                    <div class="formula-content">
+                        <strong>Faktor yang Mempengaruhi Ukuran File DOCX:</strong><br>
+                        • Komponen dokumen: XML structure, styles, metadata<br>
+                        • Gambar: Format, kompresi, resolusi<br>
+                        • Media assets: Fonts, themes, embedded objects<br>
+                        <br>
+                        <strong>LSB Steganography Impact:</strong><br>
+                        • Modifikasi LSB minimal mempengaruhi kompresi<br>
+                        • Perubahan ukuran biasanya &lt; 1%<br>
+                        • Steganografi yang baik: invisible & minimal size change<br>
+                        <br>
+                        <strong>Interpretasi Perubahan Ukuran:</strong><br>
+                        &lt; 1%: Excellent steganography<br>
+                        1-5%: Good steganography<br>
+                        &gt; 5%: Detectable changes
                     </div>
                 </div>
             `;
@@ -2025,6 +2225,192 @@
                     hideProcessDetails(processDetailsMap[tab]);
                 }
             });
+        }
+
+        // QR Slider functionality
+        class QRSlider {
+            constructor(container) {
+                this.container = container;
+                this.track = container.querySelector('.qr-slider-track');
+                this.slides = container.querySelectorAll('.qr-slide');
+                this.prevBtn = container.querySelector('.qr-prev-btn');
+                this.nextBtn = container.querySelector('.qr-next-btn');
+                this.indicators = container.querySelectorAll('.qr-indicator');
+                this.counter = container.querySelector('.qr-counter');
+                
+                this.currentIndex = 0;
+                this.totalSlides = this.slides.length;
+                
+                this.initializeEvents();
+                this.updateSlider();
+            }
+            
+            initializeEvents() {
+                if (this.prevBtn) {
+                    this.prevBtn.addEventListener('click', () => this.prevSlide());
+                }
+                
+                if (this.nextBtn) {
+                    this.nextBtn.addEventListener('click', () => this.nextSlide());
+                }
+                
+                this.indicators.forEach((indicator, index) => {
+                    indicator.addEventListener('click', () => this.goToSlide(index));
+                });
+                
+                // Add keyboard navigation
+                this.container.addEventListener('keydown', (e) => {
+                    if (e.key === 'ArrowLeft') this.prevSlide();
+                    if (e.key === 'ArrowRight') this.nextSlide();
+                });
+                
+                // Add touch/swipe support
+                let startX = 0;
+                let isDragging = false;
+                
+                this.track.addEventListener('touchstart', (e) => {
+                    startX = e.touches[0].clientX;
+                    isDragging = true;
+                });
+                
+                this.track.addEventListener('touchmove', (e) => {
+                    if (!isDragging) return;
+                    e.preventDefault();
+                });
+                
+                this.track.addEventListener('touchend', (e) => {
+                    if (!isDragging) return;
+                    const endX = e.changedTouches[0].clientX;
+                    const diff = startX - endX;
+                    
+                    if (Math.abs(diff) > 50) {
+                        if (diff > 0) {
+                            this.nextSlide();
+                        } else {
+                            this.prevSlide();
+                        }
+                    }
+                    
+                    isDragging = false;
+                });
+            }
+            
+            updateSlider() {
+                const translateX = -this.currentIndex * 100;
+                this.track.style.transform = `translateX(${translateX}%)`;
+                
+                // Update navigation buttons
+                if (this.prevBtn) {
+                    this.prevBtn.disabled = this.currentIndex === 0;
+                }
+                
+                if (this.nextBtn) {
+                    this.nextBtn.disabled = this.currentIndex === this.totalSlides - 1;
+                }
+                
+                // Update indicators
+                this.indicators.forEach((indicator, index) => {
+                    indicator.classList.toggle('active', index === this.currentIndex);
+                });
+                
+                // Update counter
+                if (this.counter) {
+                    this.counter.textContent = `${this.currentIndex + 1} / ${this.totalSlides}`;
+                }
+            }
+            
+            nextSlide() {
+                if (this.currentIndex < this.totalSlides - 1) {
+                    this.currentIndex++;
+                    this.updateSlider();
+                }
+            }
+            
+            prevSlide() {
+                if (this.currentIndex > 0) {
+                    this.currentIndex--;
+                    this.updateSlider();
+                }
+            }
+            
+            goToSlide(index) {
+                if (index >= 0 && index < this.totalSlides) {
+                    this.currentIndex = index;
+                    this.updateSlider();
+                }
+            }
+        }
+        
+        function createQRSlider(qrResults, containerId) {
+            const container = document.getElementById(containerId);
+            
+            if (!qrResults || qrResults.length === 0) {
+                container.innerHTML = `
+                    <div class="qr-slider-container">
+                        <div class="qr-slider-header">
+                            <h5><i class="fas fa-qrcode"></i> QR Code Results</h5>
+                        </div>
+                        <div class="qr-slider-empty">
+                            <i class="fas fa-search"></i>
+                            <p>Tidak ada QR Code yang ditemukan</p>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            const slidesHtml = qrResults.map((qr, index) => `
+                <div class="qr-slide">
+                    <img src="${qr.url}" alt="QR Code ${index + 1}" loading="lazy">
+                    <div class="qr-slide-info">
+                        <div class="qr-slide-title">QR Code ${index + 1}</div>
+                        <div class="qr-slide-description">
+                            Hasil ekstraksi dari gambar dokumen
+                        </div>
+                        <a href="${qr.url}" download="${qr.filename}" class="qr-download-btn">
+                            <i class="fas fa-download"></i>
+                            Download QR Code
+                        </a>
+                    </div>
+                </div>
+            `).join('');
+            
+            const indicatorsHtml = qrResults.map((_, index) => 
+                `<div class="qr-indicator ${index === 0 ? 'active' : ''}" data-slide="${index}"></div>`
+            ).join('');
+            
+            container.innerHTML = `
+                <div class="qr-slider-container" tabindex="0">
+                    <div class="qr-slider-header">
+                        <h5><i class="fas fa-qrcode"></i> QR Code Results (${qrResults.length} ditemukan)</h5>
+                    </div>
+                    <div class="qr-slider-content">
+                        <div class="qr-slider-wrapper">
+                            <div class="qr-slider-track">
+                                ${slidesHtml}
+                            </div>
+                        </div>
+                        <div class="qr-slider-nav">
+                            <button class="qr-nav-btn qr-prev-btn" ${qrResults.length <= 1 ? 'disabled' : ''}>
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <div class="qr-slider-indicators">
+                                ${indicatorsHtml}
+                            </div>
+                            <div class="qr-counter">1 / ${qrResults.length}</div>
+                            <button class="qr-nav-btn qr-next-btn" ${qrResults.length <= 1 ? 'disabled' : ''}>
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Initialize the slider if there are multiple slides
+            if (qrResults.length > 1) {
+                const sliderContainer = container.querySelector('.qr-slider-container');
+                new QRSlider(sliderContainer);
+            }
         }
 
         // Initialize tabs when page loads
@@ -2140,6 +2526,22 @@
                     addLogEntry('embedLog', '✅ Proses embedding berhasil!', 'success');
                     addLogEntry('embedLog', `📊 Jumlah gambar diproses: ${result.processed_images ? result.processed_images.length : 0}`, 'success');
                     
+                    // Display file size information if available
+                    if (result.file_size_info) {
+                        const sizeInfo = result.file_size_info;
+                        addLogEntry('embedLog', `📏 Ukuran file asli: ${sizeInfo.original_size_kb.toFixed(2)} KB`, 'info');
+                        addLogEntry('embedLog', `📏 Ukuran file watermark: ${sizeInfo.watermarked_size_kb.toFixed(2)} KB`, 'info');
+                        addLogEntry('embedLog', `📈 Perubahan ukuran: ${sizeInfo.size_change_percentage > 0 ? '+' : ''}${sizeInfo.size_change_percentage.toFixed(2)}% (${sizeInfo.size_difference > 0 ? '+' : ''}${sizeInfo.size_difference} bytes)`, 'info');
+                        
+                        if (Math.abs(sizeInfo.size_change_percentage) < 1) {
+                            addLogEntry('embedLog', '✅ Perubahan ukuran sangat kecil (<1%) - steganografi berhasil!', 'success');
+                        } else if (Math.abs(sizeInfo.size_change_percentage) < 5) {
+                            addLogEntry('embedLog', '✅ Perubahan ukuran kecil (<5%) - steganografi baik', 'success');
+                        } else {
+                            addLogEntry('embedLog', '⚠️ Perubahan ukuran signifikan (>5%)', 'warning');
+                        }
+                    }
+                    
                     // Display QR analysis if available
                     if (result.qr_info) {
                         displayQRAnalysis('embedLog', result.qr_info);
@@ -2167,6 +2569,16 @@
                             'PSNR = 20 × log₁₀(MAX² / MSE)',
                             `${formatPSNR(result.psnr)} dB`
                         );
+                        
+                        // Add file size analysis if available
+                        if (result.file_size_info) {
+                            const sizeInfo = result.file_size_info;
+                            addCalculationStep('calculationDetails',
+                                '📁 Analisis Ukuran File',
+                                'Perubahan ukuran file setelah LSB steganography',
+                                `Original: ${sizeInfo.original_size_kb.toFixed(2)} KB → Watermarked: ${sizeInfo.watermarked_size_kb.toFixed(2)} KB (${sizeInfo.size_change_percentage > 0 ? '+' : ''}${sizeInfo.size_change_percentage.toFixed(2)}%)`
+                            );
+                        }
                         
                         // Check PSNR quality (handle string values)
                         const psnrValue = typeof result.psnr === 'string' ? (result.psnr === 'Infinity' ? Infinity : parseFloat(result.psnr)) : result.psnr;
@@ -2203,6 +2615,25 @@
                                 <div class="metric-label">PSNR (dB)</div>
                             </div>
                         `;
+                        
+                        // Add file size metrics if available
+                        if (result.file_size_info) {
+                            const sizeInfo = result.file_size_info;
+                            metricsHtml += `
+                                <div class="metric">
+                                    <div class="metric-value">${sizeInfo.original_size_kb.toFixed(1)}</div>
+                                    <div class="metric-label">Ukuran Asli (KB)</div>
+                                </div>
+                                <div class="metric">
+                                    <div class="metric-value">${sizeInfo.watermarked_size_kb.toFixed(1)}</div>
+                                    <div class="metric-label">Ukuran Watermark (KB)</div>
+                                </div>
+                                <div class="metric">
+                                    <div class="metric-value">${sizeInfo.size_change_percentage > 0 ? '+' : ''}${sizeInfo.size_change_percentage.toFixed(2)}%</div>
+                                    <div class="metric-label">Perubahan Ukuran</div>
+                                </div>
+                            `;
+                        }
                     }
                     document.getElementById('embedMetrics').innerHTML = metricsHtml;
                     
@@ -2219,13 +2650,8 @@
                     
                     // Display detailed process explanation for first image
                     addLogEntry('embedLog', '🔬 Generating detailed process analysis...', 'info');
-                    displayDetailedProcess(result.log, result.qr_info, result.processed_images);
+                    displayDetailedProcess(result.log, result.qr_info, result.processed_images, result.file_type, result.pdf_info);
                     
-                    // Display pixel analysis if available
-                    if (result.analysis) {
-                        addLogEntry('embedLog', '🔍 Analyzing pixel values and image metrics...', 'info');
-                        displayPixelAnalysis('pixelAnalysisContainer', result.analysis);
-                    }
                     
                     showResult('embedResult');
                 } else {
@@ -2291,31 +2717,29 @@
                     addLogEntry('validateLog', '✅ Proses validasi berhasil!', 'success');
                     addLogEntry('validateLog', `🔍 QR Code ditemukan: ${result.extracted_qrs ? result.extracted_qrs.length : 0}`, 'success');
                     
+                    let alertMessage = result.message;
+                    if (result.file_type === 'pdf' && result.pdf_info) {
+                        alertMessage += ` (${result.pdf_info.pages || 0} halaman PDF)`;
+                    }
+                    
                     showAlert('validateAlert', `
                         <i class="fas fa-check-circle"></i> 
-                        ${result.message}
+                        ${alertMessage}
                     `, 'success');
                     
-                    let qrsHtml = '';
                     if (result.extracted_qrs && result.extracted_qrs.length > 0) {
                         result.extracted_qrs.forEach((qr, index) => {
                             addLogEntry('validateLog', `📋 QR Code ${index + 1}: ${qr.filename}`, 'success');
-                            qrsHtml += `
-                                <div class="extracted-qr">
-                                    <img src="${qr.url}" alt="Extracted QR ${index + 1}">
-                                    <div class="extracted-qr-data">QR Code ${index + 1}</div>
-                                    <a href="${qr.url}" download="${qr.filename}" class="download-link" style="margin-top: 10px;">
-                                        <i class="fas fa-download"></i> Download
-                                    </a>
-                                </div>
-                            `;
                         });
+                        
+                        // Use the new slider for displaying QR results
+                        createQRSlider(result.extracted_qrs, 'extractedQRs');
                     } else {
                         addLogEntry('validateLog', '⚠️ Tidak ada QR Code watermark yang ditemukan', 'warning');
-                        qrsHtml = '<p style="text-align: center; color: var(--text-secondary);">Tidak ada QR Code watermark yang ditemukan.</p>';
+                        
+                        // Use the slider for empty state too
+                        createQRSlider([], 'extractedQRs');
                     }
-                    
-                    document.getElementById('extractedQRs').innerHTML = qrsHtml;
                     showResult('validateResult');
                 } else {
                     if (result.error_type === 'NO_IMAGES_FOUND') {

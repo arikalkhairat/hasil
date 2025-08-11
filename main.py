@@ -234,6 +234,10 @@ def embed_watermark_to_docx(docx_path: str, qr_path: str, output_path: str) -> d
         dict: Result dictionary with success status and processed image info
     """
     try:
+        # Get original document size
+        original_file_size = os.path.getsize(docx_path)
+        print(f"[*] Ukuran dokumen asli: {original_file_size:,} bytes ({original_file_size / 1024:.2f} KB)")
+        
         # Create a unique temporary directory to store extracted and watermarked images
         temp_dir_name = f"temp_embed_{uuid.uuid4().hex}"
         temp_dir = os.path.join(os.path.dirname(output_path), temp_dir_name)
@@ -288,8 +292,8 @@ def embed_watermark_to_docx(docx_path: str, qr_path: str, output_path: str) -> d
                 # Store info about this image pair
                 processed_images.append({
                     "index": i,
-                    "original": f"{public_dir_name}/{original_public_name}",
-                    "watermarked": f"{public_dir_name}/{watermarked_public_name}"
+                    "original": f"generated/{public_dir_name}/{original_public_name}",
+                    "watermarked": f"generated/{public_dir_name}/{watermarked_public_name}"
                 })
                 
             except Exception as e:
@@ -299,6 +303,18 @@ def embed_watermark_to_docx(docx_path: str, qr_path: str, output_path: str) -> d
         # Replace images in the document with watermarked versions
         print(f"[*] Mengganti gambar dalam dokumen dengan versi watermark")
         success = replace_images_in_docx(docx_path, extracted_images, watermarked_images, output_path)
+
+        # Get watermarked document size after processing
+        if os.path.exists(output_path):
+            watermarked_file_size = os.path.getsize(output_path)
+            print(f"[*] Ukuran dokumen setelah watermark: {watermarked_file_size:,} bytes ({watermarked_file_size / 1024:.2f} KB)")
+            size_difference = watermarked_file_size - original_file_size
+            size_change_percentage = (size_difference / original_file_size) * 100
+            print(f"[*] Perubahan ukuran: {size_difference:+,} bytes ({size_change_percentage:+.2f}%)")
+        else:
+            watermarked_file_size = 0
+            size_difference = 0
+            size_change_percentage = 0
 
         # Clean up temporary files
         for path in extracted_images + watermarked_images:
@@ -332,9 +348,19 @@ def embed_watermark_to_docx(docx_path: str, qr_path: str, output_path: str) -> d
         return {
             "success": success, 
             "processed_images": processed_images,
-            "qr_image": f"{public_dir_name}/{qr_public_name}",
+            "qr_image": f"generated/{public_dir_name}/{qr_public_name}",
             "public_dir": public_dir_name,
-            "qr_info": qr_info
+            "qr_info": qr_info,
+            "file_size_info": {
+                "original_size": original_file_size,
+                "watermarked_size": watermarked_file_size,
+                "size_difference": size_difference,
+                "size_change_percentage": size_change_percentage,
+                "original_size_kb": original_file_size / 1024,
+                "watermarked_size_kb": watermarked_file_size / 1024,
+                "original_size_mb": original_file_size / (1024 * 1024),
+                "watermarked_size_mb": watermarked_file_size / (1024 * 1024)
+            }
         }
         
     except ValueError as ve:

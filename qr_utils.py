@@ -144,7 +144,7 @@ def verify_crc32_checksum(qr_data_with_checksum: dict) -> bool:
 
 def analyze_image_pixels(image_path: str, sample_size: int = 100) -> dict:
     """
-    Menganalisis nilai pixel dari gambar dan mengembalikan statistik.
+    Menganalisis nilai pixel dari gambar dan mengembalikan statistik detail.
     
     Args:
         image_path (str): Path ke file gambar
@@ -179,12 +179,31 @@ def analyze_image_pixels(image_path: str, sample_size: int = 100) -> dict:
                 "rgb": [int(pixel_rgb[0]), int(pixel_rgb[1]), int(pixel_rgb[2])]
             })
         
-        # Statistik pixel
+        # Statistik pixel yang lebih detail
         pixel_stats = {
             "mean_rgb": [float(np.mean(image_rgb[:,:,0])), float(np.mean(image_rgb[:,:,1])), float(np.mean(image_rgb[:,:,2]))],
             "std_rgb": [float(np.std(image_rgb[:,:,0])), float(np.std(image_rgb[:,:,1])), float(np.std(image_rgb[:,:,2]))],
             "min_rgb": [int(np.min(image_rgb[:,:,0])), int(np.min(image_rgb[:,:,1])), int(np.min(image_rgb[:,:,2]))],
-            "max_rgb": [int(np.max(image_rgb[:,:,0])), int(np.max(image_rgb[:,:,1])), int(np.max(image_rgb[:,:,2]))]
+            "max_rgb": [int(np.max(image_rgb[:,:,0])), int(np.max(image_rgb[:,:,1])), int(np.max(image_rgb[:,:,2]))],
+            "median_rgb": [float(np.median(image_rgb[:,:,0])), float(np.median(image_rgb[:,:,1])), float(np.median(image_rgb[:,:,2]))]
+        }
+        
+        # Hitung distribusi nilai pixel per channel
+        hist_r, _ = np.histogram(image_rgb[:,:,0], bins=256, range=(0, 256))
+        hist_g, _ = np.histogram(image_rgb[:,:,1], bins=256, range=(0, 256))
+        hist_b, _ = np.histogram(image_rgb[:,:,2], bins=256, range=(0, 256))
+        
+        # Analisis pixel berdasarkan region (corner, center, edge)
+        region_analysis = get_pixel_region_analysis(image_rgb, width, height)
+        
+        # Pixel intensity distribution
+        gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        intensity_stats = {
+            "mean_intensity": float(np.mean(gray_image)),
+            "std_intensity": float(np.std(gray_image)),
+            "dark_pixels": int(np.sum(gray_image < 85)),  # < 33% of 255
+            "medium_pixels": int(np.sum((gray_image >= 85) & (gray_image < 170))),  # 33-67%
+            "bright_pixels": int(np.sum(gray_image >= 170))  # > 67%
         }
         
         return {
@@ -195,10 +214,26 @@ def analyze_image_pixels(image_path: str, sample_size: int = 100) -> dict:
                 "channels": channels,
                 "total_pixels": width * height,
                 "file_size_bytes": file_size,
-                "file_size_kb": round(file_size / 1024, 2)
+                "file_size_kb": round(file_size / 1024, 2),
+                "aspect_ratio": round(width / height, 3),
+                "megapixels": round((width * height) / 1000000, 2),
+                "pixel_density": f"{width}×{height}"
             },
             "pixel_samples": pixel_samples,
-            "pixel_statistics": pixel_stats
+            "pixel_statistics": pixel_stats,
+            "pixel_distribution": {
+                "red_histogram": hist_r.tolist()[:50],  # Simplified for frontend
+                "green_histogram": hist_g.tolist()[:50],
+                "blue_histogram": hist_b.tolist()[:50]
+            },
+            "region_analysis": region_analysis,
+            "intensity_analysis": intensity_stats,
+            "color_analysis": {
+                "dominant_color": get_dominant_color(image_rgb),
+                "color_variance": float(np.var(image_rgb)),
+                "brightness": float(np.mean(image_rgb)),
+                "contrast": float(np.std(image_rgb))
+            }
         }
         
     except Exception as e:
@@ -264,5 +299,132 @@ def calculate_mse_psnr(original_path: str, watermarked_path: str) -> dict:
         
     except Exception as e:
         return {"error": f"Error menghitung MSE/PSNR: {str(e)}"}
+
+def get_pixel_region_analysis(image_rgb: np.ndarray, width: int, height: int) -> dict:
+    """
+    Menganalisis pixel berdasarkan region dalam gambar (corner, center, edges).
+    
+    Args:
+        image_rgb: Array numpy gambar dalam format RGB
+        width: Lebar gambar
+        height: Tinggi gambar
+        
+    Returns:
+        dict: Analisis pixel per region
+    """
+    try:
+        # Define regions
+        h_third = height // 3
+        w_third = width // 3
+        
+        # Center region
+        center_region = image_rgb[h_third:2*h_third, w_third:2*w_third]
+        
+        # Corner regions
+        top_left = image_rgb[0:h_third, 0:w_third]
+        top_right = image_rgb[0:h_third, 2*w_third:width]
+        bottom_left = image_rgb[2*h_third:height, 0:w_third]
+        bottom_right = image_rgb[2*h_third:height, 2*w_third:width]
+        
+        # Edge regions
+        top_edge = image_rgb[0:h_third//2, :]
+        bottom_edge = image_rgb[height-h_third//2:height, :]
+        left_edge = image_rgb[:, 0:w_third//2]
+        right_edge = image_rgb[:, width-w_third//2:width]
+        
+        def get_region_stats(region):
+            if region.size == 0:
+                return {"mean_brightness": 0, "pixel_count": 0}
+            return {
+                "mean_brightness": float(np.mean(region)),
+                "pixel_count": int(region.shape[0] * region.shape[1])
+            }
+        
+        return {
+            "center": get_region_stats(center_region),
+            "corners": {
+                "top_left": get_region_stats(top_left),
+                "top_right": get_region_stats(top_right),
+                "bottom_left": get_region_stats(bottom_left),
+                "bottom_right": get_region_stats(bottom_right)
+            },
+            "edges": {
+                "top": get_region_stats(top_edge),
+                "bottom": get_region_stats(bottom_edge),
+                "left": get_region_stats(left_edge),
+                "right": get_region_stats(right_edge)
+            }
+        }
+        
+    except Exception as e:
+        print(f"Error dalam analisis region: {e}")
+        return {"error": str(e)}
+
+def get_dominant_color(image_rgb: np.ndarray) -> list:
+    """
+    Mendapatkan warna dominan dalam gambar menggunakan K-means clustering.
+    
+    Args:
+        image_rgb: Array numpy gambar dalam format RGB
+        
+    Returns:
+        list: RGB values dari warna dominan [R, G, B]
+    """
+    try:
+        # Reshape gambar menjadi array 2D (pixel, RGB)
+        pixels = image_rgb.reshape((-1, 3))
+        
+        # Sample pixel jika terlalu banyak (untuk performa)
+        if len(pixels) > 10000:
+            indices = np.random.choice(len(pixels), 10000, replace=False)
+            pixels = pixels[indices]
+        
+        # Simple approach: hitung rata-rata dari semua pixel
+        # (untuk implementasi yang lebih sophisticated, bisa gunakan K-means)
+        dominant_color = np.mean(pixels, axis=0)
+        
+        return [int(dominant_color[0]), int(dominant_color[1]), int(dominant_color[2])]
+        
+    except Exception as e:
+        print(f"Error mendapatkan warna dominan: {e}")
+        return [128, 128, 128]  # Default gray color
+
+def get_detailed_pixel_info(image_path: str) -> dict:
+    """
+    Mendapatkan informasi pixel yang sangat detail untuk debugging dan analisis.
+    
+    Args:
+        image_path: Path ke file gambar
+        
+    Returns:
+        dict: Informasi detail pixel
+    """
+    try:
+        analysis = analyze_image_pixels(image_path, sample_size=200)
+        
+        if not analysis.get("success"):
+            return analysis
+            
+        # Tambahan informasi khusus untuk LSB analysis
+        image = cv2.imread(image_path)
+        image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        
+        # Analisis LSB dari channel biru (yang digunakan untuk steganography)
+        blue_channel = image_rgb[:,:,2]
+        lsb_values = blue_channel & 1  # Extract LSB
+        
+        lsb_analysis = {
+            "lsb_0_count": int(np.sum(lsb_values == 0)),
+            "lsb_1_count": int(np.sum(lsb_values == 1)),
+            "lsb_distribution": float(np.mean(lsb_values))  # Ratio of 1s
+        }
+        
+        analysis["lsb_analysis"] = lsb_analysis
+        analysis["steganography_capacity"] = analysis["image_info"]["total_pixels"]  # 1 bit per pixel in blue channel
+        
+        return analysis
+        
+    except Exception as e:
+        return {"error": f"Error mendapatkan info detail pixel: {str(e)}"}
 
 # --- End of qr_utils.py ---
