@@ -444,6 +444,13 @@ def embed_docx_route():
                             "image_index": i,
                             "metrics": img_metrics
                         })
+                        
+                        # Add pixel analysis data to processed_images for LSB comparison
+                        if i < len(processed_images):
+                            processed_images[i]["pixel_analysis"] = {
+                                "original": original_analysis,
+                                "watermarked": watermarked_analysis
+                            }
         
         print(f"[*] Selesai analisis {len(image_analyses)} {'halaman' if is_pdf else 'gambar'}")
 
