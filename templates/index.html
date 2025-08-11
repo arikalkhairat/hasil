@@ -646,8 +646,124 @@
             font-size: 1.1rem;
         }
 
+        /* File Size Comparison Styles */
+        .file-size-comparison {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+        }
+
+        .file-size-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+        }
+
+        .file-size-header i {
+            margin-right: 8px;
+            color: var(--primary-color);
+        }
+
+        .file-size-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .file-size-item {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .file-size-item.original {
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .file-size-item.processed {
+            border-left: 4px solid var(--success-color);
+        }
+
+        .file-size-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .file-size-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .file-size-change {
+            background: white;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .file-size-change.increase {
+            border-left: 4px solid var(--warning-color);
+        }
+
+        .file-size-change.decrease {
+            border-left: 4px solid var(--success-color);
+        }
+
+        .file-size-change.no-change {
+            border-left: 4px solid var(--text-secondary);
+        }
+
+        .file-change-icon {
+            font-size: 1.5rem;
+            margin-right: 8px;
+        }
+
+        .file-change-text {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .file-change-details {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+
         /* Mobile responsiveness */
         @media (max-width: 768px) {
+            .file-size-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .file-size-item {
+                padding: 12px;
+            }
+
+            .file-size-value {
+                font-size: 1.1rem;
+            }
+
+            .file-size-header {
+                font-size: 1rem;
+            }
+
             .qr-slide {
                 padding: 20px 15px;
             }
@@ -1382,6 +1498,427 @@
             font-weight: bold;
         }
 
+        /* LSB Image Comparison Styles */
+        .lsb-image-comparison {
+            margin-top: 15px;
+        }
+
+        .lsb-images-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .lsb-image-container {
+            text-align: center;
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .lsb-image-header {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        .lsb-comparison-img {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 10px;
+            object-fit: contain;
+        }
+
+        .lsb-image-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .image-dimension-info {
+            background: #f0f9ff;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .pixel-statistics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .pixel-stat-item {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            border: 2px solid;
+            transition: transform 0.2s ease;
+        }
+
+        .pixel-stat-item:hover {
+            transform: translateY(-2px);
+        }
+
+        .pixel-stat-item.modified {
+            border-color: #f59e0b;
+            background: #fffbeb;
+        }
+
+        .pixel-stat-item.unmodified {
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+
+        .pixel-stat-item.percentage {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+
+        .pixel-stat-item.impact {
+            border-color: #8b5cf6;
+            background: #f5f3ff;
+        }
+
+        .pixel-stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--text-primary);
+        }
+
+        .pixel-stat-label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 3px;
+            color: var(--text-primary);
+        }
+
+        .pixel-stat-desc {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            line-height: 1.2;
+        }
+
+        .lsb-impact-note {
+            background: #ecfdf5;
+            border: 1px solid #10b981;
+            border-radius: 6px;
+            padding: 12px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        /* Matrix 3x3 Example Styles */
+        .matrix-comparison {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .matrix-container {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid #e2e8f0;
+            min-width: 280px;
+        }
+
+        .matrix-title {
+            text-align: center;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+        }
+
+        .matrix-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .matrix-pixel {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 8px;
+            text-align: center;
+            font-size: 0.75rem;
+            transition: all 0.3s ease;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .matrix-pixel:hover {
+            transform: scale(1.05);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .matrix-pixel.modified {
+            border-color: #f59e0b;
+            background: #fffbeb;
+        }
+
+        .pixel-coord {
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.7rem;
+        }
+
+        .pixel-rgb {
+            margin: 4px 0;
+        }
+
+        .rgb-component {
+            font-size: 0.7rem;
+            margin: 1px 0;
+            padding: 1px 3px;
+            border-radius: 2px;
+        }
+
+        .rgb-component.r {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        .rgb-component.g {
+            background: #f0fdf4;
+            color: #16a34a;
+        }
+
+        .rgb-component.b {
+            background: #eff6ff;
+            color: #2563eb;
+        }
+
+        .rgb-component.b.modified-blue {
+            background: #fef3c7;
+            color: #d97706;
+            font-weight: 600;
+        }
+
+        .change-indicator {
+            font-size: 0.6rem;
+            font-weight: 600;
+            color: #f59e0b;
+        }
+
+        .embedded-bit {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #7c3aed;
+            background: #f3f4f6;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        .matrix-arrow {
+            font-size: 2rem;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .modifications-table {
+            margin: 20px 0;
+        }
+
+        .table-title {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .lsb-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+            background: white;
+        }
+
+        .lsb-table th {
+            background: #f8fafc;
+            padding: 8px 6px;
+            text-align: center;
+            font-weight: 600;
+            color: var(--text-primary);
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .lsb-table td {
+            padding: 6px;
+            text-align: center;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .changed-row {
+            background: #fffbeb;
+        }
+
+        .unchanged-row {
+            background: #f9fafb;
+        }
+
+        .binary-display {
+            font-family: 'Courier New', monospace;
+            font-size: 0.75rem;
+        }
+
+        .lsb-bit {
+            background: #ddd6fe;
+            padding: 1px 3px;
+            border-radius: 2px;
+            font-weight: bold;
+        }
+
+        .lsb-bit.changed-lsb {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .embed-bit {
+            font-weight: 600;
+            color: #7c3aed;
+            background: #f3f4f6;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        .change-value.changed {
+            font-weight: 600;
+            color: #f59e0b;
+        }
+
+        .change-value.unchanged {
+            color: #6b7280;
+        }
+
+        .matrix-statistics {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .stat-title {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 12px;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .stat-item {
+            background: white;
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+
+        .stat-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .watermark-bits-display {
+            background: white;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .bits-sequence {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin: 8px 0;
+            justify-content: center;
+        }
+
+        .bit-item {
+            background: #7c3aed;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: help;
+        }
+
+        .bits-explanation {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+
+        .calculation-steps {
+            background: #f0f9ff;
+            border-radius: 6px;
+            padding: 12px;
+            margin: 15px 0;
+        }
+
+        .step-title {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+        }
+
+        .calculation-list {
+            margin-left: 20px;
+        }
+
+        .calculation-list li {
+            margin: 4px 0;
+            font-size: 0.9rem;
+        }
+
+        .formula-summary {
+            background: #ecfdf5;
+            border: 1px solid #10b981;
+            border-radius: 6px;
+            padding: 10px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+
         .resize-info {
             background: #fffbeb;
             border: 1px solid #fed7aa;
@@ -1839,12 +2376,53 @@
                     <hr style="margin: 30px 0; border: 1px solid var(--border-color);">
                     
                     <div style="margin-bottom: 20px;">
-                        <h4 style="color: var(--primary-color); margin-bottom: 10px;">
-                            <i class="fas fa-shield-alt"></i> Validasi Integritas CRC32
-                        </h4>
-                        <p style="color: var(--text-secondary); font-size: 0.9rem;">
-                            Validasi integritas QR Code menggunakan CRC32 checksum untuk memastikan data tidak rusak atau dimodifikasi.
-                        </p>
+                        <div class="crc32-accordion-header" onclick="toggleCRC32Explanation()" style="cursor: pointer; user-select: none; display: flex; align-items: center; justify-content: space-between; padding: 10px; background: #f8fafc; border-radius: 6px; border: 1px solid #e5e7eb; transition: all 0.3s ease;">
+                            <h4 style="color: var(--primary-color); margin: 0; display: flex; align-items: center; gap: 10px;">
+                                <i class="fas fa-shield-alt"></i> 
+                                <span>Validasi Integritas CRC32</span>
+                            </h4>
+                            <i class="fas fa-chevron-down crc32-chevron" style="color: var(--primary-color); transition: transform 0.3s ease;"></i>
+                        </div>
+                        
+                        <div id="crc32Explanation" class="crc32-accordion-content" style="display: none; margin-top: 15px; opacity: 0; transform: translateY(-10px); transition: all 0.3s ease;">
+                            <div style="background: #f8fafc; border-left: 4px solid #3b82f6; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+                                <h5 style="color: #1f2937; margin: 0 0 10px 0; font-size: 1rem;">
+                                    <i class="fas fa-info-circle" style="color: #3b82f6;"></i> Apa itu CRC32?
+                                </h5>
+                                <p style="color: #4b5563; font-size: 0.9rem; margin: 0 0 8px 0; line-height: 1.5;">
+                                    <strong>CRC32 (Cyclic Redundancy Check 32-bit)</strong> adalah algoritma checksum yang menghasilkan nilai hash 32-bit unik untuk setiap file atau data. Nilai ini berfungsi sebagai "sidik jari digital" yang dapat mendeteksi perubahan sekecil apapun pada data.
+                                </p>
+                            </div>
+                            
+                            <div style="background: #f0f9ff; border-left: 4px solid #0ea5e9; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+                                <h5 style="color: #1f2937; margin: 0 0 10px 0; font-size: 1rem;">
+                                    <i class="fas fa-bullseye" style="color: #0ea5e9;"></i> Kegunaan Utama:
+                                </h5>
+                                <ul style="color: #4b5563; font-size: 0.9rem; margin: 0; padding-left: 20px; line-height: 1.6;">
+                                    <li><strong>Deteksi Kerusakan Data:</strong> Memastikan QR Code tidak rusak selama proses transfer atau penyimpanan</li>
+                                    <li><strong>Verifikasi Integritas:</strong> Mengonfirmasi bahwa QR Code yang diterima sama persis dengan yang asli</li>
+                                    <li><strong>Keamanan Tambahan:</strong> Mendeteksi jika ada modifikasi tidak sah pada QR Code</li>
+                                    <li><strong>Quality Assurance:</strong> Memvalidasi bahwa proses watermarking tidak merusak data QR</li>
+                                </ul>
+                            </div>
+                            
+                            <div style="background: #fefce8; border-left: 4px solid #eab308; padding: 15px; border-radius: 6px; margin-bottom: 20px;">
+                                <h5 style="color: #1f2937; margin: 0 0 10px 0; font-size: 1rem;">
+                                    <i class="fas fa-cogs" style="color: #eab308;"></i> Cara Kerja:
+                                </h5>
+                                <ol style="color: #4b5563; font-size: 0.9rem; margin: 0; padding-left: 20px; line-height: 1.6;">
+                                    <li>Sistem menghitung nilai CRC32 dari data QR Code asli</li>
+                                    <li>Nilai CRC32 ini disimpan sebagai referensi integritas</li>
+                                    <li>Saat validasi, sistem menghitung ulang CRC32 dari QR Code yang akan dicek</li>
+                                    <li>Jika kedua nilai CRC32 identik = QR Code utuh dan valid ✅</li>
+                                    <li>Jika berbeda = Ada kerusakan atau modifikasi ❌</li>
+                                </ol>
+                            </div>
+                            
+                            <div style="color: var(--text-secondary); font-size: 0.85rem; font-style: italic; text-align: center;">
+                                💡 <strong>Tips:</strong> Gunakan fitur ini sebelum melakukan embedding untuk memastikan QR Code Anda dalam kondisi sempurna
+                            </div>
+                        </div>
                     </div>
 
                     <form id="integrityForm">
@@ -1999,6 +2577,69 @@
             container.appendChild(analysis);
         }
 
+        // Function to display file size comparison
+        function displayFileSizeComparison(containerId, fileSizeInfo) {
+            if (!fileSizeInfo) return;
+            
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            // Validate required properties
+            if (!fileSizeInfo.original || !fileSizeInfo.processed) {
+                console.warn('File size info missing original or processed data');
+                return;
+            }
+
+            // Create file size comparison element
+            const sizeComparison = document.createElement('div');
+            sizeComparison.className = 'file-size-comparison';
+            
+            // Determine change type for styling
+            let changeClass = 'no-change';
+            let changeIcon = 'fas fa-equals';
+            const diffPercentage = fileSizeInfo.difference_percentage || 0;
+            if (diffPercentage > 0) {
+                changeClass = 'increase';
+                changeIcon = 'fas fa-arrow-up';
+            } else if (diffPercentage < 0) {
+                changeClass = 'decrease';
+                changeIcon = 'fas fa-arrow-down';
+            }
+            
+            // Safe access to formatted values with fallback
+            const originalFormatted = fileSizeInfo.original.formatted || `${fileSizeInfo.original.bytes || 0} bytes`;
+            const processedFormatted = fileSizeInfo.processed.formatted || `${fileSizeInfo.processed.bytes || 0} bytes`;
+            const sizeChange = fileSizeInfo.size_change || 'Tidak berubah';
+            const diffBytes = fileSizeInfo.difference_bytes || 0;
+            
+            sizeComparison.innerHTML = `
+                <div class="file-size-header">
+                    <i class="fas fa-chart-bar"></i>
+                    Perbandingan Ukuran File
+                </div>
+                <div class="file-size-grid">
+                    <div class="file-size-item original">
+                        <div class="file-size-label">File Asli</div>
+                        <div class="file-size-value">${originalFormatted}</div>
+                    </div>
+                    <div class="file-size-item processed">
+                        <div class="file-size-label">File Watermark</div>
+                        <div class="file-size-value">${processedFormatted}</div>
+                    </div>
+                </div>
+                <div class="file-size-change ${changeClass}">
+                    <i class="file-change-icon ${changeIcon}"></i>
+                    <span class="file-change-text">${sizeChange}</span>
+                    <div class="file-change-details">
+                        ${diffBytes > 0 ? '+' : ''}${diffBytes} bytes 
+                        (${diffPercentage > 0 ? '+' : ''}${diffPercentage.toFixed(2)}%)
+                    </div>
+                </div>
+            `;
+            
+            container.appendChild(sizeComparison);
+        }
+
         function displayImageComparison(containerId, processedImages) {
             const container = document.getElementById(containerId);
             
@@ -2078,7 +2719,411 @@
         }
 
 
-        function displayDetailedProcess(logData, qrInfo, processedImages, fileType, pdfInfo) {
+        // Function to create file size section for detailed process
+        function createFileSizeSection(fileSizeInfo) {
+            if (!fileSizeInfo) return '';
+            
+            let sizeChangeClass = 'no-change';
+            let sizeChangeIcon = 'fas fa-equals';
+            let sizeChangeColor = '#6b7280';
+            
+            const diffPercentage = fileSizeInfo.difference_percentage || 0;
+            if (diffPercentage > 0) {
+                sizeChangeClass = 'increase';
+                sizeChangeIcon = 'fas fa-arrow-up';
+                sizeChangeColor = '#f59e0b';
+            } else if (diffPercentage < 0) {
+                sizeChangeClass = 'decrease';
+                sizeChangeIcon = 'fas fa-arrow-down';
+                sizeChangeColor = '#10b981';
+            }
+            
+            let qualityAssessment = '';
+            const absPercentage = Math.abs(diffPercentage);
+            
+            if (absPercentage < 1) {
+                qualityAssessment = '<span style="color: #10b981;"><i class="fas fa-check-circle"></i> Excellent - Perubahan sangat minimal</span>';
+            } else if (absPercentage < 5) {
+                qualityAssessment = '<span style="color: #3b82f6;"><i class="fas fa-info-circle"></i> Good - Perubahan masih dalam batas wajar</span>';
+            } else if (absPercentage < 10) {
+                qualityAssessment = '<span style="color: #f59e0b;"><i class="fas fa-exclamation-triangle"></i> Fair - Perubahan cukup signifikan</span>';
+            } else {
+                qualityAssessment = '<span style="color: #ef4444;"><i class="fas fa-exclamation-circle"></i> Poor - Perubahan sangat signifikan</span>';
+            }
+            
+            return `
+                <div class="process-step">
+                    <div class="step-header">
+                        <div class="step-badge">5</div>
+                        <h5 class="step-title">Analisis Perubahan Ukuran File</h5>
+                    </div>
+                    <div class="file-size-comparison">
+                        <div class="file-size-header">
+                            <i class="fas fa-chart-bar"></i>
+                            Perbandingan Ukuran File
+                        </div>
+                        <div class="file-size-grid">
+                            <div class="file-size-item original">
+                                <div class="file-size-label">File Asli</div>
+                                <div class="file-size-value">${fileSizeInfo.original && fileSizeInfo.original.formatted ? fileSizeInfo.original.formatted : `${fileSizeInfo.original?.bytes || 0} bytes`}</div>
+                                <div style="font-size: 0.8rem; color: #6b7280; margin-top: 5px;">
+                                    ${(fileSizeInfo.original?.bytes || 0).toLocaleString()} bytes
+                                </div>
+                            </div>
+                            <div class="file-size-item processed">
+                                <div class="file-size-label">File Watermark</div>
+                                <div class="file-size-value">${fileSizeInfo.processed && fileSizeInfo.processed.formatted ? fileSizeInfo.processed.formatted : `${fileSizeInfo.processed?.bytes || 0} bytes`}</div>
+                                <div style="font-size: 0.8rem; color: #6b7280; margin-top: 5px;">
+                                    ${(fileSizeInfo.processed?.bytes || 0).toLocaleString()} bytes
+                                </div>
+                            </div>
+                        </div>
+                        <div class="file-size-change ${sizeChangeClass}">
+                            <i class="file-change-icon ${sizeChangeIcon}" style="color: ${sizeChangeColor};"></i>
+                            <span class="file-change-text">${fileSizeInfo.size_change || 'Tidak berubah'}</span>
+                            <div class="file-change-details">
+                                ${(fileSizeInfo.difference_bytes || 0) > 0 ? '+' : ''}${fileSizeInfo.difference_bytes || 0} bytes 
+                                (${(fileSizeInfo.difference_percentage || 0) > 0 ? '+' : ''}${(fileSizeInfo.difference_percentage || 0).toFixed(2)}%)
+                            </div>
+                        </div>
+                        <div style="margin-top: 15px; padding: 10px; background: #f8fafc; border-radius: 6px; border-left: 4px solid #3b82f6;">
+                            <strong>Penilaian Kualitas Steganografi:</strong><br>
+                            ${qualityAssessment}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Helper function to generate 3x3 matrix LSB example
+        function generate3x3MatrixExample(originalPixelSample, watermarkedPixelSample, bitsEmbedded) {
+            // Generate example 3x3 matrix with realistic pixel values
+            const generateMatrix = (baseValues) => {
+                const matrix = [];
+                for (let i = 0; i < 3; i++) {
+                    matrix[i] = [];
+                    for (let j = 0; j < 3; j++) {
+                        const variation = Math.floor(Math.random() * 40) - 20; // ±20 variation
+                        matrix[i][j] = {
+                            r: Math.max(0, Math.min(255, baseValues.r + variation)),
+                            g: Math.max(0, Math.min(255, baseValues.g + variation)),
+                            b: Math.max(0, Math.min(255, baseValues.b + variation))
+                        };
+                    }
+                }
+                return matrix;
+            };
+
+            // Use actual pixel data if available, otherwise generate realistic example
+            let baseOriginal = { r: 120, g: 85, b: 200 };
+            if (originalPixelSample) {
+                baseOriginal = {
+                    r: originalPixelSample.rgb[0],
+                    g: originalPixelSample.rgb[1],
+                    b: originalPixelSample.rgb[2]
+                };
+            }
+
+            const originalMatrix = generateMatrix(baseOriginal);
+            const watermarkedMatrix = JSON.parse(JSON.stringify(originalMatrix)); // Deep copy
+
+            // Example watermark bits to embed (9 bits for 3x3 matrix)
+            const watermarkBits = "101100110"; // Example: 9 bits
+            let bitIndex = 0;
+
+            // Apply LSB embedding to blue channel
+            const modifications = [];
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
+                    if (bitIndex < watermarkBits.length) {
+                        const originalBlue = watermarkedMatrix[i][j].b;
+                        const bitToEmbed = watermarkBits[bitIndex];
+                        
+                        // LSB embedding: modify last bit of blue channel
+                        if (bitToEmbed === '0') {
+                            watermarkedMatrix[i][j].b = originalBlue & 254; // Set LSB to 0
+                        } else {
+                            watermarkedMatrix[i][j].b = originalBlue | 1; // Set LSB to 1
+                        }
+                        
+                        const change = watermarkedMatrix[i][j].b - originalBlue;
+                        modifications.push({
+                            position: [i, j],
+                            originalBlue: originalBlue,
+                            newBlue: watermarkedMatrix[i][j].b,
+                            bitEmbedded: bitToEmbed,
+                            change: change,
+                            originalBinary: originalBlue.toString(2).padStart(8, '0'),
+                            newBinary: watermarkedMatrix[i][j].b.toString(2).padStart(8, '0')
+                        });
+                        
+                        bitIndex++;
+                    }
+                }
+            }
+
+            return {
+                originalMatrix,
+                watermarkedMatrix,
+                modifications,
+                watermarkBits,
+                totalPixels: 9,
+                bitsEmbedded: watermarkBits.length
+            };
+        }
+
+        // Helper function to render 3x3 matrix HTML
+        function render3x3MatrixHtml(matrixData) {
+            const { originalMatrix, watermarkedMatrix, modifications, watermarkBits, totalPixels, bitsEmbedded } = matrixData;
+            
+            const renderMatrix = (matrix, title, isWatermarked = false) => {
+                let matrixHtml = `
+                    <div class="matrix-container">
+                        <div class="matrix-title">${title}</div>
+                        <div class="matrix-grid">
+                `;
+                
+                for (let i = 0; i < 3; i++) {
+                    for (let j = 0; j < 3; j++) {
+                        const pixel = matrix[i][j];
+                        const modification = modifications.find(m => m.position[0] === i && m.position[1] === j);
+                        const isModified = isWatermarked && modification && modification.change !== 0;
+                        
+                        matrixHtml += `
+                            <div class="matrix-pixel ${isModified ? 'modified' : ''}" title="Posisi [${i},${j}]">
+                                <div class="pixel-coord">[${i},${j}]</div>
+                                <div class="pixel-rgb">
+                                    <div class="rgb-component r">R:${pixel.r}</div>
+                                    <div class="rgb-component g">G:${pixel.g}</div>
+                                    <div class="rgb-component b ${isModified ? 'modified-blue' : ''}">
+                                        B:${pixel.b}
+                                        ${isModified ? `<span class="change-indicator">(${modification.change > 0 ? '+' : ''}${modification.change})</span>` : ''}
+                                    </div>
+                                </div>
+                                ${isModified ? `<div class="embedded-bit">Bit: ${modification.bitEmbedded}</div>` : ''}
+                            </div>
+                        `;
+                    }
+                }
+                
+                matrixHtml += `
+                        </div>
+                    </div>
+                `;
+                
+                return matrixHtml;
+            };
+
+            const modificationsTableHtml = `
+                <div class="modifications-table">
+                    <div class="table-title">📊 Detail Modifikasi LSB (Blue Channel)</div>
+                    <div class="table-container">
+                        <table class="lsb-table">
+                            <thead>
+                                <tr>
+                                    <th>Posisi</th>
+                                    <th>Blue Asli</th>
+                                    <th>Binary Asli</th>
+                                    <th>Bit Embed</th>
+                                    <th>Blue Baru</th>
+                                    <th>Binary Baru</th>
+                                    <th>Perubahan</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${modifications.map(mod => `
+                                    <tr class="${mod.change !== 0 ? 'changed-row' : 'unchanged-row'}">
+                                        <td>[${mod.position[0]},${mod.position[1]}]</td>
+                                        <td>${mod.originalBlue}</td>
+                                        <td class="binary-display">${mod.originalBinary.slice(0, -1)}<span class="lsb-bit">${mod.originalBinary.slice(-1)}</span></td>
+                                        <td class="embed-bit">${mod.bitEmbedded}</td>
+                                        <td>${mod.newBlue}</td>
+                                        <td class="binary-display">${mod.newBinary.slice(0, -1)}<span class="lsb-bit ${mod.change !== 0 ? 'changed-lsb' : ''}">${mod.newBinary.slice(-1)}</span></td>
+                                        <td class="change-value ${mod.change !== 0 ? 'changed' : 'unchanged'}">${mod.change > 0 ? '+' : ''}${mod.change}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+
+            const statisticsHtml = `
+                <div class="matrix-statistics">
+                    <div class="stat-title">📈 Statistik Matrix 3×3</div>
+                    <div class="stat-grid">
+                        <div class="stat-item">
+                            <div class="stat-value">${totalPixels}</div>
+                            <div class="stat-label">Total Pixel</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${bitsEmbedded}</div>
+                            <div class="stat-label">Bit Ditanamkan</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${modifications.filter(m => m.change !== 0).length}</div>
+                            <div class="stat-label">Pixel Dimodifikasi</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${((modifications.filter(m => m.change !== 0).length / totalPixels) * 100).toFixed(1)}%</div>
+                            <div class="stat-label">Persentase Perubahan</div>
+                        </div>
+                    </div>
+                    <div class="watermark-bits-display">
+                        <strong>Bit Watermark yang Ditanamkan:</strong>
+                        <div class="bits-sequence">
+                            ${watermarkBits.split('').map((bit, index) => 
+                                `<span class="bit-item" data-position="[${Math.floor(index/3)},${index%3}]">${bit}</span>`
+                            ).join('')}
+                        </div>
+                        <div class="bits-explanation">
+                            <em>Setiap bit ditanamkan ke LSB channel biru secara berurutan dari kiri ke kanan, atas ke bawah</em>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            return `
+                <div class="formula-explanation">
+                    <div class="formula-title">🧮 Contoh Perhitungan Matrix 3×3 - LSB Steganography</div>
+                    <div class="formula-content">
+                        <div class="matrix-comparison">
+                            ${renderMatrix(originalMatrix, "Matrix Asli (Original)")}
+                            <div class="matrix-arrow">→</div>
+                            ${renderMatrix(watermarkedMatrix, "Matrix Watermark (Setelah LSB)", true)}
+                        </div>
+                        
+                        ${modificationsTableHtml}
+                        ${statisticsHtml}
+                        
+                        <div class="calculation-steps">
+                            <div class="step-title">🔢 Langkah Perhitungan:</div>
+                            <ol class="calculation-list">
+                                <li><strong>Persiapan:</strong> Matrix 3×3 = 9 pixel total</li>
+                                <li><strong>Kapasitas:</strong> 1 bit per pixel (LSB blue channel) = 9 bit maksimal</li>
+                                <li><strong>Watermark:</strong> "${watermarkBits}" (${bitsEmbedded} bit)</li>
+                                <li><strong>Embedding:</strong> Ganti LSB blue channel setiap pixel dengan bit watermark</li>
+                                <li><strong>Hasil:</strong> ${modifications.filter(m => m.change !== 0).length} pixel berubah, ${totalPixels - modifications.filter(m => m.change !== 0).length} pixel tetap sama</li>
+                            </ol>
+                        </div>
+                        
+                        <div class="formula-summary">
+                            <strong>💡 Kesimpulan:</strong> Dengan LSB steganography, perubahan maksimal per pixel hanya ±1, 
+                            sehingga hampir tidak terlihat oleh mata manusia namun cukup untuk menyimpan data watermark.
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Helper function to generate image comparison HTML with pixel statistics
+        function getImageComparisonHtml(processedImages, imageCapacity, bitsEmbedded, pixelsModified) {
+            if (!processedImages || processedImages.length === 0) {
+                return `
+                    <div class="formula-explanation">
+                        <div class="formula-title">🖼️ Contoh Hasil LSB Steganography</div>
+                        <div class="formula-content">
+                            <em>Tidak ada gambar yang tersedia untuk ditampilkan</em>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Get the first processed image as example
+            const firstImage = processedImages[0];
+            const originalPath = firstImage.original ? `/static/${firstImage.original}` : '';
+            const watermarkedPath = firstImage.watermarked ? `/static/${firstImage.watermarked}` : '';
+            
+            // Calculate pixel statistics
+            const totalPixels = imageCapacity || 0;
+            const modifiedPixels = pixelsModified > 0 ? pixelsModified : bitsEmbedded;
+            const unmodifiedPixels = totalPixels - modifiedPixels;
+            const modificationPercentage = totalPixels > 0 ? (modifiedPixels / totalPixels * 100).toFixed(2) : '0';
+            
+            // Get actual dimensions if available
+            let dimensionInfo = '';
+            if (firstImage.dimensions) {
+                const width = firstImage.dimensions.width;
+                const height = firstImage.dimensions.height;
+                dimensionInfo = `
+                    <div class="image-dimension-info">
+                        <strong>Dimensi:</strong> ${width} × ${height} pixel<br>
+                        <strong>Total Pixel:</strong> ${(width * height).toLocaleString()} pixel
+                    </div>
+                `;
+            } else if (totalPixels > 0) {
+                const estimatedDim = Math.floor(Math.sqrt(totalPixels));
+                dimensionInfo = `
+                    <div class="image-dimension-info">
+                        <strong>Estimasi Dimensi:</strong> ~${estimatedDim} × ${estimatedDim} pixel<br>
+                        <strong>Total Pixel:</strong> ${totalPixels.toLocaleString()} pixel
+                    </div>
+                `;
+            }
+            
+            return `
+                <div class="formula-explanation">
+                    <div class="formula-title">🖼️ Contoh Hasil LSB Steganography</div>
+                    <div class="formula-content">
+                        <div class="lsb-image-comparison">
+                            <div class="lsb-images-row">
+                                ${originalPath ? `
+                                    <div class="lsb-image-container">
+                                        <div class="lsb-image-header">Gambar Asli</div>
+                                        <img src="${originalPath}" alt="Original Image" class="lsb-comparison-img">
+                                        <div class="lsb-image-label">Sebelum LSB Embedding</div>
+                                    </div>
+                                ` : ''}
+                                
+                                ${watermarkedPath ? `
+                                    <div class="lsb-image-container">
+                                        <div class="lsb-image-header">Gambar dengan Watermark</div>
+                                        <img src="${watermarkedPath}" alt="Watermarked Image" class="lsb-comparison-img">
+                                        <div class="lsb-image-label">Setelah LSB Embedding</div>
+                                    </div>
+                                ` : ''}
+                            </div>
+                            
+                            ${dimensionInfo}
+                            
+                            <div class="pixel-statistics-grid">
+                                <div class="pixel-stat-item modified">
+                                    <div class="pixel-stat-value">${modifiedPixels.toLocaleString()}</div>
+                                    <div class="pixel-stat-label">Pixel Dimodifikasi</div>
+                                    <div class="pixel-stat-desc">LSB channel biru diubah</div>
+                                </div>
+                                
+                                <div class="pixel-stat-item unmodified">
+                                    <div class="pixel-stat-value">${unmodifiedPixels.toLocaleString()}</div>
+                                    <div class="pixel-stat-label">Pixel Tidak Berubah</div>
+                                    <div class="pixel-stat-desc">Tetap dalam kondisi asli</div>
+                                </div>
+                                
+                                <div class="pixel-stat-item percentage">
+                                    <div class="pixel-stat-value">${modificationPercentage}%</div>
+                                    <div class="pixel-stat-label">Persentase Modifikasi</div>
+                                    <div class="pixel-stat-desc">Dari total pixel gambar</div>
+                                </div>
+                                
+                                <div class="pixel-stat-item impact">
+                                    <div class="pixel-stat-value">±1</div>
+                                    <div class="pixel-stat-label">Maksimal Perubahan</div>
+                                    <div class="pixel-stat-desc">Per pixel (nilai LSB)</div>
+                                </div>
+                            </div>
+                            
+                            <div class="lsb-impact-note">
+                                <strong>💡 Catatan:</strong> Perubahan hanya terjadi pada LSB (bit terakhir) dari channel biru setiap pixel. 
+                                Perubahan maksimal ±1 per pixel membuat modifikasi hampir tidak terlihat oleh mata manusia, 
+                                namun cukup untuk menyimpan data watermark QR Code secara tersembunyi.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function displayDetailedProcess(logData, qrInfo, processedImages, fileType, pdfInfo, fileSizeInfo) {
             const container = document.getElementById('detailedSteps');
             
             // Parse log data to extract detailed information
@@ -2089,6 +3134,11 @@
             let resizedQR = false;
             let newQRSize = { width: qrWidth, height: qrHeight };
             let bitsEmbedded = 0;
+            let actualMSE = 0;
+            let actualPSNR = 0;
+            let pixelsModified = 0;
+            let originalPixelSample = null;
+            let watermarkedPixelSample = null;
             
             // Extract information from log
             lines.forEach(line => {
@@ -2120,9 +3170,28 @@
                         newQRSize = { width: parseInt(match[1]), height: parseInt(match[2]) };
                     }
                 }
+                if (line.includes('pixels processed')) {
+                    const match = line.match(/(\d+) pixels processed/);
+                    if (match) {
+                        pixelsModified = parseInt(match[1]);
+                    }
+                }
             });
             
-            // Calculate estimated dimensions from capacity
+            // Get actual data from processedImages if available
+            if (processedImages && processedImages.length > 0) {
+                const firstProcessed = processedImages[0];
+                if (firstProcessed.metrics) {
+                    actualMSE = firstProcessed.metrics.mse || 0;
+                    actualPSNR = firstProcessed.metrics.psnr || 0;
+                }
+                if (firstProcessed.original_analysis && firstProcessed.watermarked_analysis) {
+                    originalPixelSample = firstProcessed.original_analysis.pixel_samples ? firstProcessed.original_analysis.pixel_samples[0] : null;
+                    watermarkedPixelSample = firstProcessed.watermarked_analysis.pixel_samples ? firstProcessed.watermarked_analysis.pixel_samples[0] : null;
+                }
+            }
+            
+            // Calculate actual dimensions from capacity
             const estimatedDim = Math.floor(Math.sqrt(imageCapacity));
             
             container.innerHTML = '';
@@ -2257,160 +3326,263 @@
             `;
             container.appendChild(step2);
             
-            // Step 3: Header Creation
+            // Step 3: LSB Embedding
             const step3 = document.createElement('div');
             step3.className = 'process-step';
+            
+            // Create actual pixel modification examples if we have real data
+            let pixelExampleHtml = '';
+            let actualStatsHtml = '';
+            
+            if (originalPixelSample && watermarkedPixelSample) {
+                const orig = originalPixelSample;
+                const watermarked = watermarkedPixelSample;
+                
+                // Use actual pixel data for the example
+                const actualBlueChange = watermarked.rgb[2] - orig.rgb[2];
+                const origBlueBinary = orig.rgb[2].toString(2).padStart(8, '0');
+                const newBlueBinary = watermarked.rgb[2].toString(2).padStart(8, '0');
+                const origLSB = origBlueBinary.slice(-1);
+                const newLSB = newBlueBinary.slice(-1);
+                
+                pixelExampleHtml = `
+                    <div class="formula-explanation">
+                        <div class="formula-title">🔧 Contoh Modifikasi Pixel Aktual</div>
+                        <div class="formula-content">
+                            <strong>Algoritma LSB:</strong><br>
+                            1. Ambil pixel asli dari gambar cover<br>
+                            2. Konversi nilai Blue ke biner<br>
+                            3. Ganti bit terakhir (LSB) dengan bit watermark<br>
+                            4. Konversi kembali ke desimal<br>
+                            <br>
+                            <strong>Data Aktual dari Posisi (${orig.position[0]}, ${orig.position[1]}):</strong><br>
+                            Pixel Asli: R=${orig.rgb[0]}, G=${orig.rgb[1]}, B=${orig.rgb[2]}<br>
+                            Bit watermark: ${newLSB}<br>
+                            <br>
+                            Blue: ${orig.rgb[2]} → ${origBlueBinary}₂<br>
+                            LSB lama: <span class="lsb-highlight">${origLSB}</span><br>
+                            LSB baru: <span class="lsb-highlight">${newLSB}</span><br>
+                            Blue baru: ${newBlueBinary}₂ → ${watermarked.rgb[2]}<br>
+                            <br>
+                            Pixel Hasil: R=${watermarked.rgb[0]}, G=${watermarked.rgb[1]}, B=${watermarked.rgb[2]}<br>
+                            <strong>Perubahan: ${actualBlueChange > 0 ? '+' : ''}${actualBlueChange}</strong>
+                        </div>
+                    </div>
+                    
+                    <div class="example-pixel">
+                        <div class="pixel-channel red">
+                            <div class="pixel-value">Red: ${orig.rgb[0]}</div>
+                            <div class="pixel-binary">${orig.rgb[0].toString(2).padStart(8, '0')}</div>
+                            <small>Tidak diubah</small>
+                        </div>
+                        <div class="pixel-channel green">
+                            <div class="pixel-value">Green: ${orig.rgb[1]}</div>
+                            <div class="pixel-binary">${orig.rgb[1].toString(2).padStart(8, '0')}</div>
+                            <small>Tidak diubah</small>
+                        </div>
+                        <div class="pixel-channel blue">
+                            <div class="pixel-value">Blue: ${orig.rgb[2]}→${watermarked.rgb[2]}</div>
+                            <div class="pixel-binary">${origBlueBinary.slice(0, -1)}<span class="lsb-highlight">${origLSB}→${newLSB}</span></div>
+                            <small>LSB dimodifikasi</small>
+                        </div>
+                    </div>
+                `;
+                
+                actualStatsHtml = `
+                    <div class="formula-explanation">
+                        <div class="formula-title">📊 Statistik Embedding Aktual</div>
+                        <div class="formula-content">
+                            Total bit diproses: ${bitsEmbedded.toLocaleString()} bit<br>
+                            Pixel dimodifikasi: ${pixelsModified > 0 ? pixelsModified.toLocaleString() : bitsEmbedded.toLocaleString()} pixel<br>
+                            Perubahan aktual pada contoh: ${actualBlueChange > 0 ? '+' : ''}${actualBlueChange}<br>
+                            Perubahan maksimum per pixel: ±1 (sangat kecil)<br>
+                            <br>
+                            Dampak visual: Hampir tidak terdeteksi mata manusia
+                        </div>
+                    </div>
+                `;
+            } else {
+                // Fallback to generic example if no actual data available
+                pixelExampleHtml = `
+                    <div class="formula-explanation">
+                        <div class="formula-title">🔧 Algoritma LSB (Data tidak tersedia untuk contoh spesifik)</div>
+                        <div class="formula-content">
+                            <strong>Algoritma LSB:</strong><br>
+                            1. Ambil pixel asli dari gambar cover<br>
+                            2. Konversi nilai Blue ke biner<br>
+                            3. Ganti bit terakhir (LSB) dengan bit watermark<br>
+                            4. Konversi kembali ke desimal<br>
+                        </div>
+                    </div>
+                `;
+                
+                actualStatsHtml = `
+                    <div class="formula-explanation">
+                        <div class="formula-title">📊 Statistik Embedding</div>
+                        <div class="formula-content">
+                            Total bit diproses: ${bitsEmbedded.toLocaleString()} bit<br>
+                            Pixel dimodifikasi: ${pixelsModified > 0 ? pixelsModified.toLocaleString() : bitsEmbedded.toLocaleString()} pixel<br>
+                            Perubahan maksimum per pixel: ±1 (sangat kecil)<br>
+                            <br>
+                            Dampak visual: Hampir tidak terdeteksi mata manusia
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Generate 3x3 matrix example
+            const matrix3x3Data = generate3x3MatrixExample(originalPixelSample, watermarkedPixelSample, bitsEmbedded);
+            const matrix3x3Html = render3x3MatrixHtml(matrix3x3Data);
+            
             step3.innerHTML = `
                 <div class="step-header">
                     <span class="step-badge">STEP 3</span>
-                    <span class="step-title">Pembuatan Header</span>
-                </div>
-                <p>Membuat header yang berisi informasi dimensi QR Code untuk ekstraksi.</p>
-                
-                <div class="bit-visualization">
-                    <div class="bit-row">
-                        <span class="bit-label">Lebar QR (dec):</span>
-                        <span class="bit-value">${newQRSize.width}</span>
-                    </div>
-                    <div class="bit-row">
-                        <span class="bit-label">Lebar QR (bin):</span>
-                        <span class="bit-value header">${newQRSize.width.toString(2).padStart(20, '0')}</span>
-                        <span>(20 bit)</span>
-                    </div>
-                    <div class="bit-row">
-                        <span class="bit-label">Tinggi QR (dec):</span>
-                        <span class="bit-value">${newQRSize.height}</span>
-                    </div>
-                    <div class="bit-row">
-                        <span class="bit-label">Tinggi QR (bin):</span>
-                        <span class="bit-value header">${newQRSize.height.toString(2).padStart(20, '0')}</span>
-                        <span>(20 bit)</span>
-                    </div>
-                    <div class="bit-row">
-                        <span class="bit-label">Total Header:</span>
-                        <span class="bit-value header">40 bit</span>
-                    </div>
-                </div>
-                
-                <div class="formula-explanation">
-                    <div class="formula-title">📋 Format Header</div>
-                    <div class="formula-content">
-                        Header disimpan di awal untuk memberitahu decoder:<br>
-                        • Bit 1-20: Lebar QR Code (20 bit)<br>
-                        • Bit 21-40: Tinggi QR Code (20 bit)<br>
-                        <br>
-                        Format: [20-bit width][20-bit height][QR data bits...]
-                    </div>
-                </div>
-            `;
-            container.appendChild(step3);
-            
-            // Step 4: LSB Embedding
-            const step4 = document.createElement('div');
-            step4.className = 'process-step';
-            step4.innerHTML = `
-                <div class="step-header">
-                    <span class="step-badge">STEP 4</span>
                     <span class="step-title">Proses LSB Embedding</span>
                 </div>
                 <p>Menyisipkan bit watermark ke dalam LSB (Least Significant Bit) channel biru.</p>
                 
-                <div class="formula-explanation">
-                    <div class="formula-title">🔧 Contoh Modifikasi Pixel</div>
-                    <div class="formula-content">
-                        <strong>Algoritma LSB:</strong><br>
-                        1. Ambil pixel asli dari gambar cover<br>
-                        2. Konversi nilai Blue ke biner<br>
-                        3. Ganti bit terakhir (LSB) dengan bit watermark<br>
-                        4. Konversi kembali ke desimal<br>
-                        <br>
-                        <strong>Contoh:</strong><br>
-                        Pixel Asli: R=120, G=85, B=200<br>
-                        Bit watermark: 1<br>
-                        <br>
-                        Blue: 200 → 11001000₂<br>
-                        LSB lama: <span class="lsb-highlight">0</span><br>
-                        LSB baru: <span class="lsb-highlight">1</span><br>
-                        Blue baru: 11001001₂ → 201<br>
-                        <br>
-                        Pixel Hasil: R=120, G=85, B=201
-                    </div>
-                </div>
-                
-                <div class="example-pixel">
-                    <div class="pixel-channel red">
-                        <div class="pixel-value">Red: 120</div>
-                        <div class="pixel-binary">01111000</div>
-                        <small>Tidak diubah</small>
-                    </div>
-                    <div class="pixel-channel green">
-                        <div class="pixel-value">Green: 85</div>
-                        <div class="pixel-binary">01010101</div>
-                        <small>Tidak diubah</small>
-                    </div>
-                    <div class="pixel-channel blue">
-                        <div class="pixel-value">Blue: 200→201</div>
-                        <div class="pixel-binary">1100100<span class="lsb-highlight">0→1</span></div>
-                        <small>LSB dimodifikasi</small>
-                    </div>
-                </div>
-                
-                <div class="formula-explanation">
-                    <div class="formula-title">📊 Statistik Embedding</div>
-                    <div class="formula-content">
-                        Total bit diproses: ${bitsEmbedded.toLocaleString()} bit<br>
-                        Pixel dimodifikasi: ${bitsEmbedded.toLocaleString()} pixel<br>
-                        Perubahan maksimum per pixel: ±1 (sangat kecil)<br>
-                        <br>
-                        Dampak visual: Hampir tidak terdeteksi mata manusia
-                    </div>
-                </div>
+                ${pixelExampleHtml}
+                ${matrix3x3Html}
+                ${actualStatsHtml}
             `;
-            container.appendChild(step4);
+            container.appendChild(step3);
             
-            // Step 5: Quality Analysis & File Size Impact
-            const step5 = document.createElement('div');
-            step5.className = 'process-step';
-            step5.innerHTML = `
+            // Step 4: Quality Analysis & File Size Impact
+            const step4 = document.createElement('div');
+            step4.className = 'process-step';
+            
+            // Create actual MSE/PSNR calculations if we have real data
+            let mseExampleHtml = '';
+            let psnrResultsHtml = '';
+            let actualMetricsHtml = '';
+            
+            if (originalPixelSample && watermarkedPixelSample && actualMSE !== undefined) {
+                const orig = originalPixelSample;
+                const watermarked = watermarkedPixelSample;
+                
+                // Calculate MSE for the specific pixel example
+                const rDiff = watermarked.rgb[0] - orig.rgb[0];
+                const gDiff = watermarked.rgb[1] - orig.rgb[1];
+                const bDiff = watermarked.rgb[2] - orig.rgb[2];
+                const pixelMSE = ((rDiff * rDiff) + (gDiff * gDiff) + (bDiff * bDiff)) / 3;
+                
+                mseExampleHtml = `
+                    <div class="formula-explanation">
+                        <div class="formula-title">📊 Mean Squared Error (MSE) - Perhitungan Aktual</div>
+                        <div class="formula-content">
+                            MSE = (1/N) × Σ(Original - Watermarked)²<br>
+                            <br>
+                            N = Total pixel dalam gambar<br>
+                            Untuk setiap pixel: (R₁-R₂)² + (G₁-G₂)² + (B₁-B₂)²<br>
+                            <br>
+                            <strong>Perhitungan aktual untuk pixel (${orig.position[0]}, ${orig.position[1]}):</strong><br>
+                            Original: R=${orig.rgb[0]}, G=${orig.rgb[1]}, B=${orig.rgb[2]}<br>
+                            Watermarked: R=${watermarked.rgb[0]}, G=${watermarked.rgb[1]}, B=${watermarked.rgb[2]}<br>
+                            <br>
+                            MSE pixel = [(${orig.rgb[0]}-${watermarked.rgb[0]})² + (${orig.rgb[1]}-${watermarked.rgb[1]})² + (${orig.rgb[2]}-${watermarked.rgb[2]})²] / 3<br>
+                            MSE pixel = [${rDiff}² + ${gDiff}² + ${bDiff}²] / 3<br>
+                            MSE pixel = [${rDiff * rDiff} + ${gDiff * gDiff} + ${bDiff * bDiff}] / 3 = ${pixelMSE.toFixed(6)}<br>
+                            <br>
+                            <strong>MSE rata-rata seluruh gambar: ${actualMSE.toFixed(6)}</strong>
+                        </div>
+                    </div>
+                `;
+                
+                // PSNR calculation with actual values
+                let psnrValue = actualPSNR;
+                let psnrDisplay = '';
+                let qualityAssessment = '';
+                
+                if (typeof actualPSNR === 'string' && actualPSNR === 'Infinity') {
+                    psnrDisplay = '∞ (Infinite)';
+                    qualityAssessment = 'Perfect - Tidak ada perbedaan';
+                } else if (typeof actualPSNR === 'number') {
+                    psnrDisplay = `${actualPSNR.toFixed(2)} dB`;
+                    if (actualPSNR > 40) {
+                        qualityAssessment = 'Excellent (Sangat Baik Sekali)';
+                    } else if (actualPSNR > 30) {
+                        qualityAssessment = 'Very Good (Sangat Baik)';
+                    } else if (actualPSNR > 20) {
+                        qualityAssessment = 'Good (Baik)';
+                    } else {
+                        qualityAssessment = 'Poor (Kurang Baik)';
+                    }
+                }
+                
+                psnrResultsHtml = `
+                    <div class="formula-explanation">
+                        <div class="formula-title">📈 Peak Signal-to-Noise Ratio (PSNR) - Hasil Aktual</div>
+                        <div class="formula-content">
+                            PSNR = 20 × log₁₀(MAX²/MSE)<br>
+                            MAX = 255 (nilai maksimum pixel)<br>
+                            <br>
+                            PSNR = 20 × log₁₀(255²/${actualMSE.toFixed(6)})<br>
+                            PSNR = 20 × log₁₀(${(255*255).toLocaleString()}/${actualMSE.toFixed(6)})<br>
+                            <br>
+                            <strong>PSNR Aktual: ${psnrDisplay}</strong><br>
+                            <strong>Kualitas: ${qualityAssessment}</strong><br>
+                            <br>
+                            <strong>Interpretasi Standar:</strong><br>
+                            • PSNR > 40 dB: Excellent (Sangat Baik Sekali)<br>
+                            • PSNR > 30 dB: Very Good (Sangat Baik)<br>
+                            • PSNR > 20 dB: Good (Baik)<br>
+                            • PSNR < 20 dB: Poor (Kurang Baik)
+                        </div>
+                    </div>
+                `;
+                
+                actualMetricsHtml = `
+                    <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; border-left: 4px solid #0369a1; margin-top: 15px;">
+                        <strong>📊 Hasil Metrik Kualitas Aktual:</strong><br>
+                        • MSE: ${actualMSE.toFixed(6)}<br>
+                        • PSNR: ${psnrDisplay}<br>
+                        • Kualitas: <span style="color: ${actualPSNR > 30 ? '#059669' : actualPSNR > 20 ? '#d97706' : '#dc2626'};">${qualityAssessment}</span><br>
+                        • Steganografi berhasil dengan dampak visual minimal
+                    </div>
+                `;
+            } else {
+                // Fallback to generic formulas if no actual data available
+                mseExampleHtml = `
+                    <div class="formula-explanation">
+                        <div class="formula-title">📊 Mean Squared Error (MSE)</div>
+                        <div class="formula-content">
+                            MSE = (1/N) × Σ(Original - Watermarked)²<br>
+                            <br>
+                            N = Total pixel dalam gambar<br>
+                            Untuk setiap pixel: (R₁-R₂)² + (G₁-G₂)² + (B₁-B₂)²<br>
+                            <br>
+                            <em>Data pixel spesifik tidak tersedia untuk perhitungan contoh</em>
+                        </div>
+                    </div>
+                `;
+                
+                psnrResultsHtml = `
+                    <div class="formula-explanation">
+                        <div class="formula-title">📈 Peak Signal-to-Noise Ratio (PSNR)</div>
+                        <div class="formula-content">
+                            PSNR = 20 × log₁₀(MAX²/MSE)<br>
+                            MAX = 255 (nilai maksimum pixel)<br>
+                            <br>
+                            <strong>Interpretasi Kualitas:</strong><br>
+                            • PSNR > 40 dB: Excellent (Sangat Baik Sekali)<br>
+                            • PSNR > 30 dB: Very Good (Sangat Baik)<br>
+                            • PSNR > 20 dB: Good (Baik)<br>
+                            • PSNR < 20 dB: Poor (Kurang Baik)
+                        </div>
+                    </div>
+                `;
+            }
+            
+            step4.innerHTML = `
                 <div class="step-header">
-                    <span class="step-badge">STEP 5</span>
+                    <span class="step-badge">STEP 4</span>
                     <span class="step-title">Analisis Kualitas & Dampak Ukuran File</span>
                 </div>
                 <p>Mengukur dampak penyisipan terhadap kualitas gambar dan ukuran file menggunakan MSE, PSNR, dan analisis size.</p>
                 
-                <div class="formula-explanation">
-                    <div class="formula-title">📊 Mean Squared Error (MSE)</div>
-                    <div class="formula-content">
-                        MSE = (1/N) × Σ(Original - Watermarked)²<br>
-                        <br>
-                        N = Total pixel dalam gambar<br>
-                        Untuk setiap pixel: (R₁-R₂)² + (G₁-G₂)² + (B₁-B₂)²<br>
-                        <br>
-                        <strong>Contoh perhitungan 1 pixel:</strong><br>
-                        Original: R=120, G=85, B=200<br>
-                        Watermarked: R=120, G=85, B=201<br>
-                        <br>
-                        MSE pixel = [(120-120)² + (85-85)² + (200-201)²] / 3<br>
-                        MSE pixel = [0 + 0 + 1] / 3 = 0.333
-                    </div>
-                </div>
-                
-                <div class="formula-explanation">
-                    <div class="formula-title">📈 Peak Signal-to-Noise Ratio (PSNR)</div>
-                    <div class="formula-content">
-                        PSNR = 20 × log₁₀(MAX²/MSE)<br>
-                        MAX = 255 (nilai maksimum pixel)<br>
-                        <br>
-                        PSNR = 20 × log₁₀(255²/MSE)<br>
-                        PSNR = 20 × log₁₀(65025/MSE)<br>
-                        <br>
-                        <strong>Interpretasi Kualitas:</strong><br>
-                        • PSNR > 40 dB: Excellent (Sangat Baik Sekali)<br>
-                        • PSNR > 30 dB: Very Good (Sangat Baik)<br>
-                        • PSNR > 20 dB: Good (Baik)<br>
-                        • PSNR < 20 dB: Poor (Kurang Baik)
-                    </div>
-                </div>
+                ${mseExampleHtml}
+                ${psnrResultsHtml}
+                ${actualMetricsHtml}
                 
                 <div class="formula-explanation">
                     <div class="formula-title">📁 Analisis Dampak Ukuran File</div>
@@ -2431,8 +3603,10 @@
                         &gt; 5%: Detectable changes
                     </div>
                 </div>
+                
+                ${getImageComparisonHtml(processedImages, imageCapacity, bitsEmbedded, pixelsModified)}
             `;
-            container.appendChild(step5);
+            container.appendChild(step4);
             
             // Show the detailed process
             document.getElementById('detailedProcess').style.display = 'block';
@@ -2576,6 +3750,43 @@
                     ` : ''}
                 </div>
             `;
+        }
+
+        // CRC32 Accordion Toggle Function
+        function toggleCRC32Explanation() {
+            const content = document.getElementById('crc32Explanation');
+            const chevron = document.querySelector('.crc32-chevron');
+            const header = document.querySelector('.crc32-accordion-header');
+            
+            if (content.style.display === 'none' || content.style.display === '') {
+                // Show content
+                content.style.display = 'block';
+                setTimeout(() => {
+                    content.style.opacity = '1';
+                    content.style.transform = 'translateY(0)';
+                }, 10);
+                
+                // Rotate chevron
+                chevron.style.transform = 'rotate(180deg)';
+                
+                // Change header background to indicate active state
+                header.style.background = '#e0f2fe';
+                header.style.borderColor = '#0ea5e9';
+            } else {
+                // Hide content
+                content.style.opacity = '0';
+                content.style.transform = 'translateY(-10px)';
+                setTimeout(() => {
+                    content.style.display = 'none';
+                }, 300);
+                
+                // Reset chevron
+                chevron.style.transform = 'rotate(0deg)';
+                
+                // Reset header background
+                header.style.background = '#f8fafc';
+                header.style.borderColor = '#e5e7eb';
+            }
         }
 
         // File upload label updates
@@ -2931,17 +4142,29 @@
                     // Display file size information if available
                     if (result.file_size_info) {
                         const sizeInfo = result.file_size_info;
-                        addLogEntry('embedLog', `📏 Ukuran file asli: ${sizeInfo.original_size_kb.toFixed(2)} KB`, 'info');
-                        addLogEntry('embedLog', `📏 Ukuran file watermark: ${sizeInfo.watermarked_size_kb.toFixed(2)} KB`, 'info');
-                        addLogEntry('embedLog', `📈 Perubahan ukuran: ${sizeInfo.size_change_percentage > 0 ? '+' : ''}${sizeInfo.size_change_percentage.toFixed(2)}% (${sizeInfo.size_difference > 0 ? '+' : ''}${sizeInfo.size_difference} bytes)`, 'info');
                         
-                        if (Math.abs(sizeInfo.size_change_percentage) < 1) {
+                        // Safe access to formatted values with fallback
+                        const originalFormatted = sizeInfo.original && sizeInfo.original.formatted ? 
+                            sizeInfo.original.formatted : `${sizeInfo.original?.bytes || 0} bytes`;
+                        const processedFormatted = sizeInfo.processed && sizeInfo.processed.formatted ? 
+                            sizeInfo.processed.formatted : `${sizeInfo.processed?.bytes || 0} bytes`;
+                        const sizeChange = sizeInfo.size_change || 'Tidak berubah';
+                        
+                        addLogEntry('embedLog', `📏 Ukuran file asli: ${originalFormatted}`, 'info');
+                        addLogEntry('embedLog', `📏 Ukuran file watermark: ${processedFormatted}`, 'info');
+                        addLogEntry('embedLog', `📈 Perubahan ukuran: ${sizeChange}`, 'info');
+                        
+                        const diffPercentage = sizeInfo.difference_percentage || 0;
+                        if (Math.abs(diffPercentage) < 1) {
                             addLogEntry('embedLog', '✅ Perubahan ukuran sangat kecil (<1%) - steganografi berhasil!', 'success');
-                        } else if (Math.abs(sizeInfo.size_change_percentage) < 5) {
+                        } else if (Math.abs(diffPercentage) < 5) {
                             addLogEntry('embedLog', '✅ Perubahan ukuran kecil (<5%) - steganografi baik', 'success');
                         } else {
                             addLogEntry('embedLog', '⚠️ Perubahan ukuran signifikan (>5%)', 'warning');
                         }
+                        
+                        // Display visual file size comparison
+                        displayFileSizeComparison('embedProcess', result.file_size_info);
                     }
                     
                     // Display QR analysis if available
@@ -3052,7 +4275,7 @@
                     
                     // Display detailed process explanation for first image
                     addLogEntry('embedLog', '🔬 Generating detailed process analysis...', 'info');
-                    displayDetailedProcess(result.log, result.qr_info, result.processed_images, result.file_type, result.pdf_info);
+                    displayDetailedProcess(result.log, result.qr_info, result.processed_images, result.file_type, result.pdf_info, result.file_size_info);
                     
                     // Display LSB comparison if pixel analysis is available
                     if (result.processed_images && result.processed_images.length > 0) {
@@ -3139,6 +4362,13 @@
                 if (result.success) {
                     addLogEntry('validateLog', '✅ Proses validasi berhasil!', 'success');
                     addLogEntry('validateLog', `🔍 QR Code ditemukan: ${result.extracted_qrs ? result.extracted_qrs.length : 0}`, 'success');
+                    
+                    // Display file size information if available
+                    if (result.original_file_size) {
+                        const fileSizeFormatted = result.original_file_size.formatted || 
+                            `${result.original_file_size.bytes || 0} bytes`;
+                        addLogEntry('validateLog', `📏 Ukuran dokumen: ${fileSizeFormatted}`, 'info');
+                    }
                     
                     let alertMessage = result.message;
                     if (result.file_type === 'pdf' && result.pdf_info) {

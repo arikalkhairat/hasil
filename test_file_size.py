@@ -98,12 +98,7 @@ def test_file_size_analysis():
                 else:
                     print("   🔴 WARNING: Perubahan ukuran signifikan (>5%)")
                 
-                # Verifikasi manual ukuran file
-                if os.path.exists(output_docx):
-                    actual_watermarked_size = os.path.getsize(output_docx)
-                    print(f"\n5. VERIFIKASI MANUAL:")
-                    print(f"   📏 Ukuran file watermark (manual check): {actual_watermarked_size:,} bytes")
-                    print(f"   ✅ Konsistensi data: {'OK' if actual_watermarked_size == size_info['watermarked_size'] else 'ERROR'}")
+
             else:
                 print("   ❌ Informasi ukuran file tidak tersedia dalam hasil")
         else:
@@ -114,8 +109,8 @@ def test_file_size_analysis():
         print(f"   ❌ Error saat embedding: {str(e)}")
         return False
     
-    # 6. Analisis perbandingan dengan file sistem
-    print(f"\n6. PERBANDINGAN SISTEM FILE:")
+    # 5. Analisis perbandingan dengan file sistem dan verifikasi
+    print(f"\n5. VERIFIKASI & PERBANDINGAN SISTEM FILE:")
     if os.path.exists(test_docx) and os.path.exists(output_docx):
         system_original = os.path.getsize(test_docx)
         system_watermarked = os.path.getsize(output_docx)
@@ -125,9 +120,15 @@ def test_file_size_analysis():
         print(f"   📁 Original (sistem): {system_original:,} bytes")
         print(f"   📁 Watermarked (sistem): {system_watermarked:,} bytes")
         print(f"   📊 Perubahan (sistem): {system_diff:+,} bytes ({system_percent:+.3f}%)")
+        
+        # Verifikasi konsistensi data dengan hasil fungsi
+        if "file_size_info" in result:
+            size_info = result["file_size_info"]
+            consistency_check = system_watermarked == size_info['watermarked_size']
+            print(f"   ✅ Konsistensi data fungsi vs sistem: {'OK' if consistency_check else 'ERROR'}")
     
     # Cleanup
-    print(f"\n7. Pembersihan file test...")
+    print(f"\n6. Pembersihan file test...")
     for file_path in [test_docx, qr_path, output_docx]:
         if os.path.exists(file_path):
             os.remove(file_path)

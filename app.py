@@ -41,6 +41,83 @@ def allowed_file(filename, allowed_extensions):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
 
 
+def get_file_size_info(file_path):
+    """
+    Mendapatkan informasi ukuran file dalam berbagai format.
+    
+    Args:
+        file_path (str): Path ke file yang akan dianalisis
+    
+    Returns:
+        dict: Informasi ukuran file dalam bytes, KB, MB
+    """
+    if not os.path.exists(file_path):
+        return {"bytes": 0, "kb": 0, "mb": 0, "formatted": "File tidak ditemukan"}
+    
+    size_bytes = os.path.getsize(file_path)
+    size_kb = size_bytes / 1024
+    size_mb = size_bytes / (1024 * 1024)
+    
+    # Format yang mudah dibaca
+    if size_mb >= 1:
+        formatted_size = f"{size_mb:.2f} MB"
+    elif size_kb >= 1:
+        formatted_size = f"{size_kb:.2f} KB"
+    else:
+        formatted_size = f"{size_bytes} bytes"
+    
+    return {
+        "bytes": size_bytes,
+        "kb": round(size_kb, 2),
+        "mb": round(size_mb, 2),
+        "formatted": formatted_size
+    }
+
+
+def calculate_file_size_comparison(original_path, processed_path):
+    """
+    Membandingkan ukuran file sebelum dan sesudah proses.
+    
+    Args:
+        original_path (str): Path file asli
+        processed_path (str): Path file hasil proses
+    
+    Returns:
+        dict: Informasi perbandingan ukuran file
+    """
+    original_info = get_file_size_info(original_path)
+    processed_info = get_file_size_info(processed_path)
+    
+    if original_info["bytes"] == 0 or processed_info["bytes"] == 0:
+        return {
+            "original": original_info,
+            "processed": processed_info,
+            "difference_bytes": 0,
+            "difference_percentage": 0,
+            "size_change": "Tidak dapat menghitung"
+        }
+    
+    # Hitung selisih
+    difference_bytes = processed_info["bytes"] - original_info["bytes"]
+    difference_percentage = (difference_bytes / original_info["bytes"]) * 100
+    
+    # Tentukan jenis perubahan
+    if difference_bytes > 0:
+        size_change = f"Bertambah {abs(difference_percentage):.2f}%"
+    elif difference_bytes < 0:
+        size_change = f"Berkurang {abs(difference_percentage):.2f}%"
+    else:
+        size_change = "Tidak berubah"
+    
+    return {
+        "original": original_info,
+        "processed": processed_info,
+        "difference_bytes": difference_bytes,
+        "difference_percentage": round(difference_percentage, 2),
+        "size_change": size_change
+    }
+
+
 def run_main_script(args):
     """Menjalankan skrip main.py dan menangkap output."""
     command = ['python', MAIN_SCRIPT_PATH] + args
@@ -224,6 +301,9 @@ def embed_docx_route():
     qr_temp_path = os.path.join(app.config['UPLOAD_FOLDER'], qr_embed_filename)
     docx_file.save(docx_temp_path)
     qr_file.save(qr_temp_path)
+
+    # Simpan ukuran file asli sebelum diproses
+    original_file_size = get_file_size_info(docx_temp_path)
 
     file_extension = docx_file.filename.rsplit('.', 1)[1].lower()
     stego_docx_filename = f"stego_doc_{uuid.uuid4().hex}.{file_extension}"
@@ -471,11 +551,111 @@ def embed_docx_route():
         except Exception as e:
             print(f"[!] Warning: Tidak dapat membaca data QR Code: {str(e)}")
 
+        # Hitung perbandingan ukuran file sebelum menghapus file temporary
+        processed_size_info = get_file_size_info(stego_docx_output_path)
+        
+        # Hitung selisih
+        size_difference = processed_size_info["bytes"] - original_file_size["bytes"]
+        size_change_percentage = (size_difference / original_file_size["bytes"]) * 100 if original_file_size["bytes"] > 0 else 0
+        
+        # Format perubahan
+        if size_difference > 0:
+            size_change_text = f"Bertambah {abs(size_change_percentage):.2f}%"
+        elif size_difference < 0:
+            size_change_text = f"Berkurang {abs(size_change_percentage):.2f}%"
+        else:
+            size_change_text = "Tidak berubah"
+
+        file_size_info = {
+            "original": original_file_size,
+            "processed": processed_size_info,
+            "difference_bytes": size_difference,
+            "difference_percentage": round(size_change_percentage, 2),
+            "size_change": size_change_text
+        }
+
         # Hapus file temporary setelah perhitungan metrik
         if os.path.exists(docx_temp_path):
             os.remove(docx_temp_path)
         if os.path.exists(qr_temp_path):
             os.remove(qr_temp_path)
+
+        # Hitung informasi ukuran file
+        original_size_info = {
+            "bytes": docx_file.content_length or 0,
+            "kb": round((docx_file.content_length or 0) / 1024, 2),
+            "mb": round((docx_file.content_length or 0) / (1024 * 1024), 2),
+            "formatted": f"{(docx_file.content_length or 0) / 1024:.2f} KB" if (docx_file.content_length or 0) >= 1024 else f"{docx_file.content_length or 0} bytes"
+        }
+        
+        # Informasi file hasil
+        processed_size_info = get_file_size_info(stego_docx_output_path)
+        
+        # Hitung perbandingan ukuran file
+        original_bytes = original_size_info["bytes"]
+        processed_bytes = processed_size_info["bytes"]
+        difference_bytes = processed_bytes - original_bytes
+        
+        if original_bytes > 0:
+            difference_percentage = (difference_bytes / original_bytes) * 100
+        else:
+            difference_percentage = 0
+            
+        # Tentukan jenis perubahan
+        if difference_bytes > 0:
+            change_type = "increase"
+            change_text = f"+{abs(difference_bytes)} bytes (+{abs(difference_percentage):.2f}%)"
+        elif difference_bytes < 0:
+            change_type = "decrease"
+            change_text = f"-{abs(difference_bytes)} bytes (-{abs(difference_percentage):.2f}%)"
+        else:
+            change_type = "no-change"
+            change_text = "Tidak ada perubahan ukuran"
+        
+        # Quality assessment berdasarkan persentase perubahan
+        if abs(difference_percentage) < 1:
+            quality = "Excellent"
+            quality_color = "success"
+        elif abs(difference_percentage) < 5:
+            quality = "Good"
+            quality_color = "success"
+        elif abs(difference_percentage) < 10:
+            quality = "Fair"
+            quality_color = "warning"
+        else:
+            quality = "Poor"
+            quality_color = "error"
+            
+        file_size_comparison = {
+            "original": original_size_info,
+            "processed": processed_size_info,
+            "difference_bytes": difference_bytes,
+            "difference_percentage": round(difference_percentage, 2),
+            "change_type": change_type,
+            "change_text": change_text,
+            "quality": quality,
+            "quality_color": quality_color
+        }
+        
+        # Hitung selisih
+        size_difference = processed_size_info["bytes"] - original_size_info["bytes"]
+        size_change_percentage = (size_difference / original_size_info["bytes"]) * 100 if original_size_info["bytes"] > 0 else 0
+        
+        # Format perubahan
+        if size_difference > 0:
+            size_change_text = f"Bertambah {abs(size_change_percentage):.2f}%"
+        elif size_difference < 0:
+            size_change_text = f"Berkurang {abs(size_change_percentage):.2f}%"
+        else:
+            size_change_text = "Tidak berubah"
+
+        file_size_info = {
+            "original": original_size_info,
+            "processed": processed_size_info,
+            "difference_bytes": size_difference,
+            "difference_percentage": round(size_change_percentage, 2),
+            "size_change": size_change_text
+        }
 
         response_data = {
             "success": True,
@@ -497,7 +677,8 @@ def embed_docx_route():
                 "detailed_metrics": detailed_metrics
             },
             "file_type": "pdf" if is_pdf else "docx",
-            "original_filename": docx_file.filename
+            "original_filename": docx_file.filename,
+            "file_size_info": file_size_info
         }
         
         # Tambahkan informasi ukuran file jika tersedia dari process_result
@@ -550,6 +731,9 @@ def extract_docx_route():
     docx_validate_filename = f"doc_extract_in_{uuid.uuid4().hex}.{file_extension}"
     docx_temp_path = os.path.join(app.config['UPLOAD_FOLDER'], docx_validate_filename)
     docx_file.save(docx_temp_path)
+
+    # Simpan ukuran file untuk informasi
+    original_file_size = get_file_size_info(docx_temp_path)
 
     extraction_id = uuid.uuid4().hex
     output_extraction_dir_name = f"extraction_{extraction_id}"
@@ -604,7 +788,8 @@ def extract_docx_route():
             "message": f"Proses ekstraksi {'PDF' if is_pdf else 'dokumen'} selesai.",
             "extracted_qrs": extracted_qrs_info,
             "log": result["stdout"],
-            "file_type": "pdf" if is_pdf else "docx"
+            "file_type": "pdf" if is_pdf else "docx",
+            "original_file_size": original_file_size
         }
         
         # Tambahkan informasi PDF jika relevan
