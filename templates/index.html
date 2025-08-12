@@ -1356,6 +1356,46 @@
             color: var(--text-primary);
         }
 
+        /* Accordion Styles */
+        .accordion-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 5px 0;
+        }
+
+        .accordion-header:hover {
+            color: var(--primary-color);
+        }
+
+        .accordion-toggle {
+            transition: transform 0.3s ease;
+            color: var(--primary-color);
+            transform: rotate(-90deg);
+        }
+
+        .accordion-toggle.expanded {
+            transform: rotate(0deg);
+        }
+
+        .accordion-content {
+            overflow: hidden;
+            transition: max-height 0.3s ease, opacity 0.3s ease;
+            max-height: 0;
+            opacity: 0;
+            margin: 0;
+            padding: 0;
+        }
+
+        .accordion-content.expanded {
+            max-height: 1000px;
+            opacity: 1;
+            margin: 10px 0;
+            padding: 15px 0;
+        }
+
         .bit-visualization {
             background: #f1f5f9;
             border-radius: 6px;
@@ -3232,39 +3272,42 @@
             const step1 = document.createElement('div');
             step1.className = 'process-step';
             step1.innerHTML = `
-                <div class="step-header">
+                <div class="step-header accordion-header" onclick="toggleAccordion('step1-content')">
                     <span class="step-badge">STEP 1</span>
                     <span class="step-title">Analisis Gambar Cover</span>
+                    <i class="fas fa-chevron-down accordion-toggle" id="step1-toggle"></i>
                 </div>
-                <p>Menganalisis gambar yang akan dijadikan media penyimpanan watermark.</p>
-                
-                <div class="capacity-analysis">
-                    <div class="capacity-item">
-                        <div class="capacity-value">RGB</div>
-                        <div class="capacity-label">Format Warna</div>
+                <div id="step1-content" class="accordion-content">
+                    <p>Menganalisis gambar yang akan dijadikan media penyimpanan watermark.</p>
+                    
+                    <div class="capacity-analysis">
+                        <div class="capacity-item">
+                            <div class="capacity-value">RGB</div>
+                            <div class="capacity-label">Format Warna</div>
+                        </div>
+                        <div class="capacity-item">
+                            <div class="capacity-value">${estimatedDim}</div>
+                            <div class="capacity-label">Est. Lebar (px)</div>
+                        </div>
+                        <div class="capacity-item">
+                            <div class="capacity-value">${estimatedDim}</div>
+                            <div class="capacity-label">Est. Tinggi (px)</div>
+                        </div>
+                        <div class="capacity-item">
+                            <div class="capacity-value">${imageCapacity.toLocaleString()}</div>
+                            <div class="capacity-label">Kapasitas (bit)</div>
+                        </div>
                     </div>
-                    <div class="capacity-item">
-                        <div class="capacity-value">${estimatedDim}</div>
-                        <div class="capacity-label">Est. Lebar (px)</div>
-                    </div>
-                    <div class="capacity-item">
-                        <div class="capacity-value">${estimatedDim}</div>
-                        <div class="capacity-label">Est. Tinggi (px)</div>
-                    </div>
-                    <div class="capacity-item">
-                        <div class="capacity-value">${imageCapacity.toLocaleString()}</div>
-                        <div class="capacity-label">Kapasitas (bit)</div>
-                    </div>
-                </div>
-                
-                <div class="formula-explanation">
-                    <div class="formula-title">📐 Kapasitas Penyimpanan</div>
-                    <div class="formula-content">
-                        Kapasitas = Lebar × Tinggi × 1 bit (LSB Blue channel)<br>
-                        Kapasitas = ${estimatedDim} × ${estimatedDim} = ${imageCapacity.toLocaleString()} bit<br>
-                        <br>
-                        Hanya menggunakan Blue channel LSB untuk steganography<br>
-                        Sehingga kapasitas = jumlah pixel = lebar × tinggi
+                    
+                    <div class="formula-explanation">
+                        <div class="formula-title">📐 Kapasitas Penyimpanan</div>
+                        <div class="formula-content">
+                            Kapasitas = Lebar × Tinggi × 1 bit (LSB Blue channel)<br>
+                            Kapasitas = ${estimatedDim} × ${estimatedDim} = ${imageCapacity.toLocaleString()} bit<br>
+                            <br>
+                            Hanya menggunakan Blue channel LSB untuk steganography<br>
+                            Sehingga kapasitas = jumlah pixel = lebar × tinggi
+                        </div>
                     </div>
                 </div>
             `;
@@ -3285,42 +3328,45 @@
             }
             
             step2.innerHTML = `
-                <div class="step-header">
+                <div class="step-header accordion-header" onclick="toggleAccordion('step2-content')">
                     <span class="step-badge">STEP 2</span>
                     <span class="step-title">Persiapan QR Code</span>
+                    <i class="fas fa-chevron-down accordion-toggle" id="step2-toggle"></i>
                 </div>
-                <p>Menganalisis dan mempersiapkan QR Code untuk disisipkan.</p>
-                
-                ${resizeHtml}
-                
-                <div class="capacity-analysis">
-                    <div class="capacity-item">
-                        <div class="capacity-value">${newQRSize.width}</div>
-                        <div class="capacity-label">Lebar QR (px)</div>
+                <div id="step2-content" class="accordion-content">
+                    <p>Menganalisis dan mempersiapkan QR Code untuk disisipkan.</p>
+                    
+                    ${resizeHtml}
+                    
+                    <div class="capacity-analysis">
+                        <div class="capacity-item">
+                            <div class="capacity-value">${newQRSize.width}</div>
+                            <div class="capacity-label">Lebar QR (px)</div>
+                        </div>
+                        <div class="capacity-item">
+                            <div class="capacity-value">${newQRSize.height}</div>
+                            <div class="capacity-label">Tinggi QR (px)</div>
+                        </div>
+                        <div class="capacity-item">
+                            <div class="capacity-value">${(newQRSize.width * newQRSize.height).toLocaleString()}</div>
+                            <div class="capacity-label">Bit QR Data</div>
+                        </div>
+                        <div class="capacity-item">
+                            <div class="capacity-value">40</div>
+                            <div class="capacity-label">Bit Header</div>
+                        </div>
                     </div>
-                    <div class="capacity-item">
-                        <div class="capacity-value">${newQRSize.height}</div>
-                        <div class="capacity-label">Tinggi QR (px)</div>
-                    </div>
-                    <div class="capacity-item">
-                        <div class="capacity-value">${(newQRSize.width * newQRSize.height).toLocaleString()}</div>
-                        <div class="capacity-label">Bit QR Data</div>
-                    </div>
-                    <div class="capacity-item">
-                        <div class="capacity-value">40</div>
-                        <div class="capacity-label">Bit Header</div>
-                    </div>
-                </div>
-                
-                <div class="formula-explanation">
-                    <div class="formula-title">📊 Kebutuhan Bit Total</div>
-                    <div class="formula-content">
-                        Bit QR = Lebar × Tinggi = ${newQRSize.width} × ${newQRSize.height} = ${(newQRSize.width * newQRSize.height).toLocaleString()} bit<br>
-                        Bit Header = 40 bit (informasi dimensi QR)<br>
-                        <br>
-                        <strong>Total Bit = ${(newQRSize.width * newQRSize.height).toLocaleString()} + 40 = ${((newQRSize.width * newQRSize.height) + 40).toLocaleString()} bit</strong><br>
-                        <br>
-                        Rasio Penggunaan = ${(((newQRSize.width * newQRSize.height) + 40) / imageCapacity * 100).toFixed(1)}% dari kapasitas
+                    
+                    <div class="formula-explanation">
+                        <div class="formula-title">📊 Kebutuhan Bit Total</div>
+                        <div class="formula-content">
+                            Bit QR = Lebar × Tinggi = ${newQRSize.width} × ${newQRSize.height} = ${(newQRSize.width * newQRSize.height).toLocaleString()} bit<br>
+                            Bit Header = 40 bit (informasi dimensi QR)<br>
+                            <br>
+                            <strong>Total Bit = ${(newQRSize.width * newQRSize.height).toLocaleString()} + 40 = ${((newQRSize.width * newQRSize.height) + 40).toLocaleString()} bit</strong><br>
+                            <br>
+                            Rasio Penggunaan = ${(((newQRSize.width * newQRSize.height) + 40) / imageCapacity * 100).toFixed(1)}% dari kapasitas
+                        </div>
                     </div>
                 </div>
             `;
@@ -3435,15 +3481,18 @@
             const matrix3x3Html = render3x3MatrixHtml(matrix3x3Data);
             
             step3.innerHTML = `
-                <div class="step-header">
+                <div class="step-header accordion-header" onclick="toggleAccordion('step3-content')">
                     <span class="step-badge">STEP 3</span>
                     <span class="step-title">Proses LSB Embedding</span>
+                    <i class="fas fa-chevron-down accordion-toggle" id="step3-toggle"></i>
                 </div>
-                <p>Menyisipkan bit watermark ke dalam LSB (Least Significant Bit) channel biru.</p>
-                
-                ${pixelExampleHtml}
-                ${matrix3x3Html}
-                ${actualStatsHtml}
+                <div id="step3-content" class="accordion-content">
+                    <p>Menyisipkan bit watermark ke dalam LSB (Least Significant Bit) channel biru.</p>
+                    
+                    ${pixelExampleHtml}
+                    ${matrix3x3Html}
+                    ${actualStatsHtml}
+                </div>
             `;
             container.appendChild(step3);
             
@@ -3574,37 +3623,40 @@
             }
             
             step4.innerHTML = `
-                <div class="step-header">
+                <div class="step-header accordion-header" onclick="toggleAccordion('step4-content')">
                     <span class="step-badge">STEP 4</span>
                     <span class="step-title">Analisis Kualitas & Dampak Ukuran File</span>
+                    <i class="fas fa-chevron-down accordion-toggle" id="step4-toggle"></i>
                 </div>
-                <p>Mengukur dampak penyisipan terhadap kualitas gambar dan ukuran file menggunakan MSE, PSNR, dan analisis size.</p>
-                
-                ${mseExampleHtml}
-                ${psnrResultsHtml}
-                ${actualMetricsHtml}
-                
-                <div class="formula-explanation">
-                    <div class="formula-title">📁 Analisis Dampak Ukuran File</div>
-                    <div class="formula-content">
-                        <strong>Faktor yang Mempengaruhi Ukuran File DOCX:</strong><br>
-                        • Komponen dokumen: XML structure, styles, metadata<br>
-                        • Gambar: Format, kompresi, resolusi<br>
-                        • Media assets: Fonts, themes, embedded objects<br>
-                        <br>
-                        <strong>LSB Steganography Impact:</strong><br>
-                        • Modifikasi LSB minimal mempengaruhi kompresi<br>
-                        • Perubahan ukuran biasanya &lt; 1%<br>
-                        • Steganografi yang baik: invisible & minimal size change<br>
-                        <br>
-                        <strong>Interpretasi Perubahan Ukuran:</strong><br>
-                        &lt; 1%: Excellent steganography<br>
-                        1-5%: Good steganography<br>
-                        &gt; 5%: Detectable changes
+                <div id="step4-content" class="accordion-content">
+                    <p>Mengukur dampak penyisipan terhadap kualitas gambar dan ukuran file menggunakan MSE, PSNR, dan analisis size.</p>
+                    
+                    ${mseExampleHtml}
+                    ${psnrResultsHtml}
+                    ${actualMetricsHtml}
+                    
+                    <div class="formula-explanation">
+                        <div class="formula-title">📁 Analisis Dampak Ukuran File</div>
+                        <div class="formula-content">
+                            <strong>Faktor yang Mempengaruhi Ukuran File DOCX:</strong><br>
+                            • Komponen dokumen: XML structure, styles, metadata<br>
+                            • Gambar: Format, kompresi, resolusi<br>
+                            • Media assets: Fonts, themes, embedded objects<br>
+                            <br>
+                            <strong>LSB Steganography Impact:</strong><br>
+                            • Modifikasi LSB minimal mempengaruhi kompresi<br>
+                            • Perubahan ukuran biasanya &lt; 1%<br>
+                            • Steganografi yang baik: invisible & minimal size change<br>
+                            <br>
+                            <strong>Interpretasi Perubahan Ukuran:</strong><br>
+                            &lt; 1%: Excellent steganography<br>
+                            1-5%: Good steganography<br>
+                            &gt; 5%: Detectable changes
+                        </div>
                     </div>
+                    
+                    ${getImageComparisonHtml(processedImages, imageCapacity, bitsEmbedded, pixelsModified)}
                 </div>
-                
-                ${getImageComparisonHtml(processedImages, imageCapacity, bitsEmbedded, pixelsModified)}
             `;
             container.appendChild(step4);
             
@@ -3786,6 +3838,25 @@
                 // Reset header background
                 header.style.background = '#f8fafc';
                 header.style.borderColor = '#e5e7eb';
+            }
+        }
+
+        // General Accordion Toggle Function
+        function toggleAccordion(contentId) {
+            const content = document.getElementById(contentId);
+            const toggleId = contentId.replace('-content', '-toggle');
+            const toggle = document.getElementById(toggleId);
+            
+            if (!content || !toggle) return;
+            
+            if (content.classList.contains('expanded')) {
+                // Hide content
+                content.classList.remove('expanded');
+                toggle.classList.remove('expanded');
+            } else {
+                // Show content
+                content.classList.add('expanded');
+                toggle.classList.add('expanded');
             }
         }
 
