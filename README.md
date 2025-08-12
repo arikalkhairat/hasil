@@ -153,6 +153,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Acknowledgements
 
-- Created by Arikal Sayangg
+- Created by Arikal Khairat
 - Built with Python, Flask, and modern web technologies
 - Uses LSB steganography techniques for secure watermarking 
