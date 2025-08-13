@@ -293,7 +293,9 @@ def embed_watermark_to_docx(docx_path: str, qr_path: str, output_path: str) -> d
                 processed_images.append({
                     "index": i,
                     "original": f"generated/{public_dir_name}/{original_public_name}",
-                    "watermarked": f"generated/{public_dir_name}/{watermarked_public_name}"
+                    "watermarked": f"generated/{public_dir_name}/{watermarked_public_name}",
+                    "original_path": original_public_path,
+                    "watermarked_path": watermarked_public_path
                 })
                 
             except Exception as e:
