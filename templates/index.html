@@ -1973,265 +1973,239 @@
             margin-bottom: 8px;
         }
 
-        /* LSB Comparison Styles */
-        .lsb-comparison-container {
-            margin-top: 25px;
-            padding: 20px;
+
+        /* Image Processing Progress Styles */
+        .images-processing-container {
             background: white;
             border-radius: 12px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin: 20px 0;
         }
-
-        .lsb-comparison-header {
+        
+        .processing-header {
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
-            padding: 15px 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+            padding: 20px;
             text-align: center;
         }
-
-        .lsb-comparison-header h4 {
-            margin: 0;
+        
+        .processing-header h4 {
+            margin: 0 0 15px 0;
             font-size: 1.3rem;
-            font-weight: 600;
         }
-
-        .lsb-comparison-grid {
+        
+        .processing-progress {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+        
+        .progress-fill {
+            background: #28a745;
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+        
+        .progress-text {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .image-loading-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            padding: 20px;
         }
-
-        .lsb-before, .lsb-after {
-            background: #f8f9ff;
+        
+        .image-loading-card {
+            background: #f8f9fa;
             border-radius: 8px;
-            padding: 15px;
-            border: 1px solid var(--border-color);
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            transition: transform 0.2s ease;
         }
-
-        .lsb-before {
-            border-left: 4px solid #e53e3e;
+        
+        .image-loading-card:hover {
+            transform: translateY(-2px);
         }
-
-        .lsb-after {
-            border-left: 4px solid #38a169;
+        
+        .image-loading-header {
+            background: white;
+            padding: 12px 15px;
+            border-bottom: 1px solid #e2e8f0;
         }
-
-        .lsb-section-title {
+        
+        .image-loading-title {
             font-weight: 600;
             color: var(--primary-color);
-            margin-bottom: 12px;
+            font-size: 0.95rem;
+            margin-bottom: 5px;
+        }
+        
+        .image-loading-status {
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+        
+        .image-loading-preview {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            padding: 15px;
+            background: white;
+        }
+        
+        .image-preview-item {
+            text-align: center;
+        }
+        
+        .image-preview-label {
+            font-size: 0.8rem;
+            color: #6c757d;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .loading-preview-img {
+            max-width: 100%;
+            max-height: 80px;
+            border-radius: 4px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .image-metrics-placeholder {
+            padding: 12px 15px;
+            background: #f8f9fa;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .metrics-loading {
+            display: flex;
+            justify-content: space-around;
+            gap: 10px;
+        }
+        
+        .metric-loading-item {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .metric-loading-label {
+            font-size: 0.75rem;
+            color: #6c757d;
+            margin-bottom: 4px;
+        }
+        
+        .metric-loading-spinner {
+            color: var(--primary-color);
+        }
+        
+        .metrics-completed {
+            display: flex;
+            justify-content: space-around;
+            gap: 10px;
+        }
+        
+        .metric-completed-item {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .metric-completed-item .metric-value {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        
+        .metric-completed-item .metric-label {
+            font-size: 0.7rem;
+            color: #6c757d;
+        }
+
+        /* Metrics Detail Accordion Styles */
+        .metrics-detail-accordion {
+            margin: 15px 0;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .metrics-accordion-header {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-bottom: 1px solid #e2e8f0;
+            padding: 12px 16px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .metrics-accordion-header:hover {
+            background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+        }
+
+        .metrics-accordion-title {
             display: flex;
             align-items: center;
             gap: 8px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
         }
 
-        .lsb-before .lsb-section-title {
-            color: #e53e3e;
-        }
-
-        .lsb-after .lsb-section-title {
-            color: #38a169;
-        }
-
-        .pixel-samples-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .pixel-sample-card {
-            background: white;
-            border-radius: 6px;
-            padding: 10px;
-            border: 1px solid #e2e8f0;
-            text-align: center;
-        }
-
-        .pixel-position {
-            font-size: 0.8rem;
-            color: #666;
-            margin-bottom: 6px;
-            font-family: 'Courier New', monospace;
-        }
-
-        .rgb-values {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-        }
-
-        .rgb-channel {
-            padding: 4px 6px;
-            border-radius: 3px;
-            font-size: 0.8rem;
-            font-family: 'Courier New', monospace;
-            color: white;
-            text-shadow: 1px 1px 1px rgba(0,0,0,0.5);
-        }
-
-        .rgb-channel.r {
-            background: #ef4444;
-        }
-
-        .rgb-channel.g {
-            background: #22c55e;
-        }
-
-        .rgb-channel.b {
-            background: #3b82f6;
-        }
-
-        .binary-representation {
-            font-family: 'Courier New', monospace;
-            font-size: 0.75rem;
-            margin-top: 6px;
-            padding: 4px 6px;
-            background: #f1f5f9;
-            border-radius: 3px;
-        }
-
-        .lsb-highlight {
-            background: #fef3c7;
-            padding: 1px 2px;
-            border-radius: 2px;
-            font-weight: bold;
-            border: 1px solid #f59e0b;
-        }
-
-        .lsb-changed {
-            background: #dcfce7;
-            padding: 1px 2px;
-            border-radius: 2px;
-            font-weight: bold;
-            border: 1px solid #22c55e;
-        }
-
-        .change-indicator {
-            font-size: 0.7rem;
-            margin-top: 4px;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-weight: bold;
-        }
-
-        .no-change {
-            background: #f3f4f6;
-            color: #6b7280;
-        }
-
-        .lsb-modified {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .comparison-summary {
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-            border-radius: 8px;
-            padding: 15px;
-            margin-top: 20px;
-            border: 1px solid #bae6fd;
-        }
-
-        .summary-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-        }
-
-        .summary-item {
-            background: white;
-            border-radius: 6px;
-            padding: 12px;
-            text-align: center;
-            border: 1px solid #e0f2fe;
-        }
-
-        .summary-value {
-            font-size: 1.2rem;
-            font-weight: 600;
+        .metrics-accordion-toggle {
             color: var(--primary-color);
-            margin-bottom: 4px;
-        }
-
-        .summary-label {
-            font-size: 0.85rem;
-            color: #64748b;
-        }
-
-        .bit-change-visualization {
-            margin-top: 15px;
-            background: white;
-            border-radius: 6px;
-            padding: 15px;
-            border: 1px solid #e2e8f0;
-        }
-
-        .bit-change-title {
-            font-weight: 600;
-            color: var(--primary-color);
-            margin-bottom: 10px;
+            transition: transform 0.3s ease;
             font-size: 0.9rem;
         }
 
-        .bit-change-row {
-            display: flex;
-            align-items: center;
-            margin-bottom: 8px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.85rem;
+        .metrics-accordion-toggle.expanded {
+            transform: rotate(180deg);
         }
 
-        .bit-label {
-            min-width: 80px;
-            font-weight: 600;
-            color: #374151;
+        .metrics-accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background: #fafbfc;
         }
 
-        .bit-original {
-            background: #fee2e2;
-            padding: 2px 6px;
-            border-radius: 3px;
-            margin-right: 10px;
-            border: 1px solid #fecaca;
+        .metrics-accordion-content.expanded {
+            max-height: 1000px;
+            padding: 16px;
         }
 
-        .bit-modified {
-            background: #dcfce7;
-            padding: 2px 6px;
-            border-radius: 3px;
-            border: 1px solid #bbf7d0;
-        }
-
-        .arrow-indicator {
-            margin: 0 8px;
-            color: var(--primary-color);
-            font-weight: bold;
+        .metrics-accordion-content .formula-explanation {
+            margin: 0;
+            background: white;
         }
 
         /* Mobile responsiveness */
         @media (max-width: 768px) {
-            .lsb-comparison-grid {
+
+            .image-loading-grid {
                 grid-template-columns: 1fr;
-                gap: 15px;
             }
-
-            .pixel-samples-grid {
-                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            
+            .metrics-accordion-header {
+                padding: 10px 12px;
             }
-
-            .summary-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .bit-change-row {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 4px;
+            
+            .metrics-accordion-title {
+                font-size: 0.9rem;
             }
         }
     </style>
@@ -2680,6 +2654,154 @@
             container.appendChild(sizeComparison);
         }
 
+        function showImageProcessingProgress(containerId, processedImages) {
+            const container = document.getElementById(containerId);
+            
+            if (!processedImages || processedImages.length === 0) {
+                container.innerHTML = `
+                    <div class="qr-slider-container">
+                        <div class="qr-slider-header">
+                            <h5><i class="fas fa-images"></i> Tidak ada gambar untuk diproses</h5>
+                        </div>
+                        <div class="qr-slider-empty">
+                            <i class="fas fa-images"></i>
+                            <p>Tidak ada gambar yang ditemukan</p>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            // Buat loading interface untuk setiap gambar
+            const loadingCardsHtml = processedImages.map((img, index) => `
+                <div class="image-loading-card" id="image-loading-${index}">
+                    <div class="image-loading-header">
+                        <div class="image-loading-title">
+                            <i class="fas fa-image"></i> Gambar ${index + 1}
+                        </div>
+                        <div class="image-loading-status" id="status-${index}">
+                            <i class="fas fa-spinner fa-spin"></i> Menghitung PSNR dan MSE...
+                        </div>
+                    </div>
+                    <div class="image-loading-preview">
+                        <div class="image-preview-item">
+                            <div class="image-preview-label">Asli</div>
+                            <img src="/static/${img.original}" alt="Original ${index + 1}" class="loading-preview-img">
+                        </div>
+                        <div class="image-preview-item">
+                            <div class="image-preview-label">Watermarked</div>
+                            <img src="/static/${img.watermarked}" alt="Watermarked ${index + 1}" class="loading-preview-img">
+                        </div>
+                    </div>
+                    <div class="image-metrics-placeholder" id="metrics-${index}">
+                        <div class="metrics-loading">
+                            <div class="metric-loading-item">
+                                <div class="metric-loading-label">MSE</div>
+                                <div class="metric-loading-spinner"><i class="fas fa-spinner fa-spin"></i></div>
+                            </div>
+                            <div class="metric-loading-item">
+                                <div class="metric-loading-label">PSNR</div>
+                                <div class="metric-loading-spinner"><i class="fas fa-spinner fa-spin"></i></div>
+                            </div>
+                            <div class="metric-loading-item">
+                                <div class="metric-loading-label">Kualitas</div>
+                                <div class="metric-loading-spinner"><i class="fas fa-spinner fa-spin"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            container.innerHTML = `
+                <div class="images-processing-container">
+                    <div class="processing-header">
+                        <h4><i class="fas fa-cog fa-spin"></i> Memproses ${processedImages.length} Gambar</h4>
+                        <div class="processing-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="overall-progress" style="width: 0%"></div>
+                            </div>
+                            <div class="progress-text" id="progress-text">0 / ${processedImages.length} selesai</div>
+                        </div>
+                    </div>
+                    <div class="image-loading-grid">
+                        ${loadingCardsHtml}
+                    </div>
+                </div>
+            `;
+
+            // Simulasi proses loading untuk setiap gambar
+            processedImages.forEach((img, index) => {
+                const hasMetrics = img.individual_metrics && 
+                    (img.individual_metrics.success || 
+                     img.individual_metrics.mse !== undefined || 
+                     img.individual_metrics.psnr !== undefined);
+
+                // Delay berbeda untuk setiap gambar (simulasi proses berurutan)
+                const delay = (index + 1) * 800; // 800ms per gambar
+                
+                setTimeout(() => {
+                    updateImageProgress(index, img, hasMetrics, processedImages.length);
+                }, delay);
+            });
+
+            // Setelah semua selesai, tampilkan hasil lengkap
+            setTimeout(() => {
+                displayImageComparison(containerId, processedImages);
+            }, (processedImages.length + 1) * 800 + 1000);
+        }
+
+        function updateImageProgress(imageIndex, imageData, hasMetrics, totalImages) {
+            const statusElement = document.getElementById(`status-${imageIndex}`);
+            const metricsElement = document.getElementById(`metrics-${imageIndex}`);
+            
+            if (hasMetrics) {
+                // Update status menjadi selesai
+                statusElement.innerHTML = '<i class="fas fa-check-circle" style="color: #28a745;"></i> Analisis selesai';
+                
+                // Update metrics dengan data real
+                const metrics = imageData.individual_metrics;
+                const mse = typeof metrics.mse === 'number' ? metrics.mse.toFixed(4) : 'N/A';
+                const psnr = metrics.psnr === Infinity ? '∞' : 
+                             (typeof metrics.psnr === 'number' ? metrics.psnr.toFixed(2) : 'N/A');
+                const quality = metrics.quality || 'Unknown';
+                
+                let qualityColor = '#28a745';
+                if (quality === 'Buruk') qualityColor = '#dc3545';
+                else if (quality === 'Cukup') qualityColor = '#ffc107';
+                else if (quality === 'Baik') qualityColor = '#17a2b8';
+                
+                metricsElement.innerHTML = `
+                    <div class="metrics-completed">
+                        <div class="metric-completed-item">
+                            <div class="metric-value" style="color: #e74c3c;">${mse}</div>
+                            <div class="metric-label">MSE</div>
+                        </div>
+                        <div class="metric-completed-item">
+                            <div class="metric-value" style="color: #3498db;">${psnr} dB</div>
+                            <div class="metric-label">PSNR</div>
+                        </div>
+                        <div class="metric-completed-item">
+                            <div class="metric-value" style="color: ${qualityColor};">${quality}</div>
+                            <div class="metric-label">Kualitas</div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                // Jika tidak ada metrics, tandai sebagai gagal
+                statusElement.innerHTML = '<i class="fas fa-exclamation-triangle" style="color: #ffc107;"></i> Metrics tidak tersedia';
+                metricsElement.innerHTML = '<div style="text-align: center; color: #6c757d; font-style: italic;">Data tidak tersedia</div>';
+            }
+            
+            // Update progress bar keseluruhan
+            const completedCount = imageIndex + 1;
+            const progressPercentage = (completedCount / totalImages) * 100;
+            const progressFill = document.getElementById('overall-progress');
+            const progressText = document.getElementById('progress-text');
+            
+            if (progressFill) progressFill.style.width = `${progressPercentage}%`;
+            if (progressText) progressText.textContent = `${completedCount} / ${totalImages} selesai`;
+        }
+
         function displayImageComparison(containerId, processedImages) {
             const container = document.getElementById(containerId);
             
@@ -2701,7 +2823,7 @@
             const slidesHtml = processedImages.map((img, index) => {
                 // Prepare metrics display
                 let metricsHtml = '';
-                if (img.individual_metrics && img.individual_metrics.success) {
+                if (img.individual_metrics && (img.individual_metrics.success || img.individual_metrics.mse !== undefined || img.individual_metrics.psnr !== undefined)) {
                     const metrics = img.individual_metrics;
                     const mse = typeof metrics.mse === 'number' ? metrics.mse.toFixed(4) : 'N/A';
                     const psnr = metrics.psnr === Infinity ? '∞' : 
@@ -2714,31 +2836,66 @@
                     else if (quality === 'Baik') qualityColor = '#17a2b8';
                     
                     metricsHtml = `
-                        <div class="metrics-display" style="margin-top: 15px; padding: 12px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid var(--primary-color);">
-                            <div class="metrics-header" style="font-weight: 600; color: var(--primary-color); margin-bottom: 8px;">
-                                <i class="fas fa-chart-line"></i> Analisis Kualitas Gambar ${index + 1}
+                        <div class="image-metrics-accordion" style="margin-top: 15px;">
+                            <div class="image-metrics-header" onclick="toggleImageMetrics('metrics-${index}')" style="
+                                background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+                                border: 1px solid #e2e8f0;
+                                border-radius: 8px 8px 0 0;
+                                padding: 12px 16px;
+                                cursor: pointer;
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+                                font-weight: 600;
+                                color: var(--primary-color);
+                                transition: all 0.3s ease;
+                            " onmouseover="this.style.background='linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%)'"
+                               onmouseout="this.style.background='linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)'">
+                                <span>
+                                    <i class="fas fa-chart-line"></i> Analisis Kualitas Gambar ${index + 1}
+                                </span>
+                                <i class="fas fa-chevron-down image-metrics-toggle" id="metrics-${index}-toggle" style="
+                                    color: var(--primary-color);
+                                    transition: transform 0.3s ease;
+                                "></i>
                             </div>
-                            <div class="metrics-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: center;">
-                                <div class="metric-item">
-                                    <div class="metric-value" style="font-size: 1.1rem; font-weight: 600; color: #e74c3c;">${mse}</div>
-                                    <div class="metric-label" style="font-size: 0.8rem; color: #666;">MSE</div>
+                            <div id="metrics-${index}" class="image-metrics-content" style="
+                                max-height: 0;
+                                overflow: hidden;
+                                transition: max-height 0.3s ease;
+                                background: #fafbfc;
+                                border: 1px solid #e2e8f0;
+                                border-top: none;
+                                border-radius: 0 0 8px 8px;
+                            ">
+                                <div style="padding: 16px;">
+                                    <div class="metrics-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: center; margin-bottom: 12px;">
+                                        <div class="metric-item">
+                                            <div class="metric-value" style="font-size: 1.1rem; font-weight: 600; color: #e74c3c;">${mse}</div>
+                                            <div class="metric-label" style="font-size: 0.8rem; color: #666;">MSE</div>
+                                        </div>
+                                        <div class="metric-item">
+                                            <div class="metric-value" style="font-size: 1.1rem; font-weight: 600; color: #3498db;">${psnr} dB</div>
+                                            <div class="metric-label" style="font-size: 0.8rem; color: #666;">PSNR</div>
+                                        </div>
+                                        <div class="metric-item">
+                                            <div class="metric-value" style="font-size: 1rem; font-weight: 600; color: ${qualityColor};">${quality}</div>
+                                            <div class="metric-label" style="font-size: 0.8rem; color: #666;">Kualitas</div>
+                                        </div>
+                                    </div>
+                                    <div class="metrics-explanation" style="font-size: 0.85rem; color: #666; text-align: center; padding: 8px; background: white; border-radius: 4px;">
+                                        ${mse !== 'N/A' && psnr !== 'N/A' ? 
+                                            `MSE lebih kecil = lebih baik • PSNR lebih besar = lebih baik` : 
+                                            'Metrics tidak tersedia untuk gambar ini'}
+                                    </div>
                                 </div>
-                                <div class="metric-item">
-                                    <div class="metric-value" style="font-size: 1.1rem; font-weight: 600; color: #3498db;">${psnr} dB</div>
-                                    <div class="metric-label" style="font-size: 0.8rem; color: #666;">PSNR</div>
-                                </div>
-                                <div class="metric-item">
-                                    <div class="metric-value" style="font-size: 1rem; font-weight: 600; color: ${qualityColor};">${quality}</div>
-                                    <div class="metric-label" style="font-size: 0.8rem; color: #666;">Kualitas</div>
-                                </div>
-                            </div>
-                            <div class="metrics-explanation" style="margin-top: 8px; font-size: 0.85rem; color: #666; text-align: center;">
-                                ${mse !== 'N/A' && psnr !== 'N/A' ? 
-                                    `MSE lebih kecil = lebih baik • PSNR lebih besar = lebih baik` : 
-                                    'Metrics tidak tersedia untuk gambar ini'}
                             </div>
                         </div>
                     `;
+                } else {
+                    // Jangan tampilkan apapun jika metrics belum tersedia
+                    // Hasil hanya ditampilkan setelah semua kalkulasi selesai
+                    metricsHtml = '';
                 }
                 
                 return `
@@ -3676,8 +3833,33 @@
                 <div id="step4-content" class="accordion-content">
                     <p>Mengukur dampak penyisipan terhadap kualitas gambar dan ukuran file menggunakan MSE, PSNR, dan analisis size.</p>
                     
-                    ${mseExampleHtml}
-                    ${psnrResultsHtml}
+                    <!-- MSE Detail Accordion -->
+                    <div class="metrics-detail-accordion">
+                        <div class="metrics-accordion-header" onclick="toggleMetricsDetail('mse-detail')">
+                            <span class="metrics-accordion-title">
+                                <i class="fas fa-calculator"></i> 📊 Detail Perhitungan MSE
+                            </span>
+                            <i class="fas fa-chevron-down metrics-accordion-toggle" id="mse-detail-toggle"></i>
+                        </div>
+                        <div id="mse-detail" class="metrics-accordion-content">
+                            ${mseExampleHtml}
+                        </div>
+                    </div>
+                    
+                    <!-- PSNR Detail Accordion -->
+                    <div class="metrics-detail-accordion">
+                        <div class="metrics-accordion-header" onclick="toggleMetricsDetail('psnr-detail')">
+                            <span class="metrics-accordion-title">
+                                <i class="fas fa-chart-line"></i> 📈 Detail Perhitungan PSNR
+                            </span>
+                            <i class="fas fa-chevron-down metrics-accordion-toggle" id="psnr-detail-toggle"></i>
+                        </div>
+                        <div id="psnr-detail" class="metrics-accordion-content">
+                            ${psnrResultsHtml}
+                        </div>
+                    </div>
+                    
+                    <!-- Hasil Aktual -->
                     ${actualMetricsHtml}
                     
                     <div class="formula-explanation">
@@ -3709,145 +3891,6 @@
             document.getElementById('detailedProcess').style.display = 'block';
         }
 
-        // Function to display LSB comparison
-        function displayLSBComparison(originalAnalysis, watermarkedAnalysis, containerId) {
-            const container = document.getElementById(containerId);
-            if (!originalAnalysis || !watermarkedAnalysis) return;
-
-            // Generate comparison data
-            const originalSamples = originalAnalysis.pixel_samples || [];
-            const watermarkedSamples = watermarkedAnalysis.pixel_samples || [];
-
-            let changedPixels = 0;
-            let totalPixelsCompared = Math.min(originalSamples.length, watermarkedSamples.length);
-            
-            const comparisonSamples = [];
-            for (let i = 0; i < totalPixelsCompared; i++) {
-                const original = originalSamples[i];
-                const watermarked = watermarkedSamples[i];
-                
-                if (original && watermarked && 
-                    original.position[0] === watermarked.position[0] && 
-                    original.position[1] === watermarked.position[1]) {
-                    
-                    const blueChanged = original.rgb[2] !== watermarked.rgb[2];
-                    if (blueChanged) changedPixels++;
-                    
-                    comparisonSamples.push({
-                        position: original.position,
-                        original: original.rgb,
-                        watermarked: watermarked.rgb,
-                        changed: blueChanged,
-                        difference: watermarked.rgb[2] - original.rgb[2]
-                    });
-                }
-            }
-
-            const changePercentage = totalPixelsCompared > 0 ? (changedPixels / totalPixelsCompared * 100).toFixed(1) : '0';
-
-            container.innerHTML = `
-                <div class="lsb-comparison-container">
-                    <div class="lsb-comparison-header">
-                        <h4><i class="fas fa-exchange-alt"></i> Perbandingan Sebelum & Sesudah LSB Steganography</h4>
-                    </div>
-
-                    <div class="comparison-summary">
-                        <div class="summary-grid">
-                            <div class="summary-item">
-                                <div class="summary-value">${changedPixels}</div>
-                                <div class="summary-label">Pixel yang Berubah</div>
-                            </div>
-                            <div class="summary-item">
-                                <div class="summary-value">${changePercentage}%</div>
-                                <div class="summary-label">Persentase Perubahan</div>
-                            </div>
-                            <div class="summary-item">
-                                <div class="summary-value">±1</div>
-                                <div class="summary-label">Maksimal Selisih</div>
-                            </div>
-                            <div class="summary-item">
-                                <div class="summary-value">Channel Biru</div>
-                                <div class="summary-label">Area Modifikasi</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="lsb-comparison-grid">
-                        <div class="lsb-before">
-                            <div class="lsb-section-title">
-                                <i class="fas fa-image"></i>
-                                Sebelum (Original)
-                            </div>
-                            <div class="pixel-samples-grid">
-                                ${originalSamples.slice(0, 6).map(sample => `
-                                    <div class="pixel-sample-card">
-                                        <div class="pixel-position">(${sample.position[0]}, ${sample.position[1]})</div>
-                                        <div class="rgb-values">
-                                            <div class="rgb-channel r">R: ${sample.rgb[0]}</div>
-                                            <div class="rgb-channel g">G: ${sample.rgb[1]}</div>
-                                            <div class="rgb-channel b">B: ${sample.rgb[2]}</div>
-                                        </div>
-                                        <div class="binary-representation">
-                                            Blue: ${sample.rgb[2].toString(2).padStart(8, '0')}
-                                            <br><span class="lsb-highlight">LSB: ${sample.rgb[2] & 1}</span>
-                                        </div>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        </div>
-
-                        <div class="lsb-after">
-                            <div class="lsb-section-title">
-                                <i class="fas fa-shield-alt"></i>
-                                Sesudah (Watermarked)
-                            </div>
-                            <div class="pixel-samples-grid">
-                                ${watermarkedSamples.slice(0, 6).map((sample, index) => {
-                                    const comparison = comparisonSamples[index];
-                                    const changed = comparison && comparison.changed;
-                                    return `
-                                        <div class="pixel-sample-card">
-                                            <div class="pixel-position">(${sample.position[0]}, ${sample.position[1]})</div>
-                                            <div class="rgb-values">
-                                                <div class="rgb-channel r">R: ${sample.rgb[0]}</div>
-                                                <div class="rgb-channel g">G: ${sample.rgb[1]}</div>
-                                                <div class="rgb-channel b">B: ${sample.rgb[2]}</div>
-                                            </div>
-                                            <div class="binary-representation">
-                                                Blue: ${sample.rgb[2].toString(2).padStart(8, '0')}
-                                                <br><span class="${changed ? 'lsb-changed' : 'lsb-highlight'}">LSB: ${sample.rgb[2] & 1}</span>
-                                            </div>
-                                            <div class="change-indicator ${changed ? 'lsb-modified' : 'no-change'}">
-                                                ${changed ? `Modified (${comparison.difference > 0 ? '+' : ''}${comparison.difference})` : 'Unchanged'}
-                                            </div>
-                                        </div>
-                                    `;
-                                }).join('')}
-                            </div>
-                        </div>
-                    </div>
-
-                    ${comparisonSamples.length > 0 ? `
-                        <div class="bit-change-visualization">
-                            <div class="bit-change-title">Detail Perubahan LSB pada Beberapa Pixel</div>
-                            ${comparisonSamples.slice(0, 3).map(sample => {
-                                if (!sample.changed) return '';
-                                const originalBinary = sample.original[2].toString(2).padStart(8, '0');
-                                const modifiedBinary = sample.watermarked[2].toString(2).padStart(8, '0');
-                                return `
-                                    <div class="bit-change-row">
-                                        <div class="bit-label">Pos (${sample.position[0]},${sample.position[1]}):</div>
-                                        <div class="bit-original">${originalBinary}</div>
-                                        <div class="arrow-indicator">→</div>
-                                        <div class="bit-modified">${modifiedBinary}</div>
-                                    </div>
-                                `;
-                            }).filter(Boolean).join('')}
-                        </div>
-                    ` : ''}
-                </div>
-            `;
-        }
 
         // CRC32 Accordion Toggle Function
         function toggleCRC32Explanation() {
@@ -3902,6 +3945,44 @@
                 // Show content
                 content.classList.add('expanded');
                 toggle.classList.add('expanded');
+            }
+        }
+
+        // Metrics Detail Accordion Toggle Function
+        function toggleMetricsDetail(contentId) {
+            const content = document.getElementById(contentId);
+            const toggleId = contentId + '-toggle';
+            const toggle = document.getElementById(toggleId);
+            
+            if (!content || !toggle) return;
+            
+            if (content.classList.contains('expanded')) {
+                // Hide content
+                content.classList.remove('expanded');
+                toggle.classList.remove('expanded');
+            } else {
+                // Show content
+                content.classList.add('expanded');
+                toggle.classList.add('expanded');
+            }
+        }
+
+        // Image Metrics Accordion Toggle Function
+        function toggleImageMetrics(contentId) {
+            const content = document.getElementById(contentId);
+            const toggleId = contentId + '-toggle';
+            const toggle = document.getElementById(toggleId);
+            
+            if (!content || !toggle) return;
+            
+            if (content.style.maxHeight && content.style.maxHeight !== '0px') {
+                // Hide content
+                content.style.maxHeight = '0px';
+                toggle.style.transform = 'rotate(0deg)';
+            } else {
+                // Show content
+                content.style.maxHeight = '300px';
+                toggle.style.transform = 'rotate(180deg)';
             }
         }
 
@@ -4418,35 +4499,16 @@
                         </a>
                     `;
                     
-                    // Display image comparisons
+                    // Tampilkan progress loading untuk setiap gambar
                     if (result.processed_images) {
-                        displayImageComparison('processedImages', result.processed_images);
+                        showImageProcessingProgress('processedImages', result.processed_images);
                     }
                     
                     // Display detailed process explanation for first image
                     addLogEntry('embedLog', '🔬 Generating detailed process analysis...', 'info');
                     displayDetailedProcess(result.log, result.qr_info, result.processed_images, result.file_type, result.pdf_info, result.file_size_info);
                     
-                    // Display LSB comparison if pixel analysis is available
-                    if (result.processed_images && result.processed_images.length > 0) {
-                        const firstImage = result.processed_images[0];
-                        if (firstImage.pixel_analysis && firstImage.pixel_analysis.original && firstImage.pixel_analysis.watermarked) {
-                            addLogEntry('embedLog', '🔍 Analyzing pixel-level changes...', 'info');
-                            
-                            // Add LSB comparison section to detailed steps
-                            const lsbContainer = document.createElement('div');
-                            lsbContainer.id = 'lsbComparison';
-                            document.getElementById('detailedSteps').appendChild(lsbContainer);
-                            
-                            displayLSBComparison(
-                                firstImage.pixel_analysis.original,
-                                firstImage.pixel_analysis.watermarked,
-                                'lsbComparison'
-                            );
-                            
-                            addLogEntry('embedLog', '✅ Pixel-level comparison completed', 'success');
-                        }
-                    }
+                    // LSB comparison section removed per user request
                     
                     
                     showResult('embedResult');

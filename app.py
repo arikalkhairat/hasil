@@ -504,7 +504,7 @@ def embed_docx_route():
             image_analyses = []
             detailed_metrics = []
             if processed_images:
-                for i, img_info in enumerate(processed_images[:3]):  # Analisis maksimal 3 gambar pertama
+                for i, img_info in enumerate(processed_images):  # Analisis semua gambar
                     if "original_path" in img_info and "watermarked_path" in img_info:
                         # Analisis pixel gambar asli dengan detail
                         original_analysis = get_detailed_pixel_info(img_info["original_path"])
