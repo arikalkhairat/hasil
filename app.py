@@ -312,7 +312,8 @@ def embed_docx_route():
                     processed_images.append({
                         "index": page_num,
                         "original": f"generated/{pdf_dir_name}/{original_filename}",
-                        "watermarked": f"generated/{pdf_dir_name}/{watermarked_filename}"
+                        "watermarked": f"generated/{pdf_dir_name}/{watermarked_filename}",
+                        "individual_metrics": img_info.get("metrics", {})
                     })
                 except Exception as e:
                     print(f"[!] Error menyalin file untuk halaman {page_num + 1}: {e}")
@@ -391,7 +392,7 @@ def embed_docx_route():
                     print(f"[*] Metrik rata-rata PDF - MSE: {avg_mse}, PSNR: {avg_psnr}")
         
         # Analisis pixel gambar QR dengan detail
-        from qr_utils import analyze_image_pixels, calculate_mse_psnr, get_detailed_pixel_info
+        from qr_utils import calculate_mse_psnr, get_detailed_pixel_info
         
         if is_pdf and process_result and "analysis" in process_result:
             # Untuk PDF, gunakan analisis QR dari hasil PDF processing
@@ -445,12 +446,13 @@ def embed_docx_route():
                             "metrics": img_metrics
                         })
                         
-                        # Add pixel analysis data to processed_images for LSB comparison
+                        # Add pixel analysis data and metrics to processed_images for display
                         if i < len(processed_images):
                             processed_images[i]["pixel_analysis"] = {
                                 "original": original_analysis,
                                 "watermarked": watermarked_analysis
                             }
+                            processed_images[i]["individual_metrics"] = img_metrics
         
         print(f"[*] Selesai analisis {len(image_analyses)} {'halaman' if is_pdf else 'gambar'}")
 

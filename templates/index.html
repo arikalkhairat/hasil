@@ -2017,7 +2017,50 @@
                 return;
             }
             
-            const slidesHtml = processedImages.map((img, index) => `
+            const slidesHtml = processedImages.map((img, index) => {
+                // Prepare metrics display
+                let metricsHtml = '';
+                if (img.individual_metrics && img.individual_metrics.success) {
+                    const metrics = img.individual_metrics;
+                    const mse = typeof metrics.mse === 'number' ? metrics.mse.toFixed(4) : 'N/A';
+                    const psnr = metrics.psnr === Infinity ? '∞' : 
+                                 (typeof metrics.psnr === 'number' ? metrics.psnr.toFixed(2) : 'N/A');
+                    const quality = metrics.quality || 'Unknown';
+                    
+                    let qualityColor = '#28a745'; // green for good quality
+                    if (quality === 'Buruk') qualityColor = '#dc3545';
+                    else if (quality === 'Cukup') qualityColor = '#ffc107';
+                    else if (quality === 'Baik') qualityColor = '#17a2b8';
+                    
+                    metricsHtml = `
+                        <div class="metrics-display" style="margin-top: 15px; padding: 12px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid var(--primary-color);">
+                            <div class="metrics-header" style="font-weight: 600; color: var(--primary-color); margin-bottom: 8px;">
+                                <i class="fas fa-chart-line"></i> Analisis Kualitas Gambar ${index + 1}
+                            </div>
+                            <div class="metrics-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: center;">
+                                <div class="metric-item">
+                                    <div class="metric-value" style="font-size: 1.1rem; font-weight: 600; color: #e74c3c;">${mse}</div>
+                                    <div class="metric-label" style="font-size: 0.8rem; color: #666;">MSE</div>
+                                </div>
+                                <div class="metric-item">
+                                    <div class="metric-value" style="font-size: 1.1rem; font-weight: 600; color: #3498db;">${psnr} dB</div>
+                                    <div class="metric-label" style="font-size: 0.8rem; color: #666;">PSNR</div>
+                                </div>
+                                <div class="metric-item">
+                                    <div class="metric-value" style="font-size: 1rem; font-weight: 600; color: ${qualityColor};">${quality}</div>
+                                    <div class="metric-label" style="font-size: 0.8rem; color: #666;">Kualitas</div>
+                                </div>
+                            </div>
+                            <div class="metrics-explanation" style="margin-top: 8px; font-size: 0.85rem; color: #666; text-align: center;">
+                                ${mse !== 'N/A' && psnr !== 'N/A' ? 
+                                    `MSE lebih kecil = lebih baik • PSNR lebih besar = lebih baik` : 
+                                    'Metrics tidak tersedia untuk gambar ini'}
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                return `
                 <div class="qr-slide">
                     <div class="image-comparison" style="margin: 0; background: transparent; border: none; padding: 0;">
                         <div class="image-item">
@@ -2035,9 +2078,11 @@
                             Hasil watermarking menggunakan LSB steganography
                             ${index === 0 && img.dimensions ? `<br><strong>Dimensi:</strong> ${img.dimensions.width} × ${img.dimensions.height} pixel (${(img.dimensions.width * img.dimensions.height).toLocaleString()} total pixel)` : ''}
                         </div>
+                        ${metricsHtml}
                     </div>
                 </div>
-            `).join('');
+                `;
+            }).join('');
             
             const indicatorsHtml = processedImages.map((_, index) => 
                 `<div class="qr-indicator ${index === 0 ? 'active' : ''}" data-slide="${index}"></div>`
@@ -3007,16 +3052,50 @@
                             return psnr.toFixed(2);
                         };
                         
+                        // Count processed images
+                        const imageCount = result.processed_images ? result.processed_images.length : 0;
+                        const imageType = result.file_type === 'pdf' ? 'halaman' : 'gambar';
+                        
                         metricsHtml = `
                             <div class="metric">
+                                <div class="metric-value">${imageCount}</div>
+                                <div class="metric-label">${imageType.charAt(0).toUpperCase() + imageType.slice(1)} Diproses</div>
+                            </div>
+                            <div class="metric">
                                 <div class="metric-value">${result.mse ? result.mse.toFixed(4) : 'N/A'}</div>
-                                <div class="metric-label">MSE</div>
+                                <div class="metric-label">MSE Rata-rata</div>
                             </div>
                             <div class="metric">
                                 <div class="metric-value">${formatPSNRDisplay(result.psnr)}</div>
-                                <div class="metric-label">PSNR (dB)</div>
+                                <div class="metric-label">PSNR Rata-rata (dB)</div>
                             </div>
                         `;
+                        
+                        // Add individual metrics summary if available
+                        if (result.processed_images && result.processed_images.length > 0) {
+                            const individualMetrics = result.processed_images
+                                .map(img => img.individual_metrics)
+                                .filter(metrics => metrics && metrics.success);
+                            
+                            if (individualMetrics.length > 0) {
+                                const qualityCounts = {};
+                                individualMetrics.forEach(metrics => {
+                                    const quality = metrics.quality || 'Unknown';
+                                    qualityCounts[quality] = (qualityCounts[quality] || 0) + 1;
+                                });
+                                
+                                const bestQuality = Object.keys(qualityCounts).reduce((a, b) => 
+                                    (qualityCounts[a] > qualityCounts[b]) ? a : b
+                                );
+                                
+                                metricsHtml += `
+                                    <div class="metric">
+                                        <div class="metric-value">${bestQuality}</div>
+                                        <div class="metric-label">Kualitas Dominan</div>
+                                    </div>
+                                `;
+                            }
+                        }
                         
                         // Add file size metrics if available
                         if (result.file_size_info) {
