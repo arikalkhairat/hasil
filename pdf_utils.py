@@ -334,7 +334,7 @@ def extract_watermark_from_pdf(pdf_path: str, output_dir: str, dpi: int = 300) -
                             extracted_qrs.append({
                                 "page_number": i + 1,
                                 "filename": qr_filename,
-                                "url": f"/static/generated/{os.path.basename(output_dir)}/{qr_filename}",
+                                "url": f"/static/generated/{os.path.basename(output_dir)}/extracted_qr/{qr_filename}",
                                 "path": qr_output_path
                             })
                             print(f"[*] QR Code berhasil diekstrak dari halaman {i+1}")

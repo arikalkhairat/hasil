@@ -899,6 +899,12 @@ def download_generated(filename):
     return send_from_directory(app.config['GENERATED_FOLDER'], filename, as_attachment=True)
 
 
+@app.route('/static/generated/<path:filepath>')
+def serve_generated_static(filepath):
+    """Endpoint untuk melayani file static dari subdirektori generated."""
+    return send_from_directory(app.config['GENERATED_FOLDER'], filepath)
+
+
 @app.route('/download_documents/<filename>')
 def download_documents(filename):
     """Endpoint untuk mengunduh file dari folder documents."""

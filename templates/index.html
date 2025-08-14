@@ -4154,6 +4154,13 @@
         function createQRSlider(qrResults, containerId) {
             const container = document.getElementById(containerId);
             
+            // Debug log untuk melihat data yang diterima
+            console.log('createQRSlider called with:', {
+                qrResults: qrResults,
+                containerId: containerId,
+                container: container
+            });
+            
             if (!qrResults || qrResults.length === 0) {
                 container.innerHTML = `
                     <div class="qr-slider-container">
@@ -4166,24 +4173,30 @@
                         </div>
                     </div>
                 `;
+                console.log('No QR results to display');
                 return;
             }
             
-            const slidesHtml = qrResults.map((qr, index) => `
-                <div class="qr-slide">
-                    <img src="${qr.url}" alt="QR Code ${index + 1}" loading="lazy">
-                    <div class="qr-slide-info">
-                        <div class="qr-slide-title">QR Code ${index + 1}</div>
-                        <div class="qr-slide-description">
-                            Hasil ekstraksi dari gambar dokumen
+            console.log(`Creating slider with ${qrResults.length} QR codes`);
+            
+            const slidesHtml = qrResults.map((qr, index) => {
+                console.log(`QR ${index + 1}:`, qr);
+                return `
+                    <div class="qr-slide">
+                        <img src="${qr.url}" alt="QR Code ${index + 1}" loading="lazy" onerror="console.error('Failed to load image:', '${qr.url}')">
+                        <div class="qr-slide-info">
+                            <div class="qr-slide-title">QR Code ${index + 1}${qr.page_number ? ` (Halaman ${qr.page_number})` : ''}</div>
+                            <div class="qr-slide-description">
+                                Hasil ekstraksi dari gambar dokumen${qr.page_number ? `, halaman ${qr.page_number}` : ''}
+                            </div>
+                            <a href="${qr.url}" download="${qr.filename}" class="qr-download-btn">
+                                <i class="fas fa-download"></i>
+                                Download QR Code
+                            </a>
                         </div>
-                        <a href="${qr.url}" download="${qr.filename}" class="qr-download-btn">
-                            <i class="fas fa-download"></i>
-                            Download QR Code
-                        </a>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
             
             const indicatorsHtml = qrResults.map((_, index) => 
                 `<div class="qr-indicator ${index === 0 ? 'active' : ''}" data-slide="${index}"></div>`
@@ -4216,10 +4229,15 @@
                 </div>
             `;
             
+            console.log('QR slider HTML created');
+            
             // Initialize the slider if there are multiple slides
             if (qrResults.length > 1) {
                 const sliderContainer = container.querySelector('.qr-slider-container');
-                new QRSlider(sliderContainer);
+                if (sliderContainer) {
+                    console.log('Initializing QR slider');
+                    new QRSlider(sliderContainer);
+                }
             }
         }
 
@@ -4571,6 +4589,8 @@
                 
                 const result = await response.json();
                 
+                console.log('Extract response received:', result); // Debug log
+                
                 if (result.success) {
                     addLogEntry('validateLog', '✅ Proses validasi berhasil!', 'success');
                     addLogEntry('validateLog', `🔍 QR Code ditemukan: ${result.extracted_qrs ? result.extracted_qrs.length : 0}`, 'success');
@@ -4591,6 +4611,8 @@
                         <i class="fas fa-check-circle"></i> 
                         ${alertMessage}
                     `, 'success');
+                    
+                    console.log('extracted_qrs data:', result.extracted_qrs); // Debug log
                     
                     if (result.extracted_qrs && result.extracted_qrs.length > 0) {
                         result.extracted_qrs.forEach((qr, index) => {
