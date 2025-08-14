@@ -106,16 +106,18 @@ def add_crc32_checksum(data: str) -> dict:
     try:
         checksum = zlib.crc32(data.encode('utf-8')) & 0xffffffff
         
-        return {
+        qr_data = {
             "data": data,
             "crc32": checksum,
             "timestamp": int(time.time()) if 'time' in globals() else None
         }
+        
+        return qr_data
     except Exception as e:
         print(f"[!] Error menambahkan CRC32: {e}")
         return {"data": data, "crc32": None}
 
-def verify_crc32_checksum(qr_data_with_checksum: dict) -> bool:
+def verify_crc32_checksum(qr_data_with_checksum: dict) -> dict:
     """
     Memverifikasi integritas data menggunakan CRC32 checksum.
     
@@ -123,24 +125,40 @@ def verify_crc32_checksum(qr_data_with_checksum: dict) -> bool:
         qr_data_with_checksum (dict): Data QR dengan checksum
         
     Returns:
-        bool: True jika valid, False jika tidak
+        dict: Hasil verifikasi dengan detail lengkap
     """
     try:
         if not isinstance(qr_data_with_checksum, dict):
-            return False
+            return {
+                "valid": False,
+                "error": "Data tidak dalam format yang benar"
+            }
             
         original_data = qr_data_with_checksum.get("data")
         stored_checksum = qr_data_with_checksum.get("crc32")
         
         if not original_data or stored_checksum is None:
-            return False
-            
+            return {
+                "valid": False,
+                "error": "Data atau checksum tidak lengkap"
+            }
+        
+        # Verifikasi checksum data
         calculated_checksum = zlib.crc32(original_data.encode('utf-8')) & 0xffffffff
-        return calculated_checksum == stored_checksum
+        data_valid = calculated_checksum == stored_checksum
+        
+        return {
+            "valid": data_valid,
+            "data_valid": data_valid,
+            "timestamp": qr_data_with_checksum.get("timestamp")
+        }
         
     except Exception as e:
         print(f"[!] Error verifikasi CRC32: {e}")
-        return False
+        return {
+            "valid": False,
+            "error": str(e)
+        }
 
 def analyze_image_pixels(image_path: str, sample_size: int = 100) -> dict:
     """

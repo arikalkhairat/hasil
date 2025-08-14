@@ -232,6 +232,338 @@
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
+        .security-option-card {
+            background: linear-gradient(135deg, #f8faff 0%, #f0f4ff 100%);
+            border: 2px solid #e6effb;
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .security-option-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            opacity: 0.7;
+        }
+
+        .security-option-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .security-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .security-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .security-content {
+            flex: 1;
+        }
+
+        .security-title {
+            margin: 0 0 4px 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .security-subtitle {
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        .security-toggle {
+            flex-shrink: 0;
+        }
+
+        .toggle-input {
+            display: none;
+        }
+
+        .toggle-label {
+            display: block;
+            width: 60px;
+            height: 32px;
+            background: #e2e8f0;
+            border-radius: 16px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 26px;
+            height: 26px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .toggle-input:checked + .toggle-label {
+            background: linear-gradient(135deg, var(--success-color), #38a169);
+        }
+
+        .toggle-input:checked + .toggle-label .toggle-slider {
+            transform: translateX(28px);
+            box-shadow: 0 2px 8px rgba(72, 187, 120, 0.4);
+        }
+
+        .security-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #e6effb;
+        }
+
+        .security-benefits {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .benefit-item i {
+            color: var(--success-color);
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        .security-info {
+            flex-shrink: 0;
+        }
+
+        .info-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .info-badge.enabled {
+            background: rgba(72, 187, 120, 0.15);
+            color: var(--success-color);
+            border: 1px solid rgba(72, 187, 120, 0.3);
+        }
+
+        .info-badge.disabled {
+            background: rgba(237, 137, 54, 0.15);
+            color: var(--warning-color);
+            border: 1px solid rgba(237, 137, 54, 0.3);
+        }
+
+        .info-badge i {
+            font-size: 0.75rem;
+        }
+
+        .qr-result-card {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            margin-top: 20px;
+        }
+
+        .qr-image-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border: 2px dashed #dee2e6;
+        }
+
+        .qr-result-image {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .qr-data-info {
+            background: #f8faff;
+            border: 1px solid #e6effb;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .qr-data-info h4 {
+            margin: 0 0 12px 0;
+            color: var(--primary-color);
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .data-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            padding: 8px 0;
+            border-bottom: 1px solid #e6effb;
+        }
+
+        .data-item:last-child {
+            margin-bottom: 0;
+            border-bottom: none;
+        }
+
+        .data-label {
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .data-value {
+            color: var(--text-primary);
+            font-weight: 500;
+            font-size: 0.9rem;
+            word-break: break-all;
+            text-align: right;
+            max-width: 60%;
+        }
+
+        .qr-result-security {
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+
+        .qr-result-security.enabled {
+            background: linear-gradient(135deg, rgba(72, 187, 120, 0.08), rgba(56, 161, 105, 0.05));
+            border: 2px solid rgba(72, 187, 120, 0.2);
+        }
+
+        .qr-result-security.disabled {
+            background: linear-gradient(135deg, rgba(237, 137, 54, 0.08), rgba(217, 119, 6, 0.05));
+            border: 2px solid rgba(237, 137, 54, 0.2);
+        }
+
+        .security-status {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .status-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .qr-result-security.enabled .status-icon {
+            background: rgba(72, 187, 120, 0.15);
+            color: var(--success-color);
+        }
+
+        .qr-result-security.disabled .status-icon {
+            background: rgba(237, 137, 54, 0.15);
+            color: var(--warning-color);
+        }
+
+        .status-content h5 {
+            margin: 0 0 4px 0;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .qr-result-security.enabled .status-content h5 {
+            color: var(--success-color);
+        }
+
+        .qr-result-security.disabled .status-content h5 {
+            color: var(--warning-color);
+        }
+
+        .status-content p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .checksum-info {
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(72, 187, 120, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .checksum-label {
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .checksum-value {
+            background: rgba(102, 126, 234, 0.1);
+            color: var(--primary-color);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
         .file-upload {
             position: relative;
             display: inline-block;
@@ -2258,6 +2590,49 @@
                                    placeholder="Masukkan teks untuk QR Code..." required>
                         </div>
                         
+                        
+                        <div class="form-group">
+                            <div class="security-option-card">
+                                <div class="security-header">
+                                    <div class="security-icon">
+                                        <i class="fas fa-shield-alt"></i>
+                                    </div>
+                                    <div class="security-content">
+                                        <h4 class="security-title">Proteksi Integritas Data</h4>
+                                        <p class="security-subtitle">Lindungi QR Code dengan CRC32 Checksum</p>
+                                    </div>
+                                    <div class="security-toggle">
+                                        <input type="checkbox" id="useCrc32" name="useCrc32" checked class="toggle-input">
+                                        <label for="useCrc32" class="toggle-label">
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="security-details">
+                                    <div class="security-benefits">
+                                        <div class="benefit-item">
+                                            <i class="fas fa-check-circle"></i>
+                                            <span>Deteksi otomatis jika data dimodifikasi</span>
+                                        </div>
+                                        <div class="benefit-item">
+                                            <i class="fas fa-check-circle"></i>
+                                            <span>Validasi integritas saat ekstraksi</span>
+                                        </div>
+                                        <div class="benefit-item">
+                                            <i class="fas fa-check-circle"></i>
+                                            <span>Keamanan tambahan untuk watermark</span>
+                                        </div>
+                                    </div>
+                                    <div class="security-info">
+                                        <div class="info-badge enabled" id="crc32StatusBadge">
+                                            <i class="fas fa-lock"></i>
+                                            <span>Aktif - Data Terlindungi</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <button type="submit" class="btn btn-success" style="width: 100%;">
                             <i class="fas fa-magic"></i> Buat QR Code
                         </button>
@@ -4246,6 +4621,20 @@
             initializeTabs();
         });
 
+        // CRC32 Toggle Handler
+        document.getElementById('useCrc32').addEventListener('change', function() {
+            const badge = document.getElementById('crc32StatusBadge');
+            const isEnabled = this.checked;
+            
+            if (isEnabled) {
+                badge.className = 'info-badge enabled';
+                badge.innerHTML = '<i class="fas fa-lock"></i><span>Aktif - Data Terlindungi</span>';
+            } else {
+                badge.className = 'info-badge disabled';
+                badge.innerHTML = '<i class="fas fa-unlock"></i><span>Nonaktif - Tanpa Proteksi</span>';
+            }
+        });
+
         // Generate QR Code Form
         document.getElementById('generateForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -4262,11 +4651,13 @@
             
             const formData = new FormData(this);
             const qrData = document.getElementById('qrData').value;
+            const useCrc32 = document.getElementById('useCrc32').checked;
             
             // Add process steps
             addLogEntry('generateLog', '🚀 Memulai proses pembuatan QR Code...', 'info');
             addLogEntry('generateLog', `📝 Data input: "${qrData}"`, 'info');
             addLogEntry('generateLog', `📏 Panjang data: ${qrData.length} karakter`, 'info');
+            addLogEntry('generateLog', `🛡️ CRC32 checksum: ${useCrc32 ? 'Diaktifkan' : 'Tidak digunakan'}`, useCrc32 ? 'success' : 'warning');
             
             try {
                 const response = await fetch('/generate_qr', {
@@ -4280,14 +4671,66 @@
                     addLogEntry('generateLog', '✅ QR Code berhasil dibuat!', 'success');
                     addLogEntry('generateLog', `💾 File tersimpan: ${result.qr_filename}`, 'success');
                     
+                    if (result.crc32_enabled) {
+                        addLogEntry('generateLog', `🔐 CRC32 checksum: ${result.crc32_info.checksum}`, 'success');
+                        addLogEntry('generateLog', '🛡️ Data dilindungi dengan validasi integritas', 'success');
+                    } else {
+                        addLogEntry('generateLog', '⚠️ QR Code dibuat tanpa CRC32 checksum', 'warning');
+                    }
+                    
                     showAlert('generateAlert', `
                         <i class="fas fa-check-circle"></i> 
                         ${result.message}
                     `, 'success');
                     
+                    const crc32InfoHtml = result.crc32_enabled ? `
+                        <div class="qr-result-security enabled">
+                            <div class="security-status">
+                                <div class="status-icon">
+                                    <i class="fas fa-shield-alt"></i>
+                                </div>
+                                <div class="status-content">
+                                    <h5>Proteksi CRC32 Aktif</h5>
+                                    <p>Data QR Code dilindungi dengan checksum</p>
+                                </div>
+                            </div>
+                            <div class="checksum-info">
+                                <span class="checksum-label">Checksum:</span>
+                                <code class="checksum-value">${result.crc32_info.checksum}</code>
+                            </div>
+                        </div>
+                    ` : `
+                        <div class="qr-result-security disabled">
+                            <div class="security-status">
+                                <div class="status-icon">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </div>
+                                <div class="status-content">
+                                    <h5>Tanpa Proteksi CRC32</h5>
+                                    <p>QR Code dibuat tanpa validasi integritas</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
                     document.getElementById('qrPreview').innerHTML = `
-                        <img src="${result.qr_url}" alt="QR Code">
-                        <p><strong>Data:</strong> ${qrData}</p>
+                        <div class="qr-result-card">
+                            <div class="qr-image-container">
+                                <img src="${result.qr_url}" alt="QR Code" class="qr-result-image">
+                            </div>
+                            <div class="qr-data-info">
+                                <h4><i class="fas fa-info-circle"></i> Informasi QR Code</h4>
+                                <div class="data-item">
+                                    <span class="data-label">Data:</span>
+                                    <span class="data-value">${qrData}</span>
+                                </div>
+                                <div class="data-item">
+                                    <span class="data-label">Panjang:</span>
+                                    <span class="data-value">${qrData.length} karakter</span>
+                                </div>
+                            </div>
+                            ${crc32InfoHtml}
+                        </div>
                     `;
                     
                     document.getElementById('qrDownload').innerHTML = `
@@ -4332,9 +4775,24 @@
             clearLog('embedLog');
             document.getElementById('calculationDetails').innerHTML = '';
             
-            const formData = new FormData(this);
             const docxFile = document.getElementById('docxFileEmbed').files[0];
             const qrFile = document.getElementById('qrFileEmbed').files[0];
+            
+            // Validate files are selected
+            if (!docxFile) {
+                showAlert('embedAlert', 'Pilih file dokumen terlebih dahulu', 'error');
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+                return;
+            }
+            if (!qrFile) {
+                showAlert('embedAlert', 'Pilih file QR Code terlebih dahulu', 'error');
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+                return;
+            }
+            
+            const formData = new FormData(this);
             
             // Add process steps
             addLogEntry('embedLog', '🚀 Memulai proses embedding watermark...', 'info');
@@ -4347,6 +4805,11 @@
                     method: 'POST',
                     body: formData
                 });
+                
+                if (!response.ok) {
+                    addLogEntry('embedLog', `❌ Server error: ${response.status} ${response.statusText}`, 'error');
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
                 
                 const result = await response.json();
                 
@@ -4413,10 +4876,20 @@
                         // Add file size analysis if available
                         if (result.file_size_info) {
                             const sizeInfo = result.file_size_info;
+                            
+                            // Handle both old and new format
+                            const originalKB = sizeInfo.original_size_kb || 
+                                              (sizeInfo.original ? sizeInfo.original.kb : 0);
+                            const processedKB = sizeInfo.watermarked_size_kb || 
+                                               (sizeInfo.processed ? sizeInfo.processed.kb : 0);
+                            const changePercentage = sizeInfo.size_change_percentage !== undefined ? 
+                                                   sizeInfo.size_change_percentage : 
+                                                   (sizeInfo.difference_percentage || 0);
+                            
                             addCalculationStep('calculationDetails',
                                 '📁 Analisis Ukuran File',
                                 'Perubahan ukuran file setelah LSB steganography',
-                                `Original: ${sizeInfo.original_size_kb.toFixed(2)} KB → Watermarked: ${sizeInfo.watermarked_size_kb.toFixed(2)} KB (${sizeInfo.size_change_percentage > 0 ? '+' : ''}${sizeInfo.size_change_percentage.toFixed(2)}%)`
+                                `Original: ${originalKB ? originalKB.toFixed(2) : '0.00'} KB → Watermarked: ${processedKB ? processedKB.toFixed(2) : '0.00'} KB (${changePercentage > 0 ? '+' : ''}${changePercentage ? changePercentage.toFixed(2) : '0.00'}%)`
                             );
                         }
                         
@@ -4493,17 +4966,27 @@
                         // Add file size metrics if available
                         if (result.file_size_info) {
                             const sizeInfo = result.file_size_info;
+                            
+                            // Handle both old and new format
+                            const originalKB = sizeInfo.original_size_kb || 
+                                              (sizeInfo.original ? sizeInfo.original.kb : 0);
+                            const processedKB = sizeInfo.watermarked_size_kb || 
+                                               (sizeInfo.processed ? sizeInfo.processed.kb : 0);
+                            const changePercentage = sizeInfo.size_change_percentage !== undefined ? 
+                                                   sizeInfo.size_change_percentage : 
+                                                   (sizeInfo.difference_percentage || 0);
+                            
                             metricsHtml += `
                                 <div class="metric">
-                                    <div class="metric-value">${sizeInfo.original_size_kb.toFixed(1)}</div>
+                                    <div class="metric-value">${originalKB ? originalKB.toFixed(1) : '0.0'}</div>
                                     <div class="metric-label">Ukuran Asli (KB)</div>
                                 </div>
                                 <div class="metric">
-                                    <div class="metric-value">${sizeInfo.watermarked_size_kb.toFixed(1)}</div>
+                                    <div class="metric-value">${processedKB ? processedKB.toFixed(1) : '0.0'}</div>
                                     <div class="metric-label">Ukuran Watermark (KB)</div>
                                 </div>
                                 <div class="metric">
-                                    <div class="metric-value">${sizeInfo.size_change_percentage > 0 ? '+' : ''}${sizeInfo.size_change_percentage.toFixed(2)}%</div>
+                                    <div class="metric-value">${changePercentage > 0 ? '+' : ''}${changePercentage ? changePercentage.toFixed(2) : '0.00'}%</div>
                                     <div class="metric-label">Perubahan Ukuran</div>
                                 </div>
                             `;

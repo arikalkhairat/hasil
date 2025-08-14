@@ -305,10 +305,11 @@ def embed_watermark_to_docx(docx_path: str, qr_path: str, output_path: str) -> d
                 shutil.copy(watermarked_path, watermarked_public_path)
                 
                 # Store info about this image pair (with proper URL generation)
+                # Frontend will add /static/ prefix, so we only provide the path after /static/
                 processed_images.append({
                     "index": i,
-                    "original": f"/static/generated/{public_dir_name}/{original_public_name}".replace('\\', '/'),
-                    "watermarked": f"/static/generated/{public_dir_name}/{watermarked_public_name}".replace('\\', '/'),
+                    "original": f"generated/{public_dir_name}/{original_public_name}".replace('\\', '/'),
+                    "watermarked": f"generated/{public_dir_name}/{watermarked_public_name}".replace('\\', '/'),
                     "original_path": original_public_path,
                     "watermarked_path": watermarked_public_path
                 })
