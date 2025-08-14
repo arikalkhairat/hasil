@@ -5,6 +5,9 @@ import os
 import subprocess
 import uuid
 import shutil
+import sys
+import logging
+from pathlib import Path
 from flask import Flask, render_template, request, jsonify, send_from_directory
 from PIL import Image
 import numpy as np
@@ -17,20 +20,30 @@ from qr_utils import read_qr
 # Inisialisasi aplikasi Flask
 app = Flask(__name__)
 
-# Konfigurasi path
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-UPLOAD_FOLDER = os.path.join(BASE_DIR, 'static', 'uploads')
-GENERATED_FOLDER = os.path.join(BASE_DIR, 'static', 'generated')
-DOCUMENTS_FOLDER = os.path.join(BASE_DIR, 'public', 'documents')
-MAIN_SCRIPT_PATH = os.path.join(BASE_DIR, 'main.py')
+# Konfigurasi path menggunakan pathlib untuk cross-platform compatibility
+BASE_DIR = Path(__file__).parent.absolute()
+UPLOAD_FOLDER = BASE_DIR / 'static' / 'uploads'
+GENERATED_FOLDER = BASE_DIR / 'static' / 'generated'
+DOCUMENTS_FOLDER = BASE_DIR / 'public' / 'documents'
+MAIN_SCRIPT_PATH = BASE_DIR / 'main.py'
+
+# Setup logging
+logging.basicConfig(
+    level=logging.INFO, 
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('app.log'),
+        logging.StreamHandler(sys.stdout)
+    ]
+)
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(GENERATED_FOLDER, exist_ok=True)
 os.makedirs(DOCUMENTS_FOLDER, exist_ok=True)
 
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['GENERATED_FOLDER'] = GENERATED_FOLDER
-app.config['DOCUMENTS_FOLDER'] = DOCUMENTS_FOLDER
+app.config['UPLOAD_FOLDER'] = str(UPLOAD_FOLDER)
+app.config['GENERATED_FOLDER'] = str(GENERATED_FOLDER)
+app.config['DOCUMENTS_FOLDER'] = str(DOCUMENTS_FOLDER)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # Batas unggah 16MB
 
 ALLOWED_DOCX_EXTENSIONS = {'docx', 'pdf'}
@@ -74,6 +87,89 @@ def get_file_size_info(file_path):
     }
 
 
+def get_size_recommendation(compression_ratio):
+    """
+    Memberikan rekomendasi berdasarkan rasio perubahan ukuran file.
+    
+    Args:
+        compression_ratio (float): Rasio ukuran processed/original
+    
+    Returns:
+        dict: Rekomendasi dan status
+    """
+    abs_change = abs(1 - compression_ratio) * 100
+    
+    if abs_change < 1:
+        return {
+            "status": "excellent",
+            "message": "Perubahan ukuran sangat minimal (<1%) - steganografi optimal!",
+            "color": "success"
+        }
+    elif abs_change < 5:
+        return {
+            "status": "good", 
+            "message": "Perubahan ukuran dalam batas wajar (1-5%) - steganografi berhasil.",
+            "color": "success"
+        }
+    elif abs_change < 10:
+        return {
+            "status": "fair",
+            "message": "Perubahan ukuran cukup signifikan (5-10%) - masih dapat diterima.",
+            "color": "warning"
+        }
+    else:
+        return {
+            "status": "poor",
+            "message": f"Perubahan ukuran sangat signifikan (>{abs_change:.1f}%) - perlu optimasi.",
+            "color": "error"
+        }
+
+def analyze_file_size_impact(original_path, processed_path):
+    """
+    Analisis mendalam terhadap perubahan ukuran file dengan monitoring.
+    
+    Args:
+        original_path (str): Path file asli
+        processed_path (str): Path file hasil proses
+    
+    Returns:
+        dict: Analisis lengkap ukuran file
+    """
+    try:
+        original_size = os.path.getsize(original_path)
+        processed_size = os.path.getsize(processed_path)
+        
+        # Hitung compression ratio
+        compression_ratio = processed_size / original_size if original_size > 0 else 1
+        
+        # Warn jika perubahan terlalu besar
+        if compression_ratio > 1.1:  # 10% increase
+            logging.warning(f"File size increased significantly: {compression_ratio:.2f}x")
+        elif compression_ratio < 0.9:  # 10% decrease  
+            logging.info(f"File size decreased: {compression_ratio:.2f}x")
+        
+        recommendation = get_size_recommendation(compression_ratio)
+        
+        return {
+            "original_size": original_size,
+            "processed_size": processed_size,
+            "size_change_ratio": compression_ratio,
+            "size_change_percentage": (compression_ratio - 1) * 100,
+            "recommendation": recommendation,
+            "original_size_formatted": f"{original_size / 1024:.2f} KB" if original_size >= 1024 else f"{original_size} bytes",
+            "processed_size_formatted": f"{processed_size / 1024:.2f} KB" if processed_size >= 1024 else f"{processed_size} bytes"
+        }
+    except Exception as e:
+        logging.error(f"Error analyzing file size impact: {str(e)}")
+        return {
+            "error": str(e),
+            "recommendation": {
+                "status": "error",
+                "message": "Tidak dapat menganalisis perubahan ukuran file",
+                "color": "error"
+            }
+        }
+
 def calculate_file_size_comparison(original_path, processed_path):
     """
     Membandingkan ukuran file sebelum dan sesudah proses.
@@ -109,37 +205,72 @@ def calculate_file_size_comparison(original_path, processed_path):
     else:
         size_change = "Tidak berubah"
     
+    # Tambahkan analisis mendalam
+    detailed_analysis = analyze_file_size_impact(original_path, processed_path)
+    
     return {
         "original": original_info,
         "processed": processed_info,
         "difference_bytes": difference_bytes,
         "difference_percentage": round(difference_percentage, 2),
-        "size_change": size_change
+        "size_change": size_change,
+        "detailed_analysis": detailed_analysis
     }
 
+
+def generate_image_url(folder, filename):
+    """Generate consistent URL for images with cross-platform path handling."""
+    return f"/static/generated/{folder}/{filename}".replace('\\', '/')
+
+def safe_subprocess_run(command):
+    """Cross-platform subprocess execution with proper encoding."""
+    try:
+        command_str = [str(item) for item in command]  # Convert Path objects to strings
+        logging.info(f"[*] Menjalankan perintah: {' '.join(command_str)}")
+        
+        if sys.platform == 'win32':
+            # Windows-specific configuration
+            result = subprocess.run(
+                command_str, 
+                capture_output=True, 
+                text=True, 
+                check=True,
+                encoding='cp1252',
+                shell=False
+            )
+        else:
+            # Unix/Linux configuration
+            result = subprocess.run(
+                command_str, 
+                capture_output=True, 
+                text=True, 
+                check=True, 
+                encoding='utf-8'
+            )
+        
+        logging.info(f"[*] Stdout: {result.stdout}")
+        if result.stderr:
+            logging.warning(f"[*] Stderr: {result.stderr}")
+        return {"success": True, "stdout": result.stdout, "stderr": result.stderr}
+        
+    except subprocess.CalledProcessError as e:
+        logging.error(f"[!] Error saat menjalankan skrip: {e}")
+        logging.error(f"    Stdout: {e.stdout}")
+        logging.error(f"    Stderr: {e.stderr}")
+        return {"success": False, "stdout": e.stdout, "stderr": e.stderr, "error": str(e)}
+    except FileNotFoundError as e:
+        error_msg = f"[!] Error: File tidak ditemukan: {str(e)}"
+        logging.error(error_msg)
+        return {"success": False, "stdout": "", "stderr": error_msg, "error": error_msg}
+    except Exception as e:
+        error_msg = f"[!] Exception saat menjalankan skrip: {str(e)}"
+        logging.error(error_msg)
+        return {"success": False, "stdout": "", "stderr": error_msg, "error": error_msg}
 
 def run_main_script(args):
     """Menjalankan skrip main.py dan menangkap output."""
     command = ['python', MAIN_SCRIPT_PATH] + args
-    try:
-        print(f"[*] Menjalankan perintah: {' '.join(command)}")
-        result = subprocess.run(command, capture_output=True, text=True, check=True, encoding='utf-8')
-        print(f"[*] Stdout: {result.stdout}")
-        print(f"[*] Stderr: {result.stderr}")
-        return {"success": True, "stdout": result.stdout, "stderr": result.stderr}
-    except subprocess.CalledProcessError as e:
-        print(f"[!] Error saat menjalankan skrip: {e}")
-        print(f"    Stdout: {e.stdout}")
-        print(f"    Stderr: {e.stderr}")
-        return {"success": False, "stdout": e.stdout, "stderr": e.stderr, "error": str(e)}
-    except FileNotFoundError:
-        error_msg = "[!] Error: Perintah 'python' atau skrip 'main.py' tidak ditemukan. Pastikan Python terinstal dan path sudah benar."
-        print(error_msg)
-        return {"success": False, "stdout": "", "stderr": error_msg, "error": error_msg}
-    except Exception as e:
-        error_msg = f"[!] Exception saat menjalankan skrip: {str(e)}"
-        print(error_msg)
-        return {"success": False, "stdout": "", "stderr": error_msg, "error": error_msg}
+    return safe_subprocess_run(command)
 
 
 def calculate_metrics(original_docx_path, stego_docx_path):
@@ -391,8 +522,8 @@ def embed_docx_route():
                     # Tambahkan ke processed_images dengan path relatif yang benar
                     processed_images.append({
                         "index": page_num,
-                        "original": f"generated/{pdf_dir_name}/{original_filename}",
-                        "watermarked": f"generated/{pdf_dir_name}/{watermarked_filename}",
+                        "original": generate_image_url(pdf_dir_name, original_filename),
+                        "watermarked": generate_image_url(pdf_dir_name, watermarked_filename),
                         "individual_metrics": img_info.get("metrics", {})
                     })
                 except Exception as e:
@@ -403,7 +534,7 @@ def embed_docx_route():
             qr_public_path = os.path.join(app.config['GENERATED_FOLDER'], pdf_dir_name, qr_filename)
             try:
                 shutil.copy(qr_temp_path, qr_public_path)
-                qr_image_url = f"generated/{pdf_dir_name}/{qr_filename}"
+                qr_image_url = generate_image_url(pdf_dir_name, qr_filename)
             except Exception as e:
                 print(f"[!] Error menyalin QR Code: {e}")
                 qr_image_url = ""
@@ -902,7 +1033,31 @@ def download_generated(filename):
 @app.route('/static/generated/<path:filepath>')
 def serve_generated_static(filepath):
     """Endpoint untuk melayani file static dari subdirektori generated."""
-    return send_from_directory(app.config['GENERATED_FOLDER'], filepath)
+    try:
+        # Normalize path untuk cross-platform compatibility
+        safe_filepath = filepath.replace('\\', '/')
+        full_path = os.path.join(app.config['GENERATED_FOLDER'], safe_filepath)
+        
+        if not os.path.exists(full_path):
+            logging.error(f"File tidak ditemukan: {full_path}")
+            return jsonify({"error": "File not found", "path": filepath}), 404
+            
+        return send_from_directory(app.config['GENERATED_FOLDER'], safe_filepath)
+    except Exception as e:
+        logging.error(f"Error serving static file {filepath}: {str(e)}")
+        return jsonify({"error": "Server error", "message": str(e)}), 500
+
+@app.errorhandler(404)
+def handle_404(e):
+    """Handle 404 errors, especially for static files."""
+    if request.path.startswith('/static/'):
+        logging.warning(f"Static file not found: {request.path}")
+        return jsonify({
+            "error": "File not found", 
+            "path": request.path,
+            "message": "The requested static file could not be found"
+        }), 404
+    return str(e), 404
 
 
 @app.route('/download_documents/<filename>')

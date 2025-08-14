@@ -79,15 +79,17 @@ def _resize_qr_for_capacity(qr_img, max_capacity: int):
     return resized_qr
 
 
-def embed_qr_to_image(cover_image_path: str, qr_image_path: str, output_stego_path: str, resize_qr_if_needed: bool = True):
+def embed_qr_to_image(cover_image_path: str, qr_image_path: str, output_stego_path: str, resize_qr_if_needed: bool = True, preserve_format: bool = True, quality: int = 95):
     """
     Menyisipkan citra QR Code ke dalam LSB channel Biru dari citra penampung.
 
     Args:
-        cover_image_path (str): Path ke citra penampung (disarankan PNG).
+        cover_image_path (str): Path ke citra penampung.
         qr_image_path (str): Path ke citra QR Code yang akan disembunyikan (harus hitam putih).
-        output_stego_path (str): Path untuk menyimpan citra hasil (harus PNG).
+        output_stego_path (str): Path untuk menyimpan citra hasil.
         resize_qr_if_needed (bool): Jika True, QR code akan diresize otomatis agar muat dalam kapasitas.
+        preserve_format (bool): Jika True, akan mencoba mempertahankan format asli jika memungkinkan.
+        quality (int): Kualitas kompresi untuk format lossy (1-100).
 
     Raises:
         FileNotFoundError: Jika file input tidak ditemukan.
@@ -102,9 +104,22 @@ def embed_qr_to_image(cover_image_path: str, qr_image_path: str, output_stego_pa
         raise FileNotFoundError(f"File cover tidak ditemukan: {cover_image_path}")
     if not os.path.exists(qr_image_path):
         raise FileNotFoundError(f"File QR Code tidak ditemukan: {qr_image_path}")
-    # Memastikan output adalah PNG untuk menjaga integritas LSB
-    if not output_stego_path.lower().endswith('.png'):
-        raise ValueError("Output file harus berformat PNG untuk menjaga LSB.")
+    
+    # Deteksi format asli untuk preserve_format option
+    original_format = None
+    try:
+        with Image.open(cover_image_path) as temp_img:
+            original_format = temp_img.format
+    except:
+        original_format = 'PNG'  # Fallback ke PNG
+    
+    # Untuk LSB steganography, kita memerlukan format lossless 
+    # PNG tetap jadi pilihan utama, tapi kita bisa preserve format jika memungkinkan
+    requires_lossless = True  # LSB memerlukan lossless format
+    
+    print(f"[*] Format asli: {original_format}")
+    print(f"[*] Preserve format: {preserve_format}")
+    print(f"[*] Requires lossless: {requires_lossless}")
 
     try:
         # 1. Buka kedua citra
@@ -185,8 +200,24 @@ def embed_qr_to_image(cover_image_path: str, qr_image_path: str, output_stego_pa
                 except StopIteration:
                     # Jika iterator habis (semua bit sudah disisipkan)
                     print(f"[*] Penyisipan selesai. {pixels_processed} piksel dimodifikasi.")
-                    # Simpan stego image dalam format PNG
-                    stego_img.save(output_stego_path, "PNG")
+                    
+                    # Simpan dengan format yang optimal
+                    save_format = "PNG"  # Default untuk LSB steganography
+                    save_options = {}
+                    
+                    # Untuk LSB steganography, kita tetap menggunakan PNG untuk memastikan 
+                    # tidak ada kehilangan data, tapi kita bisa mengoptimalkan kompresi
+                    if preserve_format and original_format in ['PNG', 'BMP', 'TIFF']:
+                        # Format lossless yang aman untuk LSB
+                        save_format = original_format if original_format != 'BMP' else 'PNG'
+                        if save_format == 'PNG':
+                            save_options = {'optimize': True, 'compress_level': 6}
+                    else:
+                        # Gunakan PNG dengan optimasi
+                        save_options = {'optimize': True, 'compress_level': 6}
+                    
+                    print(f"[*] Menyimpan dengan format: {save_format}")
+                    stego_img.save(output_stego_path, save_format, **save_options)
                     print(f"[*] Stego image disimpan di: {output_stego_path}")
                     return  # Keluar dari fungsi setelah penyimpanan berhasil
 

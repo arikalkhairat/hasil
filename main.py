@@ -1,6 +1,7 @@
 import argparse
 import os
 import sys
+import logging
 from typing import List
 from PIL import Image
 import docx
@@ -9,6 +10,13 @@ import uuid
 import shutil
 import json
 import time
+
+# Setup logging untuk main.py
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 # Import modul lokal
 from qr_utils import generate_qr, read_qr
@@ -282,25 +290,35 @@ def embed_watermark_to_docx(docx_path: str, qr_path: str, output_path: str) -> d
             shutil.copy(img_path, original_public_path)
             
             try:
-                # Perform the watermarking
-                embed_qr_to_image(img_path, qr_path, watermarked_path, resize_qr_if_needed=True)
+                # Perform the watermarking with optimization
+                embed_qr_to_image(
+                    img_path, 
+                    qr_path, 
+                    watermarked_path, 
+                    resize_qr_if_needed=True,
+                    preserve_format=True,  # Coba pertahankan format asli jika memungkinkan
+                    quality=95  # Kualitas tinggi untuk format yang mendukung
+                )
                 watermarked_images.append(watermarked_path)
                 
                 # Copy watermarked image to public directory
                 shutil.copy(watermarked_path, watermarked_public_path)
                 
-                # Store info about this image pair
+                # Store info about this image pair (with proper URL generation)
                 processed_images.append({
                     "index": i,
-                    "original": f"generated/{public_dir_name}/{original_public_name}",
-                    "watermarked": f"generated/{public_dir_name}/{watermarked_public_name}",
+                    "original": f"/static/generated/{public_dir_name}/{original_public_name}".replace('\\', '/'),
+                    "watermarked": f"/static/generated/{public_dir_name}/{watermarked_public_name}".replace('\\', '/'),
                     "original_path": original_public_path,
                     "watermarked_path": watermarked_public_path
                 })
                 
             except Exception as e:
-                print(f"[!] Gagal watermark gambar {img_path}: {str(e)}")
+                error_msg = f"Gagal watermark gambar {img_path}: {str(e)}"
+                print(f"[!] {error_msg}")
+                logger.error(error_msg)
                 # Continue with other images even if one fails
+                continue
 
         # Replace images in the document with watermarked versions
         print(f"[*] Mengganti gambar dalam dokumen dengan versi watermark")
@@ -318,16 +336,32 @@ def embed_watermark_to_docx(docx_path: str, qr_path: str, output_path: str) -> d
             size_difference = 0
             size_change_percentage = 0
 
-        # Clean up temporary files
+        # Clean up temporary files with better error handling
+        cleanup_errors = []
         for path in extracted_images + watermarked_images:
-            if os.path.exists(path) and not os.path.basename(path).startswith("original_") and not os.path.basename(path).startswith("watermarked_"):
-                os.remove(path)
+            if (os.path.exists(path) and 
+                not os.path.basename(path).startswith("original_") and 
+                not os.path.basename(path).startswith("watermarked_")):
+                try:
+                    os.remove(path)
+                    logger.debug(f"Cleaned up temporary file: {path}")
+                except Exception as e:
+                    cleanup_errors.append(f"Failed to remove {path}: {str(e)}")
 
         if os.path.exists(temp_dir):
             try:
                 shutil.rmtree(temp_dir)
+                logger.debug(f"Cleaned up temporary directory: {temp_dir}")
             except Exception as e:
-                print(f"[!] Warning: Tidak dapat menghapus direktori temp: {str(e)}")
+                cleanup_error = f"Warning: Tidak dapat menghapus direktori temp {temp_dir}: {str(e)}"
+                print(f"[!] {cleanup_error}")
+                logger.warning(cleanup_error)
+                cleanup_errors.append(cleanup_error)
+        
+        if cleanup_errors:
+            logger.warning(f"Cleanup issues encountered: {len(cleanup_errors)} errors")
+            for error in cleanup_errors:
+                logger.debug(error)
 
         # Copy QR code to public directory for display
         qr_public_name = "watermark_qr.png"
@@ -350,7 +384,7 @@ def embed_watermark_to_docx(docx_path: str, qr_path: str, output_path: str) -> d
         return {
             "success": success, 
             "processed_images": processed_images,
-            "qr_image": f"generated/{public_dir_name}/{qr_public_name}",
+            "qr_image": f"/static/generated/{public_dir_name}/{qr_public_name}".replace('\\', '/'),
             "public_dir": public_dir_name,
             "qr_info": qr_info,
             "file_size_info": {
