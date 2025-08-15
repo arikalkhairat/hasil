@@ -4674,6 +4674,9 @@
             const qrData = document.getElementById('qrData').value;
             const useCrc32 = document.getElementById('useCrc32').checked;
             
+            // Manually set the useCrc32 value to ensure correct boolean handling
+            formData.set('useCrc32', useCrc32 ? 'true' : 'false');
+            
             // Add process steps
             addLogEntry('generateLog', '🚀 Memulai proses pembuatan QR Code...', 'info');
             addLogEntry('generateLog', `📝 Data input: "${qrData}"`, 'info');

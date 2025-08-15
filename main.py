@@ -53,23 +53,14 @@ def parse_arguments():
 
 def generate_qr_code(data: str, output_path: str) -> bool:
     """
-    Generate QR Code with CRC32 checksum and save it to the specified path.
+    Generate QR Code and save it to the specified path.
+    The data parameter is used as-is (may already contain CRC32 if added by caller).
     """
     try:
-        # Import fungsi baru
-        from qr_utils import add_crc32_checksum
+        # Use the data as provided - don't add CRC32 here since it may already be added by the Flask app
+        generate_qr(data, output_path)
         
-        # Tambahkan CRC32 checksum
-        data_with_checksum = add_crc32_checksum(data)
-        
-        # Konversi ke JSON untuk disimpan dalam QR
-        qr_data_json = json.dumps(data_with_checksum, separators=(',', ':'))
-        
-        # Generate QR dengan data yang sudah ada checksum
-        generate_qr(qr_data_json, output_path)
-        
-        print(f"[*] QR Code berhasil dibuat dengan data: '{data}'")
-        print(f"[*] CRC32 Checksum: {data_with_checksum.get('crc32', 'N/A')}")
+        print(f"[*] QR Code berhasil dibuat dengan data: '{data[:50]}{'...' if len(data) > 50 else ''}'")
         print(f"[*] Tersimpan di: {output_path}")
         return True
     except Exception as e:
