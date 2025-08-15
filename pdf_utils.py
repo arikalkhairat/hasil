@@ -491,10 +491,10 @@ def embed_watermark_to_pdf_images(pdf_path: str, qr_path: str, output_dir: str, 
 
 def create_watermarked_pdf(original_pdf_path: str, watermarked_images_dir: str, output_pdf_path: str, dpi: int = 300) -> bool:
     """
-    Membuat PDF baru dari gambar-gambar yang sudah di-watermark.
+    Membuat PDF baru dengan mengganti gambar asli dengan gambar watermarked menggunakan pendekatan reconstruct.
     
     Args:
-        original_pdf_path (str): Path PDF asli untuk referensi ukuran
+        original_pdf_path (str): Path PDF asli
         watermarked_images_dir (str): Directory berisi gambar watermarked
         output_pdf_path (str): Path output PDF baru
         dpi (int): DPI yang digunakan untuk konversi
@@ -503,51 +503,145 @@ def create_watermarked_pdf(original_pdf_path: str, watermarked_images_dir: str, 
         bool: True jika berhasil, False jika gagal
     """
     try:
-        # Ambil semua file gambar watermarked
-        image_files = []
-        for filename in os.listdir(watermarked_images_dir):
-            if filename.lower().endswith(('.png', '.jpg', '.jpeg')):
-                image_files.append(os.path.join(watermarked_images_dir, filename))
+        import fitz  # PyMuPDF
+        from PIL import Image as PILImage
         
-        if not image_files:
-            print("[!] Tidak ada gambar watermarked ditemukan")
+        # Buka PDF asli
+        doc = fitz.open(original_pdf_path)
+        print(f"[*] Membuka PDF asli dengan {len(doc)} halaman")
+        
+        # Ambil semua file gambar watermarked
+        watermarked_files = {}
+        for filename in os.listdir(watermarked_images_dir):
+            if filename.lower().endswith(('.png', '.jpg', '.jpeg')) and 'watermarked_pdf_image' in filename:
+                # Extract page dan image number dari filename
+                import re
+                match = re.search(r'_p(\d+)_i(\d+)_', filename)
+                if match:
+                    page_num = int(match.group(1))
+                    img_num = int(match.group(2))
+                    if page_num not in watermarked_files:
+                        watermarked_files[page_num] = {}
+                    watermarked_files[page_num][img_num] = os.path.join(watermarked_images_dir, filename)
+        
+        if not watermarked_files:
+            print("[!] Tidak ada gambar watermarked yang valid ditemukan")
             return False
         
-        # Sort berdasarkan nomor halaman (untuk gambar PDF dengan format watermarked_pdf_image_p{n}_i{i}_{hash}.png)
-        def extract_page_number(filename):
-            import re
-            # Cari pattern p{number}_i{number} dalam nama file
-            match = re.search(r'_p(\d+)_i(\d+)_', filename)
-            if match:
-                page_num = int(match.group(1))
-                img_num = int(match.group(2))
-                return (page_num, img_num)
-            # Fallback untuk format lain
-            return (0, 0)
+        print(f"[*] Ditemukan gambar watermarked untuk {len(watermarked_files)} halaman")
         
-        image_files.sort(key=lambda x: extract_page_number(os.path.basename(x)))
+        # Buat PDF baru
+        new_doc = fitz.open()
+        replaced_count = 0
         
-        # Konversi gambar ke PDF
-        images = []
-        for img_path in image_files:
-            img = Image.open(img_path)
-            # Konversi ke RGB jika perlu
-            if img.mode != 'RGB':
-                img = img.convert('RGB')
-            images.append(img)
+        # Proses setiap halaman
+        for page_num in range(len(doc)):
+            page = doc[page_num]
+            page_index = page_num + 1
+            
+            # Buat halaman baru di document output
+            new_page = new_doc.new_page(width=page.rect.width, height=page.rect.height)
+            
+            # Copy semua konten non-gambar dari halaman asli
+            # Get text blocks dan drawing operations
+            text_dict = page.get_text("dict")
+            drawings = page.get_drawings()
+            
+            # Copy text content
+            for block in text_dict.get("blocks", []):
+                if "lines" in block:  # text block
+                    for line in block["lines"]:
+                        for span in line["spans"]:
+                            # Reconstruct text
+                            text = span["text"]
+                            bbox = fitz.Rect(span["bbox"])
+                            font_size = span["size"]
+                            font_name = span["font"]
+                            
+                            # Insert text ke halaman baru
+                            try:
+                                new_page.insert_text(
+                                    bbox.tl, text,
+                                    fontsize=font_size,
+                                    fontname=font_name if font_name else "helv"
+                                )
+                            except:
+                                # Fallback dengan font default
+                                new_page.insert_text(bbox.tl, text, fontsize=font_size)
+            
+            # Copy drawings (shapes, lines, etc.)
+            for drawing in drawings:
+                try:
+                    items = drawing.get("items", [])
+                    for item in items:
+                        if item[0] == "l":  # line
+                            p1, p2 = item[1], item[2]
+                            new_page.draw_line(p1, p2)
+                        elif item[0] == "c":  # curve
+                            p1, p2, p3, p4 = item[1], item[2], item[3], item[4]
+                            new_page.draw_bezier(p1, p2, p3, p4)
+                        elif item[0] == "re":  # rectangle
+                            rect = item[1]
+                            new_page.draw_rect(rect)
+                except:
+                    continue  # Skip drawing errors
+            
+            # Handle images
+            img_list = page.get_images()
+            for img_index, img in enumerate(img_list):
+                img_xref = img[0]
+                img_num_in_page = img_index + 1
+                
+                # Get image position and size
+                img_rects = page.get_image_rects(img_xref)
+                if not img_rects:
+                    continue
+                    
+                img_rect = img_rects[0]  # Use first rectangle
+                
+                # Use watermarked image if available, otherwise original
+                if (page_index in watermarked_files and 
+                    img_num_in_page in watermarked_files[page_index]):
+                    
+                    watermarked_path = watermarked_files[page_index][img_num_in_page]
+                    
+                    try:
+                        # Insert watermarked image
+                        new_page.insert_image(img_rect, filename=watermarked_path)
+                        replaced_count += 1
+                        print(f"[*] Diganti gambar {img_num_in_page} di halaman {page_index}")
+                    except Exception as e:
+                        print(f"[!] Gagal insert watermarked image: {e}")
+                        # Fallback: use original image
+                        try:
+                            img_data = doc.extract_image(img_xref)
+                            new_page.insert_image(img_rect, stream=img_data["image"])
+                        except:
+                            pass
+                else:
+                    # Use original image
+                    try:
+                        img_data = doc.extract_image(img_xref)
+                        new_page.insert_image(img_rect, stream=img_data["image"])
+                    except Exception as e:
+                        print(f"[!] Gagal insert original image: {e}")
         
-        if images:
-            # Simpan sebagai PDF
-            images[0].save(output_pdf_path, save_all=True, append_images=images[1:], 
-                          resolution=dpi, quality=95)
-            print(f"[*] PDF watermarked berhasil dibuat: {output_pdf_path}")
+        # Save new document
+        doc.close()
+        new_doc.save(output_pdf_path)
+        new_doc.close()
+        
+        if replaced_count > 0:
+            print(f"[*] PDF watermarked berhasil dibuat dengan {replaced_count} gambar diganti: {output_pdf_path}")
             return True
         else:
-            print("[!] Tidak ada gambar valid untuk dikonversi ke PDF")
+            print("[!] Tidak ada gambar yang berhasil diganti")
             return False
         
     except Exception as e:
         print(f"[!] Error membuat PDF watermarked: {e}")
+        import traceback
+        traceback.print_exc()
         return False
 
 def extract_watermark_from_pdf_real_images(pdf_path: str, output_dir: str) -> Dict[str, Any]:

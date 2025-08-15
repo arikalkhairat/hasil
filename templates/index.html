@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Code Watermarking - by Arikal Khairat </title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -3106,10 +3109,21 @@
 
             // Simulasi proses loading untuk setiap gambar
             processedImages.forEach((img, index) => {
-                const hasMetrics = img.individual_metrics && 
+                const hasMetrics = (img.individual_metrics && 
                     (img.individual_metrics.success || 
                      img.individual_metrics.mse !== undefined || 
-                     img.individual_metrics.psnr !== undefined);
+                     img.individual_metrics.psnr !== undefined)) ||
+                    (img.metrics && 
+                     (img.metrics.mse !== undefined || 
+                      img.metrics.psnr !== undefined));
+                
+                console.log(`DEBUG: Image ${index} metrics check:`, {
+                    hasIndividualMetrics: !!img.individual_metrics,
+                    hasMetrics: !!img.metrics,
+                    hasMetricsOverall: hasMetrics,
+                    metricsKeys: img.metrics ? Object.keys(img.metrics) : [],
+                    individualMetricsKeys: img.individual_metrics ? Object.keys(img.individual_metrics) : []
+                });
 
                 // Delay berbeda untuk setiap gambar (simulasi proses berurutan)
                 const delay = (index + 1) * 800; // 800ms per gambar
@@ -3133,8 +3147,8 @@
                 // Update status menjadi selesai
                 statusElement.innerHTML = '<i class="fas fa-check-circle" style="color: #28a745;"></i> Analisis selesai';
                 
-                // Update metrics dengan data real
-                const metrics = imageData.individual_metrics;
+                // Update metrics dengan data real (support both individual_metrics and metrics)
+                const metrics = imageData.individual_metrics || imageData.metrics;
                 const mse = typeof metrics.mse === 'number' ? metrics.mse.toFixed(4) : 'N/A';
                 const psnr = metrics.psnr === Infinity ? '∞' : 
                              (typeof metrics.psnr === 'number' ? metrics.psnr.toFixed(2) : 'N/A');
@@ -3198,8 +3212,15 @@
             const slidesHtml = processedImages.map((img, index) => {
                 // Prepare metrics display
                 let metricsHtml = '';
-                if (img.individual_metrics && (img.individual_metrics.success || img.individual_metrics.mse !== undefined || img.individual_metrics.psnr !== undefined)) {
-                    const metrics = img.individual_metrics;
+                const availableMetrics = img.individual_metrics || img.metrics;
+                console.log(`DEBUG: displayImageComparison - Image ${index} metrics:`, {
+                    hasIndividualMetrics: !!img.individual_metrics,
+                    hasMetrics: !!img.metrics,
+                    availableMetrics: availableMetrics,
+                    metricsKeys: availableMetrics ? Object.keys(availableMetrics) : []
+                });
+                if (availableMetrics && (availableMetrics.success || availableMetrics.mse !== undefined || availableMetrics.psnr !== undefined)) {
+                    const metrics = availableMetrics;
                     const mse = typeof metrics.mse === 'number' ? metrics.mse.toFixed(4) : 'N/A';
                     const psnr = metrics.psnr === Infinity ? '∞' : 
                                  (typeof metrics.psnr === 'number' ? metrics.psnr.toFixed(2) : 'N/A');
@@ -4821,18 +4842,27 @@
                     if (result.file_size_info) {
                         const sizeInfo = result.file_size_info;
                         
-                        // Safe access to formatted values with fallback
+                        // Safe access to formatted values with fallback (handle both DOCX and PDF formats)
                         const originalFormatted = sizeInfo.original && sizeInfo.original.formatted ? 
-                            sizeInfo.original.formatted : `${sizeInfo.original?.bytes || 0} bytes`;
+                            sizeInfo.original.formatted : 
+                            (sizeInfo.original_size_kb ? `${sizeInfo.original_size_kb.toFixed(2)} KB` : 
+                             `${sizeInfo.original?.bytes || sizeInfo.original_size || 0} bytes`);
+                        
                         const processedFormatted = sizeInfo.processed && sizeInfo.processed.formatted ? 
-                            sizeInfo.processed.formatted : `${sizeInfo.processed?.bytes || 0} bytes`;
-                        const sizeChange = sizeInfo.size_change || 'Tidak berubah';
+                            sizeInfo.processed.formatted : 
+                            (sizeInfo.watermarked_size_kb ? `${sizeInfo.watermarked_size_kb.toFixed(2)} KB` : 
+                             `${sizeInfo.processed?.bytes || sizeInfo.watermarked_size || 0} bytes`);
+                        
+                        const sizeChange = sizeInfo.size_change || 
+                                          (sizeInfo.size_change_percentage !== undefined ? 
+                                           `${sizeInfo.size_change_percentage > 0 ? '+' : ''}${sizeInfo.size_change_percentage.toFixed(2)}%` : 
+                                           'Tidak berubah');
                         
                         addLogEntry('embedLog', `📏 Ukuran file asli: ${originalFormatted}`, 'info');
                         addLogEntry('embedLog', `📏 Ukuran file watermark: ${processedFormatted}`, 'info');
                         addLogEntry('embedLog', `📈 Perubahan ukuran: ${sizeChange}`, 'info');
                         
-                        const diffPercentage = sizeInfo.difference_percentage || 0;
+                        const diffPercentage = sizeInfo.difference_percentage || sizeInfo.size_change_percentage || 0;
                         if (Math.abs(diffPercentage) < 1) {
                             addLogEntry('embedLog', '✅ Perubahan ukuran sangat kecil (<1%) - steganografi berhasil!', 'success');
                         } else if (Math.abs(diffPercentage) < 5) {
@@ -4850,14 +4880,39 @@
                         displayQRAnalysis('embedLog', result.qr_info);
                     }
                     
+                    // Handle PDF metrics from analysis structure
+                    let globalMSE = result.mse;
+                    let globalPSNR = result.psnr;
+                    
+                    console.log('DEBUG: Processing metrics for file type:', result.file_type);
+                    console.log('DEBUG: Global MSE/PSNR:', globalMSE, globalPSNR);
+                    
+                    // For PDF, extract metrics from analysis.detailed_metrics if not available globally
+                    if ((globalMSE === undefined || globalPSNR === undefined) && 
+                        result.analysis && result.analysis.detailed_metrics && 
+                        result.analysis.detailed_metrics.length > 0) {
+                        
+                        // Calculate average metrics from all images
+                        const validMetrics = result.analysis.detailed_metrics
+                            .filter(metric => metric.metrics && 
+                                             metric.metrics.mse !== undefined && 
+                                             metric.metrics.psnr !== undefined);
+                        
+                        if (validMetrics.length > 0) {
+                            globalMSE = validMetrics.reduce((sum, metric) => sum + metric.metrics.mse, 0) / validMetrics.length;
+                            globalPSNR = validMetrics.reduce((sum, metric) => sum + metric.metrics.psnr, 0) / validMetrics.length;
+                            console.log('DEBUG: Calculated average metrics from detailed_metrics:', globalMSE, globalPSNR);
+                        }
+                    }
+                    
                     // Display calculations
-                    if (result.mse !== undefined && result.psnr !== undefined) {
+                    if (globalMSE !== undefined && globalPSNR !== undefined) {
                         addLogEntry('embedLog', '🧮 Menghitung metrik kualitas...', 'info');
                         
                         addCalculationStep('calculationDetails', 
                             '📊 Mean Squared Error (MSE)',
                             'MSE = (1/N) × Σ(original - watermarked)²',
-                            `${result.mse ? result.mse.toFixed(6) : 'N/A'}`
+                            `${globalMSE ? globalMSE.toFixed(6) : 'N/A'}`
                         );
                         
                         // Format PSNR value (handle both numbers and strings like "Infinity")
@@ -4870,7 +4925,7 @@
                         addCalculationStep('calculationDetails',
                             '📈 Peak Signal-to-Noise Ratio (PSNR)',
                             'PSNR = 20 × log₁₀(MAX² / MSE)',
-                            `${formatPSNR(result.psnr)} dB`
+                            `${formatPSNR(globalPSNR)} dB`
                         );
                         
                         // Add file size analysis if available
@@ -4894,7 +4949,7 @@
                         }
                         
                         // Check PSNR quality (handle string values)
-                        const psnrValue = typeof result.psnr === 'string' ? (result.psnr === 'Infinity' ? Infinity : parseFloat(result.psnr)) : result.psnr;
+                        const psnrValue = typeof globalPSNR === 'string' ? (globalPSNR === 'Infinity' ? Infinity : parseFloat(globalPSNR)) : globalPSNR;
                         if (psnrValue > 30 || psnrValue === Infinity) {
                             addLogEntry('embedLog', '✅ Kualitas watermark: SANGAT BAIK (PSNR > 30 dB)', 'success');
                         } else if (psnrValue > 20) {
@@ -4910,7 +4965,7 @@
                     `, 'success');
                     
                     let metricsHtml = '';
-                    if (result.mse !== undefined && result.psnr !== undefined) {
+                    if (globalMSE !== undefined && globalPSNR !== undefined) {
                         // Format PSNR for display
                         const formatPSNRDisplay = (psnr) => {
                             if (!psnr) return 'N/A';
@@ -4928,11 +4983,11 @@
                                 <div class="metric-label">${imageType.charAt(0).toUpperCase() + imageType.slice(1)} Diproses</div>
                             </div>
                             <div class="metric">
-                                <div class="metric-value">${result.mse ? result.mse.toFixed(4) : 'N/A'}</div>
+                                <div class="metric-value">${globalMSE ? globalMSE.toFixed(4) : 'N/A'}</div>
                                 <div class="metric-label">MSE Rata-rata</div>
                             </div>
                             <div class="metric">
-                                <div class="metric-value">${formatPSNRDisplay(result.psnr)}</div>
+                                <div class="metric-value">${formatPSNRDisplay(globalPSNR)}</div>
                                 <div class="metric-label">PSNR Rata-rata (dB)</div>
                             </div>
                         `;
@@ -4940,8 +4995,8 @@
                         // Add individual metrics summary if available
                         if (result.processed_images && result.processed_images.length > 0) {
                             const individualMetrics = result.processed_images
-                                .map(img => img.individual_metrics)
-                                .filter(metrics => metrics && metrics.success);
+                                .map(img => img.individual_metrics || img.metrics)
+                                .filter(metrics => metrics && (metrics.success || metrics.mse !== undefined));
                             
                             if (individualMetrics.length > 0) {
                                 const qualityCounts = {};
