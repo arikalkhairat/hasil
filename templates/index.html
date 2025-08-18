@@ -71,6 +71,28 @@
             font-style: italic;
         }
 
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin: 0 5px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .nav-links a i {
+            margin-right: 6px;
+        }
+
         .tab-navigation {
             display: flex;
             justify-content: center;
@@ -2551,6 +2573,15 @@
             <h1><i class="fas fa-qrcode"></i> QR Watermarking</h1>
             <!-- <p>LSB Steganography untuk Dokumen DOCX</p> -->
             
+            <!-- Add Navigation Links -->
+            <div class="nav-links" style="margin-top: 15px;">
+                <a href="/pixel_viewer">
+                    <i class="fas fa-search-plus"></i> Pixel Analysis
+                </a>
+                <a href="/process_details">
+                    <i class="fas fa-cogs"></i> Process Details
+                </a>
+            </div>
         </div>
 
         <!-- Tab Navigation -->
