@@ -14,6 +14,7 @@ import time
 from main import extract_images_from_docx, embed_watermark_to_docx
 from qr_utils import read_qr
 
+
 # Inisialisasi aplikasi Flask
 app = Flask(__name__)
 
@@ -942,7 +943,7 @@ def list_documents():
 @app.route('/process_details')
 def process_details():
     """Render the process details page."""
-    return render_template('process_details.html')
+    return render_template('pixel_viewer.html')
 
 
 @app.route('/pixel_viewer')
@@ -955,7 +956,7 @@ def pixel_viewer():
 # PIXEL VIEWER ENHANCEMENT - API ENDPOINTS
 # =============================================================================
 
-@app.route('/api/pixel_data/<image_id>/<int:x>/<int:y>/<int:width>/<int:height>')
+@app.route('/api/pixel_data/<path:image_id>/<int:x>/<int:y>/<int:width>/<int:height>')
 def get_pixel_region(image_id, x, y, width, height):
     """
     Get pixel data for a specific region of an image.
@@ -973,14 +974,41 @@ def get_pixel_region(image_id, x, y, width, height):
         image_path = None
         search_dirs = [app.config['GENERATED_FOLDER'], app.config['UPLOAD_FOLDER']]
         
+        # Handle nested paths like "dir/filename" or just "filename"
         for search_dir in search_dirs:
             for ext in ['png', 'jpg', 'jpeg']:
+                # Try direct path first
                 potential_path = os.path.join(search_dir, f"{image_id}.{ext}")
                 if os.path.exists(potential_path):
                     image_path = potential_path
                     break
+                    
+                # If not found and contains slash, try without directory nesting
+                if '/' in image_id:
+                    filename_only = os.path.basename(image_id)
+                    potential_path = os.path.join(search_dir, f"{filename_only}.{ext}")
+                    if os.path.exists(potential_path):
+                        image_path = potential_path
+                        break
             if image_path:
                 break
+                
+        # If still not found, search recursively
+        if not image_path:
+            filename_to_search = os.path.basename(image_id)
+            for search_dir in search_dirs:
+                for root, dirs, files in os.walk(search_dir):
+                    for ext in ['png', 'jpg', 'jpeg']:
+                        filename = f"{filename_to_search}.{ext}"
+                        if filename in files:
+                            potential_path = os.path.join(root, filename)
+                            if os.path.exists(potential_path):
+                                image_path = potential_path
+                                break
+                    if image_path:
+                        break
+                if image_path:
+                    break
         
         if not image_path:
             return jsonify({'success': False, 'error': 'Image not found'}), 404
@@ -1030,7 +1058,7 @@ def get_pixel_region(image_id, x, y, width, height):
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
-@app.route('/api/bit_planes/<image_id>/<channel>')
+@app.route('/api/bit_planes/<path:image_id>/<channel>')
 def get_bit_planes(image_id, channel):
     """
     Extract bit planes untuk visualisasi LSB.
@@ -1047,14 +1075,41 @@ def get_bit_planes(image_id, channel):
         image_path = None
         search_dirs = [app.config['GENERATED_FOLDER'], app.config['UPLOAD_FOLDER']]
         
+        # Handle nested paths like "dir/filename" or just "filename"
         for search_dir in search_dirs:
             for ext in ['png', 'jpg', 'jpeg']:
+                # Try direct path first
                 potential_path = os.path.join(search_dir, f"{image_id}.{ext}")
                 if os.path.exists(potential_path):
                     image_path = potential_path
                     break
+                    
+                # If not found and contains slash, try without directory nesting
+                if '/' in image_id:
+                    filename_only = os.path.basename(image_id)
+                    potential_path = os.path.join(search_dir, f"{filename_only}.{ext}")
+                    if os.path.exists(potential_path):
+                        image_path = potential_path
+                        break
             if image_path:
                 break
+                
+        # If still not found, search recursively
+        if not image_path:
+            filename_to_search = os.path.basename(image_id)
+            for search_dir in search_dirs:
+                for root, dirs, files in os.walk(search_dir):
+                    for ext in ['png', 'jpg', 'jpeg']:
+                        filename = f"{filename_to_search}.{ext}"
+                        if filename in files:
+                            potential_path = os.path.join(root, filename)
+                            if os.path.exists(potential_path):
+                                image_path = potential_path
+                                break
+                    if image_path:
+                        break
+                if image_path:
+                    break
         
         if not image_path:
             return jsonify({'success': False, 'error': 'Image not found'}), 404
@@ -1114,8 +1169,8 @@ def get_bit_planes(image_id, channel):
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
-@app.route('/api/pixel_diff/<original_id>/<watermarked_id>')
-def get_pixel_difference(original_id, watermarked_id):
+@app.route('/api/pixel_diff/<path:dir1>/<path:img1>/<path:dir2>/<path:img2>')
+def get_pixel_difference(dir1, img1, dir2, img2):
     """
     Calculate pixel-wise differences between original and watermarked images.
     
@@ -1127,23 +1182,61 @@ def get_pixel_difference(original_id, watermarked_id):
         JSON dengan data perbedaan pixel
     """
     try:
+        # Reconstruct the full image IDs from the path components
+        original_id = f"{dir1}/{img1}"
+        watermarked_id = f"{dir2}/{img2}"
+        print(f"[DEBUG] Route received - original_id: '{original_id}', watermarked_id: '{watermarked_id}'")
         # Function untuk mencari file gambar
         def find_image_path(image_id):
             search_dirs = [app.config['GENERATED_FOLDER'], app.config['UPLOAD_FOLDER']]
+            print(f"[DEBUG] Looking for image_id: '{image_id}'")
+            
+            # Handle nested paths like "dir/filename" or just "filename"
             for search_dir in search_dirs:
                 for ext in ['png', 'jpg', 'jpeg']:
+                    # Try direct path first
                     potential_path = os.path.join(search_dir, f"{image_id}.{ext}")
+                    print(f"[DEBUG] Checking: {potential_path}")
                     if os.path.exists(potential_path):
+                        print(f"[DEBUG] FOUND: {potential_path}")
                         return potential_path
+                        
+                    # If not found and contains slash, try without directory nesting
+                    if '/' in image_id:
+                        filename_only = os.path.basename(image_id)
+                        potential_path = os.path.join(search_dir, f"{filename_only}.{ext}")
+                        print(f"[DEBUG] Checking (filename only): {potential_path}")
+                        if os.path.exists(potential_path):
+                            print(f"[DEBUG] FOUND: {potential_path}")
+                            return potential_path
+                    
+            # If still not found, search recursively
+            filename_to_search = os.path.basename(image_id)
+            print(f"[DEBUG] Using recursive search for: {filename_to_search}")
+            for search_dir in search_dirs:
+                for root, dirs, files in os.walk(search_dir):
+                    for ext in ['png', 'jpg', 'jpeg']:
+                        filename = f"{filename_to_search}.{ext}"
+                        if filename in files:
+                            potential_path = os.path.join(root, filename)
+                            if os.path.exists(potential_path):
+                                print(f"[DEBUG] FOUND: {potential_path}")
+                                return potential_path
+            print(f"[DEBUG] Not found: {image_id}")
             return None
         
         original_path = find_image_path(original_id)
         watermarked_path = find_image_path(watermarked_id)
         
+        print(f"[DEBUG] original_id: {original_id}, found path: {original_path}")
+        print(f"[DEBUG] watermarked_id: {watermarked_id}, found path: {watermarked_path}")
+        
         if not original_path:
-            return jsonify({'success': False, 'error': 'Original image not found'}), 404
+            print(f"[ERROR] Original image not found for ID: {original_id}")
+            return jsonify({'success': False, 'error': f'Original image not found for ID: {original_id}'}), 404
         if not watermarked_path:
-            return jsonify({'success': False, 'error': 'Watermarked image not found'}), 404
+            print(f"[ERROR] Watermarked image not found for ID: {watermarked_id}")
+            return jsonify({'success': False, 'error': f'Watermarked image not found for ID: {watermarked_id}'}), 404
         
         # Load kedua gambar
         original_img = Image.open(original_path)
@@ -1207,7 +1300,7 @@ def get_pixel_difference(original_id, watermarked_id):
                 'mse': float(mse),
                 'psnr': float(psnr) if psnr != float('inf') else 'Infinity'
             },
-            'changed_positions': changed_positions[:100],  # Limit to first 100 untuk performa
+            'changed_positions': changed_positions[:500],  # Limit to first 500 untuk performa tapi cukup untuk visualisasi
             'total_changes': len(changed_positions)
         })
         
@@ -1216,7 +1309,7 @@ def get_pixel_difference(original_id, watermarked_id):
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
-@app.route('/api/pixel_inspector/<image_id>/<int:x>/<int:y>')
+@app.route('/api/pixel_inspector/<path:image_id>/<int:x>/<int:y>')
 def pixel_inspector(image_id, x, y):
     """
     Get detailed information about a specific pixel.
@@ -1233,14 +1326,41 @@ def pixel_inspector(image_id, x, y):
         image_path = None
         search_dirs = [app.config['GENERATED_FOLDER'], app.config['UPLOAD_FOLDER']]
         
+        # Handle nested paths like "dir/filename" or just "filename"
         for search_dir in search_dirs:
             for ext in ['png', 'jpg', 'jpeg']:
+                # Try direct path first
                 potential_path = os.path.join(search_dir, f"{image_id}.{ext}")
                 if os.path.exists(potential_path):
                     image_path = potential_path
                     break
+                    
+                # If not found and contains slash, try without directory nesting
+                if '/' in image_id:
+                    filename_only = os.path.basename(image_id)
+                    potential_path = os.path.join(search_dir, f"{filename_only}.{ext}")
+                    if os.path.exists(potential_path):
+                        image_path = potential_path
+                        break
             if image_path:
                 break
+                
+        # If still not found, search recursively
+        if not image_path:
+            filename_to_search = os.path.basename(image_id)
+            for search_dir in search_dirs:
+                for root, dirs, files in os.walk(search_dir):
+                    for ext in ['png', 'jpg', 'jpeg']:
+                        filename = f"{filename_to_search}.{ext}"
+                        if filename in files:
+                            potential_path = os.path.join(root, filename)
+                            if os.path.exists(potential_path):
+                                image_path = potential_path
+                                break
+                    if image_path:
+                        break
+                if image_path:
+                    break
         
         if not image_path:
             return jsonify({'success': False, 'error': 'Image not found'}), 404

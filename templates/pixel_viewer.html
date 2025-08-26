@@ -213,6 +213,260 @@
             background: var(--error-color);
         }
 
+        .pixel-overlay {
+            position: absolute;
+            pointer-events: none;
+            top: 0;
+            left: 0;
+        }
+
+        .pixel-changed {
+            border: 2px solid #ff0000 !important;
+            box-shadow: 0 0 5px rgba(255, 0, 0, 0.8);
+        }
+
+        .pixel-blue-changed {
+            border: 2px solid #0066ff !important;
+            box-shadow: 0 0 5px rgba(0, 102, 255, 0.8);
+        }
+
+        .pixel-unchanged {
+            border: 1px solid rgba(200, 200, 200, 0.3) !important;
+        }
+
+        .legend {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+            font-size: 12px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border: 2px solid;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .comparison-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .difference-card {
+            border-left-color: var(--warning-color);
+        }
+
+        .rgb-display {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .rgb-values {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .rgb-value, .rgb-diff {
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .rgb-value.r, .rgb-diff.r {
+            background: rgba(255, 0, 0, 0.1);
+            color: #d32f2f;
+        }
+
+        .rgb-value.g, .rgb-diff.g {
+            background: rgba(0, 255, 0, 0.1);
+            color: #388e3c;
+        }
+
+        .rgb-value.b, .rgb-diff.b {
+            background: rgba(0, 0, 255, 0.1);
+            color: #1976d2;
+        }
+
+        .color-preview {
+            width: 100%;
+            height: 40px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            text-shadow: 1px 1px 1px rgba(0,0,0,0.5);
+        }
+
+        .binary-values {
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+        }
+
+        .binary-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 2px 0;
+        }
+
+        .binary-label {
+            width: 15px;
+            font-weight: bold;
+        }
+
+        .binary-value {
+            background: #e2e8f0;
+            padding: 2px 4px;
+            border-radius: 3px;
+            letter-spacing: 1px;
+        }
+
+        .lsb-bit {
+            background: var(--warning-color);
+            color: white;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-weight: bold;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .difference-indicator {
+            background: var(--border-color);
+            padding: 8px;
+            border-radius: 4px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .difference-indicator.changed {
+            background: var(--error-color);
+            color: white;
+        }
+
+        .difference-indicator.blue-only {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .change-summary {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-align: center;
+            font-style: italic;
+        }
+
+        .table-container {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .changes-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        .changes-table th {
+            background: var(--primary-color);
+            color: white;
+            padding: 8px 6px;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .changes-table td {
+            padding: 6px;
+            border-bottom: 1px solid var(--border-color);
+            font-family: 'Courier New', monospace;
+        }
+
+        .changes-table tbody tr:hover {
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .rgb-cell {
+            font-family: 'Courier New', monospace;
+            font-size: 10px;
+        }
+
+        .diff-cell {
+            font-weight: bold;
+        }
+
+        .diff-cell.blue-change {
+            color: var(--primary-color);
+        }
+
+        .diff-cell.multi-change {
+            color: var(--error-color);
+        }
+
+        .type-badge {
+            padding: 2px 6px;
+            border-radius: 12px;
+            font-size: 9px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .type-badge.blue-only {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .type-badge.multiple {
+            background: var(--error-color);
+            color: white;
+        }
+
+        .inspect-btn {
+            background: var(--success-color);
+            color: white;
+            border: none;
+            padding: 2px 6px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 9px;
+        }
+
+        .inspect-btn:hover {
+            opacity: 0.8;
+        }
+
+        .table-controls {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 10px;
+        }
+
         .controls-panel {
             background: var(--card-background);
             border-radius: 12px;
@@ -356,26 +610,41 @@
     </div>
 
     <div class="container">
-        <!-- Control Panel -->
-        <div class="controls-panel">
-            <h3><i class="fas fa-cogs"></i> Kontrol Gambar</h3>
-            <div class="control-group">
-                <label class="control-label">Gambar Asli:</label>
-                <input type="text" id="originalImageId" class="file-input" placeholder="ID gambar asli (tanpa ekstensi)">
-                <button onclick="loadOriginalImage()" class="load-btn">Load</button>
+        <!-- Status Panel -->
+        <div class="controls-panel" id="statusPanel">
+            <h3><i class="fas fa-info-circle"></i> Status Analisis</h3>
+            <div id="loadingMessage" class="loading">
+                <div class="spinner"></div>
+                <span style="margin-left: 15px;">Memuat data analisis pixel dari proses embedding...</span>
             </div>
-            <div class="control-group">
-                <label class="control-label">Gambar Watermarked:</label>
-                <input type="text" id="watermarkedImageId" class="file-input" placeholder="ID gambar watermarked (tanpa ekstensi)">
-                <button onclick="loadWatermarkedImage()" class="load-btn">Load</button>
-            </div>
-            <div class="control-group">
-                <button onclick="compareImages()" class="load-btn" style="background: var(--success-color)">
-                    <i class="fas fa-balance-scale"></i> Bandingkan Gambar
-                </button>
-                <button onclick="analyzePixelDifferences()" class="load-btn" style="background: var(--warning-color)">
-                    <i class="fas fa-microscope"></i> Analisis Detail
-                </button>
+            <div id="analysisInfo" style="display: none;">
+                <div class="control-group">
+                    <span class="control-label">Gambar yang Dianalisis:</span>
+                    <span id="currentImageInfo">Gambar pertama dari hasil embedding</span>
+                </div>
+                <div class="control-group">
+                    <button onclick="compareImages()" class="load-btn" style="background: var(--success-color)">
+                        <i class="fas fa-balance-scale"></i> Analisis Perbandingan
+                    </button>
+                    <button onclick="toggleDifferenceVisualization()" class="load-btn" id="diffToggleBtn" style="background: var(--warning-color); display: none;">
+                        <i class="fas fa-eye"></i> <span id="diffToggleText">Tampilkan Perbedaan</span>
+                    </button>
+                    <button onclick="toggleRGBComparison()" class="load-btn" id="rgbToggleBtn" style="background: var(--primary-color); display: none;">
+                        <i class="fas fa-palette"></i> <span id="rgbToggleText">RGB Comparison</span>
+                    </button>
+                    <button onclick="showChangedPixelsTable()" class="load-btn" id="tableBtn" style="background: var(--secondary-color); display: none;">
+                        <i class="fas fa-table"></i> Tabel Perubahan
+                    </button>
+                </div>
+                <div class="control-group" style="display: none;" id="channelControls">
+                    <span class="control-label">Focus Channel:</span>
+                    <select id="channelFocus" onchange="updateChannelFocus()" class="file-input">
+                        <option value="b" selected>Blue Channel (LSB)</option>
+                    </select>
+                    <span style="margin-left: 10px; font-size: 12px; color: var(--text-secondary);">
+                        <i class="fas fa-info-circle"></i> LSB watermarking pada blue channel
+                    </span>
+                </div>
             </div>
         </div>
 
@@ -400,13 +669,45 @@
                     <button class="zoom-btn" onclick="adjustZoom('original', -1)">
                         <i class="fas fa-search-minus"></i>
                     </button>
-                    <span class="zoom-level" id="originalZoomLevel">10x</span>
+                    <span class="zoom-level" id="originalZoomLevel">3x</span>
                     <button class="zoom-btn" onclick="adjustZoom('original', 1)">
                         <i class="fas fa-search-plus"></i>
                     </button>
                     <button class="zoom-btn" onclick="resetView('original')" style="margin-left: 10px;">
                         <i class="fas fa-undo"></i> Reset
                     </button>
+                    <button class="zoom-btn" onclick="loadFullImage('original')" style="margin-left: 10px;">
+                        <i class="fas fa-expand"></i> Full
+                    </button>
+                </div>
+                <div class="zoom-controls">
+                    <button class="zoom-btn" onclick="panImage('original', 'up')">
+                        <i class="fas fa-arrow-up"></i>
+                    </button>
+                    <button class="zoom-btn" onclick="panImage('original', 'left')">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <button class="zoom-btn" onclick="panImage('original', 'right')">
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                    <button class="zoom-btn" onclick="panImage('original', 'down')">
+                        <i class="fas fa-arrow-down"></i>
+                    </button>
+                    <span style="margin-left: 10px; font-size: 12px;" id="originalRegionInfo">Region: 0,0</span>
+                </div>
+                <div class="legend" id="originalLegend" style="display: none;">
+                    <div class="legend-item">
+                        <div class="legend-color" style="border-color: #0066ff; background: rgba(0, 102, 255, 0.2);"></div>
+                        <span>Blue Channel Changed</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="border-color: #ff0000; background: rgba(255, 0, 0, 0.2);"></div>
+                        <span>All Channels Changed</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="border-color: rgba(200, 200, 200, 0.5);"></div>
+                        <span>Unchanged</span>
+                    </div>
                 </div>
             </div>
 
@@ -421,14 +722,162 @@
                     <button class="zoom-btn" onclick="adjustZoom('watermarked', -1)">
                         <i class="fas fa-search-minus"></i>
                     </button>
-                    <span class="zoom-level" id="watermarkedZoomLevel">10x</span>
+                    <span class="zoom-level" id="watermarkedZoomLevel">3x</span>
                     <button class="zoom-btn" onclick="adjustZoom('watermarked', 1)">
                         <i class="fas fa-search-plus"></i>
                     </button>
                     <button class="zoom-btn" onclick="resetView('watermarked')" style="margin-left: 10px;">
                         <i class="fas fa-undo"></i> Reset
                     </button>
+                    <button class="zoom-btn" onclick="loadFullImage('watermarked')" style="margin-left: 10px;">
+                        <i class="fas fa-expand"></i> Full
+                    </button>
                 </div>
+                <div class="zoom-controls">
+                    <button class="zoom-btn" onclick="panImage('watermarked', 'up')">
+                        <i class="fas fa-arrow-up"></i>
+                    </button>
+                    <button class="zoom-btn" onclick="panImage('watermarked', 'left')">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <button class="zoom-btn" onclick="panImage('watermarked', 'right')">
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                    <button class="zoom-btn" onclick="panImage('watermarked', 'down')">
+                        <i class="fas fa-arrow-down"></i>
+                    </button>
+                    <span style="margin-left: 10px; font-size: 12px;" id="watermarkedRegionInfo">Region: 0,0</span>
+                </div>
+                <div class="legend" id="watermarkedLegend" style="display: none;">
+                    <div class="legend-item">
+                        <div class="legend-color" style="border-color: #0066ff; background: rgba(0, 102, 255, 0.2);"></div>
+                        <span>Blue Channel Changed</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="border-color: #ff0000; background: rgba(255, 0, 0, 0.2);"></div>
+                        <span>All Channels Changed</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="border-color: rgba(200, 200, 200, 0.5);"></div>
+                        <span>Unchanged</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RGB Comparison Panel -->
+        <div class="inspector-panel" id="rgbComparisonPanel" style="display: none;">
+            <h3><i class="fas fa-palette"></i> RGB Comparison</h3>
+            <div class="pixel-coord" id="comparisonCoord">Klik pada pixel untuk membandingkan nilai RGB</div>
+            
+            <div class="comparison-grid">
+                <div class="comparison-card">
+                    <h4><i class="fas fa-image"></i> Original</h4>
+                    <div id="originalRGB" class="rgb-display">
+                        <div class="rgb-values">
+                            <span class="rgb-value r">R: --</span>
+                            <span class="rgb-value g">G: --</span>
+                            <span class="rgb-value b">B: --</span>
+                        </div>
+                        <div class="color-preview" id="originalColorPreview"></div>
+                        <div class="binary-values">
+                            <div class="binary-row">
+                                <span class="binary-label">R:</span>
+                                <span class="binary-value" id="originalRBinary">--------</span>
+                                <span class="lsb-bit" id="originalRLSB">-</span>
+                            </div>
+                            <div class="binary-row">
+                                <span class="binary-label">G:</span>
+                                <span class="binary-value" id="originalGBinary">--------</span>
+                                <span class="lsb-bit" id="originalGLSB">-</span>
+                            </div>
+                            <div class="binary-row">
+                                <span class="binary-label">B:</span>
+                                <span class="binary-value" id="originalBBinary">--------</span>
+                                <span class="lsb-bit" id="originalBLSB">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="comparison-card">
+                    <h4><i class="fas fa-eye"></i> Watermarked</h4>
+                    <div id="watermarkedRGB" class="rgb-display">
+                        <div class="rgb-values">
+                            <span class="rgb-value r">R: --</span>
+                            <span class="rgb-value g">G: --</span>
+                            <span class="rgb-value b">B: --</span>
+                        </div>
+                        <div class="color-preview" id="watermarkedColorPreview"></div>
+                        <div class="binary-values">
+                            <div class="binary-row">
+                                <span class="binary-label">R:</span>
+                                <span class="binary-value" id="watermarkedRBinary">--------</span>
+                                <span class="lsb-bit" id="watermarkedRLSB">-</span>
+                            </div>
+                            <div class="binary-row">
+                                <span class="binary-label">G:</span>
+                                <span class="binary-value" id="watermarkedGBinary">--------</span>
+                                <span class="lsb-bit" id="watermarkedGLSB">-</span>
+                            </div>
+                            <div class="binary-row">
+                                <span class="binary-label">B:</span>
+                                <span class="binary-value" id="watermarkedBBinary">--------</span>
+                                <span class="lsb-bit" id="watermarkedBLSB">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="comparison-card difference-card">
+                    <h4><i class="fas fa-not-equal"></i> Difference</h4>
+                    <div id="differenceRGB" class="rgb-display">
+                        <div class="rgb-values">
+                            <span class="rgb-diff r" id="diffR">ΔR: --</span>
+                            <span class="rgb-diff g" id="diffG">ΔG: --</span>
+                            <span class="rgb-diff b" id="diffB">ΔB: --</span>
+                        </div>
+                        <div class="difference-indicator" id="changeType">No Change</div>
+                        <div class="change-summary" id="changeSummary">
+                            Click on a pixel to see RGB changes
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Changed Pixels Table -->
+        <div class="inspector-panel" id="changedPixelsPanel" style="display: none;">
+            <h3><i class="fas fa-table"></i> Tabel Pixel yang Berubah</h3>
+            
+            <div class="table-controls">
+                <div class="control-group">
+                    <span class="control-label">Filter:</span>
+                    <select id="changeFilter" onchange="filterChangedPixels()">
+                        <option value="all">Semua Perubahan</option>
+                        <option value="blue-only">Hanya Blue Channel</option>
+                        <option value="multiple">Multiple Channel</option>
+                    </select>
+                    <span id="filteredCount" style="margin-left: 10px; font-size: 12px;">0 pixel</span>
+                </div>
+            </div>
+            
+            <div class="table-container">
+                <table id="changedPixelsTable" class="changes-table">
+                    <thead>
+                        <tr>
+                            <th>Posisi</th>
+                            <th>Original RGB</th>
+                            <th>Watermarked RGB</th>
+                            <th>Perubahan</th>
+                            <th>Jenis</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data will be populated by JavaScript -->
+                    </tbody>
+                </table>
             </div>
         </div>
 
@@ -448,6 +897,9 @@
         let originalViewer = null;
         let watermarkedViewer = null;
         let currentPixelInfo = null;
+        let pixelDifferences = null;
+        let differenceVisualizationEnabled = false;
+        let channelFocus = 'b'; // Default focus pada blue channel
 
         // PixelViewer class
         class PixelViewer {
@@ -457,9 +909,9 @@
                 this.imageId = imageId;
                 this.imageData = null;
                 this.originalImageData = null;
-                this.zoom = 10;
+                this.zoom = 3; // Start with lower zoom for full image view
                 this.offset = {x: 0, y: 0};
-                this.viewSize = {width: 40, height: 40}; // Visible pixels at 10x zoom
+                this.maxDisplaySize = {width: 100, height: 100}; // Max pixels to display at once for performance
                 
                 this.setupEventListeners();
             }
@@ -473,13 +925,19 @@
                 this.imageId = imageId;
                 try {
                     // Load a small region first to get image info
-                    const response = await fetch(`/api/pixel_data/${imageId}/0/0/50/50`);
+                    const response = await fetch(`/api/pixel_data/${imageId}/0/0/10/10`);
                     const data = await response.json();
                     
                     if (data.success) {
                         this.imageSize = data.image_size;
-                        this.loadRegion(0, 0, Math.min(this.viewSize.width, this.imageSize.width), 
-                                      Math.min(this.viewSize.height, this.imageSize.height));
+                        console.log(`Image size: ${this.imageSize.width}x${this.imageSize.height}`);
+                        
+                        // Determine best region size to display
+                        const displayWidth = Math.min(this.maxDisplaySize.width, this.imageSize.width);
+                        const displayHeight = Math.min(this.maxDisplaySize.height, this.imageSize.height);
+                        
+                        // Load the initial region (top-left portion of the image)
+                        this.loadRegion(0, 0, displayWidth, displayHeight);
                     } else {
                         console.error('Failed to load image:', data.error);
                         alert('Gagal memuat gambar: ' + data.error);
@@ -498,12 +956,75 @@
                     if (data.success) {
                         this.imageData = data.pixel_data;
                         this.offset = {x, y};
+                        this.currentRegion = {x, y, width, height};
                         this.drawPixelGrid();
+                        this.updateRegionInfo();
                     } else {
                         console.error('Failed to load region:', data.error);
                     }
                 } catch (error) {
                     console.error('Error loading region:', error);
+                }
+            }
+
+            updateRegionInfo() {
+                const regionInfoId = this.canvas.id.replace('Canvas', 'RegionInfo');
+                const regionInfoElement = document.getElementById(regionInfoId);
+                if (regionInfoElement && this.currentRegion) {
+                    const endX = this.currentRegion.x + this.currentRegion.width - 1;
+                    const endY = this.currentRegion.y + this.currentRegion.height - 1;
+                    regionInfoElement.textContent = `Region: ${this.currentRegion.x},${this.currentRegion.y}-${endX},${endY}`;
+                }
+            }
+
+            panImage(direction) {
+                if (!this.imageSize || !this.currentRegion) return;
+                
+                const panStep = Math.floor(this.currentRegion.width / 2);
+                let newX = this.currentRegion.x;
+                let newY = this.currentRegion.y;
+                
+                switch(direction) {
+                    case 'up':
+                        newY = Math.max(0, newY - panStep);
+                        break;
+                    case 'down':
+                        newY = Math.min(this.imageSize.height - this.currentRegion.height, newY + panStep);
+                        break;
+                    case 'left':
+                        newX = Math.max(0, newX - panStep);
+                        break;
+                    case 'right':
+                        newX = Math.min(this.imageSize.width - this.currentRegion.width, newX + panStep);
+                        break;
+                }
+                
+                if (newX !== this.currentRegion.x || newY !== this.currentRegion.y) {
+                    this.loadRegion(newX, newY, this.currentRegion.width, this.currentRegion.height);
+                }
+            }
+
+            async loadFullImage() {
+                if (!this.imageSize) return;
+                
+                // For very large images, limit the maximum size
+                const maxPixels = 200 * 200; // Maximum pixels to load at once
+                const totalPixels = this.imageSize.width * this.imageSize.height;
+                
+                if (totalPixels <= maxPixels) {
+                    // Load entire image
+                    await this.loadRegion(0, 0, this.imageSize.width, this.imageSize.height);
+                    this.zoom = Math.max(1, Math.floor(400 / Math.max(this.imageSize.width, this.imageSize.height)));
+                    this.updateZoomDisplay();
+                } else {
+                    // Load a larger region but not the entire image
+                    const scaleFactor = Math.sqrt(maxPixels / totalPixels);
+                    const newWidth = Math.floor(this.imageSize.width * scaleFactor);
+                    const newHeight = Math.floor(this.imageSize.height * scaleFactor);
+                    
+                    await this.loadRegion(0, 0, newWidth, newHeight);
+                    this.zoom = Math.max(1, Math.floor(400 / Math.max(newWidth, newHeight)));
+                    this.updateZoomDisplay();
                 }
             }
 
@@ -524,10 +1045,35 @@
                         this.ctx.fillStyle = `rgb(${pixel.r}, ${pixel.g}, ${pixel.b})`;
                         this.ctx.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
                         
-                        // Draw grid lines
-                        this.ctx.strokeStyle = '#cccccc';
-                        this.ctx.lineWidth = 1;
-                        this.ctx.strokeRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
+                        // Draw grid lines dengan warna yang menunjukkan perubahan
+                        if (differenceVisualizationEnabled && pixelDifferences && this.shouldHighlightPixel(pixel.x, pixel.y)) {
+                            const changeType = this.getPixelChangeType(pixel.x, pixel.y);
+                            if (changeType === 'blue-only') {
+                                this.ctx.strokeStyle = '#0066ff';
+                                this.ctx.lineWidth = 2;
+                                this.ctx.strokeRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
+                                
+                                // Add blue overlay
+                                this.ctx.fillStyle = 'rgba(0, 102, 255, 0.2)';
+                                this.ctx.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
+                            } else if (changeType === 'multiple') {
+                                this.ctx.strokeStyle = '#ff0000';
+                                this.ctx.lineWidth = 2;
+                                this.ctx.strokeRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
+                                
+                                // Add red overlay
+                                this.ctx.fillStyle = 'rgba(255, 0, 0, 0.2)';
+                                this.ctx.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
+                            }
+                            
+                            // Redraw the pixel content on top
+                            this.ctx.fillStyle = `rgb(${pixel.r}, ${pixel.g}, ${pixel.b})`;
+                            this.ctx.fillRect(x * pixelSize + 2, y * pixelSize + 2, pixelSize - 4, pixelSize - 4);
+                        } else {
+                            this.ctx.strokeStyle = '#cccccc';
+                            this.ctx.lineWidth = 1;
+                            this.ctx.strokeRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
+                        }
                         
                         // Add pixel coordinates if zoom is high enough
                         if (this.zoom >= 20) {
@@ -551,7 +1097,13 @@
 
                 if (y < this.imageData.length && x < this.imageData[y].length) {
                     const pixel = this.imageData[y][x];
-                    this.inspectPixel(pixel.x, pixel.y);
+                    
+                    // Check if RGB comparison mode is active
+                    if (window.rgbComparisonMode) {
+                        comparePixelRGB(pixel.x, pixel.y);
+                    } else {
+                        this.inspectPixel(pixel.x, pixel.y);
+                    }
                 }
             }
 
@@ -583,7 +1135,11 @@
             }
 
             adjustZoom(delta) {
-                const newZoom = Math.max(5, Math.min(50, this.zoom + delta * 5));
+                let zoomStep = 1;
+                if (this.zoom >= 10) zoomStep = 2;
+                if (this.zoom >= 20) zoomStep = 5;
+                
+                const newZoom = Math.max(1, Math.min(30, this.zoom + delta * zoomStep));
                 if (newZoom !== this.zoom) {
                     this.zoom = newZoom;
                     this.drawPixelGrid();
@@ -595,49 +1151,162 @@
                 const zoomElementId = this.canvas.id.replace('Canvas', 'ZoomLevel');
                 document.getElementById(zoomElementId).textContent = `${this.zoom}x`;
             }
+
+            shouldHighlightPixel(x, y) {
+                if (!pixelDifferences || !pixelDifferences.changed_positions) return false;
+                
+                return pixelDifferences.changed_positions.some(change => 
+                    change.x === x && change.y === y
+                );
+            }
+
+            getPixelChangeType(x, y) {
+                if (!pixelDifferences || !pixelDifferences.changed_positions) return 'none';
+                
+                const change = pixelDifferences.changed_positions.find(change => 
+                    change.x === x && change.y === y
+                );
+                
+                if (!change) return 'none';
+                
+                // Fokus hanya pada blue channel untuk LSB watermarking
+                const rChanged = change.diff.r !== 0;
+                const gChanged = change.diff.g !== 0;
+                const bChanged = change.diff.b !== 0;
+                
+                if (bChanged && !rChanged && !gChanged) {
+                    return 'blue-only';
+                } else if (rChanged || gChanged || bChanged) {
+                    return 'multiple';
+                }
+                
+                return 'none';
+            }
         }
 
         // Initialize viewers
         document.addEventListener('DOMContentLoaded', function() {
             originalViewer = new PixelViewer('originalCanvas');
             watermarkedViewer = new PixelViewer('watermarkedCanvas');
+            
+            // Check for embedding results data and auto-load first image
+            loadEmbeddingResults();
         });
 
-        // Control functions
-        async function loadOriginalImage() {
-            const imageId = document.getElementById('originalImageId').value.trim();
-            if (!imageId) {
-                alert('Masukkan ID gambar asli');
-                return;
+        // Global variables for current analysis
+        let currentOriginalId = null;
+        let currentWatermarkedId = null;
+
+        // Auto-load embedding results
+        async function loadEmbeddingResults() {
+            try {
+                // Try to get embedding results from sessionStorage
+                const embeddingResults = sessionStorage.getItem('latestEmbeddingResults');
+                
+                if (!embeddingResults) {
+                    // No recent embedding data available
+                    document.getElementById('loadingMessage').innerHTML = `
+                        <div style="text-align: center; padding: 20px;">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: var(--warning-color); margin-bottom: 15px;"></i>
+                            <h4>Tidak ada data analisis</h4>
+                            <p>Silakan lakukan proses embedding terlebih dahulu untuk dapat menggunakan Pixel Analysis Viewer.</p>
+                            <a href="/" class="load-btn" style="display: inline-block; margin-top: 15px;">
+                                <i class="fas fa-arrow-left"></i> Kembali ke Menu Utama
+                            </a>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                const results = JSON.parse(embeddingResults);
+                
+                if (results.processed_images && results.processed_images.length > 0) {
+                    // Get first image for analysis
+                    const firstImage = results.processed_images[0];
+                    
+                    // Extract image IDs from paths
+                    currentOriginalId = extractImageId(firstImage.original);
+                    currentWatermarkedId = extractImageId(firstImage.watermarked);
+                    
+                    if (currentOriginalId && currentWatermarkedId) {
+                        // Load images automatically
+                        await originalViewer.loadImage(currentOriginalId);
+                        await watermarkedViewer.loadImage(currentWatermarkedId);
+                        
+                        // Update UI
+                        document.getElementById('loadingMessage').style.display = 'none';
+                        document.getElementById('analysisInfo').style.display = 'block';
+                        document.getElementById('currentImageInfo').textContent = 
+                            `Gambar 1 dari ${results.processed_images.length} (${results.file_type?.toUpperCase() || 'DOCX'})`;
+                        
+                        // Auto-compare images
+                        await compareImages();
+                    } else {
+                        throw new Error('Invalid image paths in embedding results');
+                    }
+                } else {
+                    throw new Error('No processed images found in embedding results');
+                }
+                
+            } catch (error) {
+                console.error('Error loading embedding results:', error);
+                document.getElementById('loadingMessage').innerHTML = `
+                    <div style="text-align: center; padding: 20px;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: var(--error-color); margin-bottom: 15px;"></i>
+                        <h4>Error memuat data analisis</h4>
+                        <p>${error.message}</p>
+                        <a href="/" class="load-btn" style="display: inline-block; margin-top: 15px;">
+                            <i class="fas fa-arrow-left"></i> Kembali ke Menu Utama
+                        </a>
+                    </div>
+                `;
             }
-            await originalViewer.loadImage(imageId);
         }
 
-        async function loadWatermarkedImage() {
-            const imageId = document.getElementById('watermarkedImageId').value.trim();
-            if (!imageId) {
-                alert('Masukkan ID gambar watermarked');
-                return;
+        function extractImageId(imagePath) {
+            if (!imagePath) return null;
+            
+            // Expected format: "generated/{public_dir_name}/original_0.png" or "generated/{public_dir_name}/watermarked_0.png"
+            // We need to return "{public_dir_name}/original_0" or "{public_dir_name}/watermarked_0"
+            
+            const pathParts = imagePath.split('/');
+            
+            if (pathParts.length >= 3 && pathParts[0] === 'generated') {
+                const dirName = pathParts[1];
+                const filename = pathParts[2];
+                const fileBase = filename.replace(/\.[^/.]+$/, ''); // Remove extension
+                return `${dirName}/${fileBase}`;
             }
-            await watermarkedViewer.loadImage(imageId);
+            
+            // Fallback - just filename without extension
+            const filename = pathParts[pathParts.length - 1];
+            return filename.replace(/\.[^/.]+$/, '');
         }
 
         async function compareImages() {
-            const originalId = document.getElementById('originalImageId').value.trim();
-            const watermarkedId = document.getElementById('watermarkedImageId').value.trim();
-            
-            if (!originalId || !watermarkedId) {
-                alert('Masukkan kedua ID gambar untuk perbandingan');
+            if (!currentOriginalId || !currentWatermarkedId) {
+                alert('Data gambar tidak tersedia untuk perbandingan');
                 return;
             }
 
             try {
-                const response = await fetch(`/api/pixel_diff/${originalId}/${watermarkedId}`);
+                const response = await fetch(`/api/pixel_diff/${currentOriginalId}/${currentWatermarkedId}`);
                 const data = await response.json();
                 
                 if (data.success) {
+                    // Simpan data perbedaan untuk visualisasi
+                    pixelDifferences = data;
+                    
                     displayComparisonStats(data.statistics);
                     document.getElementById('statsPanel').style.display = 'block';
+                    
+                    // Tampilkan tombol toggle untuk visualisasi perbedaan
+                    document.getElementById('diffToggleBtn').style.display = 'inline-block';
+                    document.getElementById('rgbToggleBtn').style.display = 'inline-block';
+                    document.getElementById('tableBtn').style.display = 'inline-block';
+                    document.getElementById('channelControls').style.display = 'flex';
+                    
+                    console.log(`Found ${data.changed_positions ? data.changed_positions.length : 0} changed pixels`);
                 } else {
                     alert('Gagal membandingkan gambar: ' + data.error);
                 }
@@ -714,21 +1383,320 @@
 
         function resetView(viewerType) {
             if (viewerType === 'original' && originalViewer) {
-                originalViewer.zoom = 10;
+                originalViewer.zoom = 3;
                 originalViewer.offset = {x: 0, y: 0};
-                originalViewer.drawPixelGrid();
+                const displayWidth = Math.min(originalViewer.maxDisplaySize.width, originalViewer.imageSize.width);
+                const displayHeight = Math.min(originalViewer.maxDisplaySize.height, originalViewer.imageSize.height);
+                originalViewer.loadRegion(0, 0, displayWidth, displayHeight);
                 originalViewer.updateZoomDisplay();
             } else if (viewerType === 'watermarked' && watermarkedViewer) {
-                watermarkedViewer.zoom = 10;
+                watermarkedViewer.zoom = 3;
                 watermarkedViewer.offset = {x: 0, y: 0};
-                watermarkedViewer.drawPixelGrid();
+                const displayWidth = Math.min(watermarkedViewer.maxDisplaySize.width, watermarkedViewer.imageSize.width);
+                const displayHeight = Math.min(watermarkedViewer.maxDisplaySize.height, watermarkedViewer.imageSize.height);
+                watermarkedViewer.loadRegion(0, 0, displayWidth, displayHeight);
                 watermarkedViewer.updateZoomDisplay();
             }
         }
 
+        function panImage(viewerType, direction) {
+            if (viewerType === 'original' && originalViewer) {
+                originalViewer.panImage(direction);
+            } else if (viewerType === 'watermarked' && watermarkedViewer) {
+                watermarkedViewer.panImage(direction);
+            }
+        }
+
+        function loadFullImage(viewerType) {
+            if (viewerType === 'original' && originalViewer) {
+                originalViewer.loadFullImage();
+            } else if (viewerType === 'watermarked' && watermarkedViewer) {
+                watermarkedViewer.loadFullImage();
+            }
+        }
+
+        function toggleDifferenceVisualization() {
+            differenceVisualizationEnabled = !differenceVisualizationEnabled;
+            
+            const btn = document.getElementById('diffToggleBtn');
+            const text = document.getElementById('diffToggleText');
+            
+            if (differenceVisualizationEnabled) {
+                text.textContent = 'Sembunyikan Perbedaan';
+                btn.style.background = 'var(--error-color)';
+                
+                // Tampilkan legend
+                document.getElementById('originalLegend').style.display = 'flex';
+                document.getElementById('watermarkedLegend').style.display = 'flex';
+            } else {
+                text.textContent = 'Tampilkan Perbedaan';
+                btn.style.background = 'var(--warning-color)';
+                
+                // Sembunyikan legend
+                document.getElementById('originalLegend').style.display = 'none';
+                document.getElementById('watermarkedLegend').style.display = 'none';
+            }
+            
+            // Redraw kedua canvas
+            if (originalViewer) originalViewer.drawPixelGrid();
+            if (watermarkedViewer) watermarkedViewer.drawPixelGrid();
+        }
+
+        function updateChannelFocus() {
+            // Selalu fokus pada blue channel untuk LSB watermarking
+            channelFocus = 'b';
+            
+            // Redraw kedua canvas jika visualisasi aktif
+            if (differenceVisualizationEnabled) {
+                if (originalViewer) originalViewer.drawPixelGrid();
+                if (watermarkedViewer) watermarkedViewer.drawPixelGrid();
+            }
+        }
+
+        function toggleRGBComparison() {
+            const panel = document.getElementById('rgbComparisonPanel');
+            const btn = document.getElementById('rgbToggleBtn');
+            const text = document.getElementById('rgbToggleText');
+            
+            if (panel.style.display === 'none') {
+                panel.style.display = 'block';
+                text.textContent = 'Tutup RGB Comparison';
+                btn.style.background = 'var(--error-color)';
+                
+                // Aktifkan mode perbandingan - klik pixel akan menampilkan perbandingan RGB
+                window.rgbComparisonMode = true;
+            } else {
+                panel.style.display = 'none';
+                text.textContent = 'RGB Comparison';
+                btn.style.background = 'var(--primary-color)';
+                window.rgbComparisonMode = false;
+            }
+        }
+
+        async function comparePixelRGB(x, y) {
+            if (!currentOriginalId || !currentWatermarkedId) {
+                return;
+            }
+
+            try {
+                // Get original pixel data
+                const originalResponse = await fetch(`/api/pixel_inspector/${currentOriginalId}/${x}/${y}`);
+                const originalData = await originalResponse.json();
+                
+                // Get watermarked pixel data
+                const watermarkedResponse = await fetch(`/api/pixel_inspector/${currentWatermarkedId}/${x}/${y}`);
+                const watermarkedData = await watermarkedResponse.json();
+                
+                if (originalData.success && watermarkedData.success) {
+                    displayRGBComparison(originalData.pixel_info, watermarkedData.pixel_info);
+                }
+            } catch (error) {
+                console.error('Error comparing pixel RGB:', error);
+            }
+        }
+
+        function displayRGBComparison(original, watermarked) {
+            // Update coordinates
+            document.getElementById('comparisonCoord').textContent = 
+                `Perbandingan Pixel (${original.position.x}, ${original.position.y})`;
+
+            // Original RGB values
+            document.querySelector('#originalRGB .r').textContent = `R: ${original.rgb.r}`;
+            document.querySelector('#originalRGB .g').textContent = `G: ${original.rgb.g}`;
+            document.querySelector('#originalRGB .b').textContent = `B: ${original.rgb.b}`;
+            
+            // Original color preview
+            document.getElementById('originalColorPreview').style.backgroundColor = original.hex;
+            document.getElementById('originalColorPreview').textContent = original.hex;
+            
+            // Original binary values
+            document.getElementById('originalRBinary').textContent = original.binary.r;
+            document.getElementById('originalGBinary').textContent = original.binary.g;
+            document.getElementById('originalBBinary').textContent = original.binary.b;
+            document.getElementById('originalRLSB').textContent = original.lsb.r;
+            document.getElementById('originalGLSB').textContent = original.lsb.g;
+            document.getElementById('originalBLSB').textContent = original.lsb.b;
+
+            // Watermarked RGB values
+            document.querySelector('#watermarkedRGB .r').textContent = `R: ${watermarked.rgb.r}`;
+            document.querySelector('#watermarkedRGB .g').textContent = `G: ${watermarked.rgb.g}`;
+            document.querySelector('#watermarkedRGB .b').textContent = `B: ${watermarked.rgb.b}`;
+            
+            // Watermarked color preview
+            document.getElementById('watermarkedColorPreview').style.backgroundColor = watermarked.hex;
+            document.getElementById('watermarkedColorPreview').textContent = watermarked.hex;
+            
+            // Watermarked binary values
+            document.getElementById('watermarkedRBinary').textContent = watermarked.binary.r;
+            document.getElementById('watermarkedGBinary').textContent = watermarked.binary.g;
+            document.getElementById('watermarkedBBinary').textContent = watermarked.binary.b;
+            document.getElementById('watermarkedRLSB').textContent = watermarked.lsb.r;
+            document.getElementById('watermarkedGLSB').textContent = watermarked.lsb.g;
+            document.getElementById('watermarkedBLSB').textContent = watermarked.lsb.b;
+
+            // Calculate and display differences
+            const diffR = watermarked.rgb.r - original.rgb.r;
+            const diffG = watermarked.rgb.g - original.rgb.g;
+            const diffB = watermarked.rgb.b - original.rgb.b;
+            
+            document.getElementById('diffR').textContent = `ΔR: ${diffR > 0 ? '+' : ''}${diffR}`;
+            document.getElementById('diffG').textContent = `ΔG: ${diffG > 0 ? '+' : ''}${diffG}`;
+            document.getElementById('diffB').textContent = `ΔB: ${diffB > 0 ? '+' : ''}${diffB}`;
+            
+            // Analyze change type
+            const rChanged = diffR !== 0;
+            const gChanged = diffG !== 0;
+            const bChanged = diffB !== 0;
+            const totalChanges = (rChanged ? 1 : 0) + (gChanged ? 1 : 0) + (bChanged ? 1 : 0);
+            
+            const changeTypeEl = document.getElementById('changeType');
+            const changeSummaryEl = document.getElementById('changeSummary');
+            
+            if (totalChanges === 0) {
+                changeTypeEl.textContent = 'No Change';
+                changeTypeEl.className = 'difference-indicator';
+                changeSummaryEl.textContent = 'Pixel ini tidak mengalami perubahan';
+            } else if (totalChanges === 1 && bChanged) {
+                changeTypeEl.textContent = 'Blue LSB Change';
+                changeTypeEl.className = 'difference-indicator blue-only';
+                changeSummaryEl.textContent = 'Hanya blue channel yang berubah (LSB watermarking)';
+            } else {
+                changeTypeEl.textContent = 'Multiple Channel Change';
+                changeTypeEl.className = 'difference-indicator changed';
+                changeSummaryEl.textContent = `${totalChanges} channel berubah: ${rChanged ? 'R' : ''}${gChanged ? 'G' : ''}${bChanged ? 'B' : ''}`;
+            }
+        }
+
+        function showChangedPixelsTable() {
+            if (!pixelDifferences || !pixelDifferences.changed_positions) {
+                alert('Data perbandingan tidak tersedia. Lakukan analisis perbandingan terlebih dahulu.');
+                return;
+            }
+
+            const panel = document.getElementById('changedPixelsPanel');
+            if (panel.style.display === 'none') {
+                panel.style.display = 'block';
+                populateChangedPixelsTable();
+            } else {
+                panel.style.display = 'none';
+            }
+        }
+
+        function populateChangedPixelsTable() {
+            const tbody = document.querySelector('#changedPixelsTable tbody');
+            tbody.innerHTML = '';
+            
+            const changes = pixelDifferences.changed_positions;
+            
+            changes.forEach((change, index) => {
+                const rChanged = change.diff.r !== 0;
+                const gChanged = change.diff.g !== 0;
+                const bChanged = change.diff.b !== 0;
+                const totalChanges = (rChanged ? 1 : 0) + (gChanged ? 1 : 0) + (bChanged ? 1 : 0);
+                
+                let changeType, typeBadgeClass, diffClass;
+                if (totalChanges === 1 && bChanged) {
+                    changeType = 'Blue LSB';
+                    typeBadgeClass = 'blue-only';
+                    diffClass = 'blue-change';
+                } else {
+                    changeType = 'Multiple';
+                    typeBadgeClass = 'multiple';
+                    diffClass = 'multi-change';
+                }
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>(${change.x}, ${change.y})</td>
+                    <td class="rgb-cell">
+                        <span style="color: #d32f2f;">R:${change.original.r}</span><br>
+                        <span style="color: #388e3c;">G:${change.original.g}</span><br>
+                        <span style="color: #1976d2;">B:${change.original.b}</span>
+                    </td>
+                    <td class="rgb-cell">
+                        <span style="color: #d32f2f;">R:${change.watermarked.r}</span><br>
+                        <span style="color: #388e3c;">G:${change.watermarked.g}</span><br>
+                        <span style="color: #1976d2;">B:${change.watermarked.b}</span>
+                    </td>
+                    <td class="diff-cell ${diffClass}">
+                        ${change.diff.r !== 0 ? `ΔR:${change.diff.r > 0 ? '+' : ''}${change.diff.r}` : ''}<br>
+                        ${change.diff.g !== 0 ? `ΔG:${change.diff.g > 0 ? '+' : ''}${change.diff.g}` : ''}<br>
+                        ${change.diff.b !== 0 ? `ΔB:${change.diff.b > 0 ? '+' : ''}${change.diff.b}` : ''}
+                    </td>
+                    <td>
+                        <span class="type-badge ${typeBadgeClass}">${changeType}</span>
+                    </td>
+                    <td>
+                        <button class="inspect-btn" onclick="comparePixelRGB(${change.x}, ${change.y})">
+                            Detail
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            // Update filtered count
+            document.getElementById('filteredCount').textContent = `${changes.length} pixel`;
+            
+            // Reset filter
+            document.getElementById('changeFilter').value = 'all';
+        }
+
+        function filterChangedPixels() {
+            const filterValue = document.getElementById('changeFilter').value;
+            const tbody = document.querySelector('#changedPixelsTable tbody');
+            const rows = tbody.querySelectorAll('tr');
+            let visibleCount = 0;
+            
+            rows.forEach(row => {
+                const typeBadge = row.querySelector('.type-badge');
+                const isBlueOnly = typeBadge.classList.contains('blue-only');
+                const isMultiple = typeBadge.classList.contains('multiple');
+                
+                let shouldShow = true;
+                
+                if (filterValue === 'blue-only' && !isBlueOnly) {
+                    shouldShow = false;
+                } else if (filterValue === 'multiple' && !isMultiple) {
+                    shouldShow = false;
+                }
+                
+                row.style.display = shouldShow ? '' : 'none';
+                if (shouldShow) visibleCount++;
+            });
+            
+            document.getElementById('filteredCount').textContent = `${visibleCount} pixel`;
+        }
+
         function analyzePixelDifferences() {
-            // Implementation for detailed pixel difference analysis
-            alert('Fitur analisis detail akan segera tersedia!');
+            if (!pixelDifferences || !pixelDifferences.changed_positions) {
+                alert('Data perbandingan tidak tersedia. Lakukan analisis perbandingan terlebih dahulu.');
+                return;
+            }
+            
+            const changes = pixelDifferences.changed_positions;
+            let blueOnlyChanges = 0;
+            let multipleChannelChanges = 0;
+            
+            changes.forEach(change => {
+                const rChanged = change.diff.r !== 0;
+                const gChanged = change.diff.g !== 0;
+                const bChanged = change.diff.b !== 0;
+                
+                if (bChanged && !rChanged && !gChanged) {
+                    blueOnlyChanges++;
+                } else if ((rChanged ? 1 : 0) + (gChanged ? 1 : 0) + (bChanged ? 1 : 0) > 1) {
+                    multipleChannelChanges++;
+                }
+            });
+            
+            alert(`Analisis Perubahan Pixel:
+            
+Total pixel berubah: ${changes.length}
+Perubahan hanya Blue channel: ${blueOnlyChanges} (${((blueOnlyChanges/changes.length)*100).toFixed(1)}%)
+Perubahan multiple channel: ${multipleChannelChanges} (${((multipleChannelChanges/changes.length)*100).toFixed(1)}%)
+
+Blue channel changes mengindikasikan LSB watermarking pada channel blue.`);
         }
     </script>
 </body>

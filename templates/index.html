@@ -5094,6 +5094,13 @@
                         showImageProcessingProgress('processedImages', result.processed_images);
                     }
                     
+                    // Store embedding results in sessionStorage for Pixel Analysis Viewer
+                    try {
+                        sessionStorage.setItem('latestEmbeddingResults', JSON.stringify(result));
+                    } catch (e) {
+                        console.warn('Failed to store embedding results in sessionStorage:', e);
+                    }
+                    
                     // Display detailed process explanation for first image
                     addLogEntry('embedLog', '🔬 Generating detailed process analysis...', 'info');
                     displayDetailedProcess(result.log, result.qr_info, result.processed_images, result.file_type, result.pdf_info, result.file_size_info);
