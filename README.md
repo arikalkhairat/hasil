@@ -154,7 +154,7 @@ LSB Analysis: Blue channel LSB changed from 0 to 1
 mse = np.mean((original - watermarked) ** 2)
 
 # PSNR Calculation  
-psnr = 20 * log10(255.0 / sqrt(mse))
+psnr = 10 * log10(255.0^2 / mse)
 
 # Quality Rating
 if psnr > 40: quality = "Excellent"

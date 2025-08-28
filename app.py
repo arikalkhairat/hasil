@@ -196,7 +196,7 @@ def calculate_metrics(original_docx_path, stego_docx_path):
                             if log_val <= 0:
                                 psnr = 0  # Very poor quality
                             else:
-                                psnr = 20 * np.log10(log_val)
+                                psnr = 10 * np.log10((max_pixel_value ** 2) / mse)
                                 # Clamp PSNR to reasonable range
                                 psnr = max(0, min(psnr, 999.99))
                     
@@ -489,7 +489,7 @@ def embed_docx_route():
             print(f"[*] Metrik MSE: {metrics['mse']}, PSNR: {metrics['psnr']}")
         else:
             # Untuk PDF, gunakan rata-rata dari semua halaman
-            metrics = {"mse": 0, "psnr": 0}
+            metrics = {"mse": 0, "psnr": 0}  # Default values
             if process_result and "analysis" in process_result and "page_analyses" in process_result["analysis"]:
                 page_metrics = [p["metrics"] for p in process_result["analysis"]["page_analyses"] if p["metrics"].get("success")]
                 if page_metrics:
@@ -499,8 +499,12 @@ def embed_docx_route():
                         avg_psnr = sum(valid_psnr_values) / len(valid_psnr_values)
                     else:
                         avg_psnr = 999.99  # Use high value instead of infinity
-                    metrics = {"mse": avg_mse, "psnr": avg_psnr}
+                    # Update metrics with calculated values
+                    metrics["mse"] = avg_mse
+                    metrics["psnr"] = avg_psnr
                     print(f"[*] Metrik rata-rata PDF - MSE: {avg_mse}, PSNR: {avg_psnr}")
+                else:
+                    print("[!] No valid page metrics found for PDF")
         
         # Analisis pixel gambar QR dengan detail
         from qr_utils import calculate_mse_psnr, get_detailed_pixel_info
@@ -1314,7 +1318,7 @@ def get_pixel_difference(dir1, img1, dir2, img2):
         if mse == 0:
             psnr = float('inf')
         else:
-            psnr = 20 * np.log10(255.0 / np.sqrt(mse))
+            psnr = 10 * np.log10((255.0 ** 2) / mse)
         
         return jsonify({
             'success': True,

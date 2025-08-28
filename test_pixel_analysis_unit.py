@@ -245,8 +245,8 @@ class TestPixelAnalysisFunctions(unittest.TestCase):
         """Test PSNR calculation"""
         # Test PSNR calculation with known MSE
         mse = 1.0
-        psnr = 20 * np.log10(255.0 / np.sqrt(mse))
-        expected_psnr = 20 * np.log10(255.0)  # ≈ 48.13 dB
+        psnr = 10 * np.log10((255.0 ** 2) / mse)
+        expected_psnr = 10 * np.log10(255.0 ** 2)  # ≈ 48.13 dB
         self.assertAlmostEqual(psnr, expected_psnr, places=2)
         
         # Test with MSE = 0 (should result in infinity, not an exception)
@@ -256,7 +256,7 @@ class TestPixelAnalysisFunctions(unittest.TestCase):
             psnr = float('inf')
             self.assertEqual(psnr, float('inf'))
         else:
-            psnr = 20 * np.log10(255.0 / np.sqrt(mse))
+            psnr = 10 * np.log10((255.0 ** 2) / mse)
 
 def run_tests():
     """Run all tests and display results"""

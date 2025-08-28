@@ -310,7 +310,7 @@ def calculate_mse_psnr(original_path: str, watermarked_path: str) -> dict:
                     if log_val <= 0:
                         psnr = 0  # Very poor quality
                     else:
-                        psnr = 20 * np.log10(log_val)
+                        psnr = 10 * np.log10((max_pixel_value ** 2) / mse)
                         # Clamp PSNR to reasonable range
                         psnr = max(0, min(psnr, 999.99))
             except Exception as e:

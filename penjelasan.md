@@ -155,7 +155,7 @@ def calculate_metrics(original_docx_path, stego_docx_path):
         # 4. Hitung PSNR (Peak Signal-to-Noise Ratio)
         if mse > 0:
             max_pixel = 255.0
-            psnr = 20 * np.log10(max_pixel / np.sqrt(mse))
+            psnr = 10 * np.log10((max_pixel ** 2) / mse)
             all_psnr_values.append(psnr)
         else:
             all_psnr_values.append(float('inf'))  # Gambar identik
