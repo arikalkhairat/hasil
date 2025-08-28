@@ -285,18 +285,40 @@ def calculate_mse_psnr(original_path: str, watermarked_path: str) -> dict:
         original_float = original.astype(np.float64)
         watermarked_float = watermarked.astype(np.float64)
         
-        # Hitung MSE
-        mse = np.mean((original_float - watermarked_float) ** 2)
+        # Robust MSE calculation
+        try:
+            mse = np.mean((original_float - watermarked_float) ** 2)
+            # Ensure MSE is non-negative and finite
+            if not np.isfinite(mse) or mse < 0:
+                mse = 0.0
+            mse = float(mse)  # Convert to Python float
+        except Exception as e:
+            print(f"[!] Error calculating MSE: {e}")
+            mse = 0.0
         
-        # Hitung PSNR
+        # Robust PSNR calculation with error handling
         if mse == 0:
-            psnr = float('inf')
+            psnr = 999.99  # Perfect quality
         else:
-            max_pixel_value = 255.0
-            psnr = 20 * np.log10(max_pixel_value / np.sqrt(mse))
+            try:
+                max_pixel_value = 255.0
+                sqrt_mse = np.sqrt(mse)
+                if sqrt_mse == 0:
+                    psnr = 999.99
+                else:
+                    log_val = max_pixel_value / sqrt_mse
+                    if log_val <= 0:
+                        psnr = 0  # Very poor quality
+                    else:
+                        psnr = 20 * np.log10(log_val)
+                        # Clamp PSNR to reasonable range
+                        psnr = max(0, min(psnr, 999.99))
+            except Exception as e:
+                print(f"[!] Error calculating PSNR: {e}")
+                psnr = 0
         
         # Interpretasi kualitas berdasarkan PSNR
-        if psnr == float('inf'):
+        if psnr >= 999:
             quality = "Identik"
         elif psnr > 40:
             quality = "Sangat Baik"
@@ -307,10 +329,18 @@ def calculate_mse_psnr(original_path: str, watermarked_path: str) -> dict:
         else:
             quality = "Buruk"
         
+        # Ensure all values are JSON-safe
+        try:
+            mse_safe = float(mse) if np.isfinite(mse) else 0.0
+            psnr_safe = float(psnr) if np.isfinite(psnr) else 0.0
+        except Exception:
+            mse_safe = 0.0
+            psnr_safe = 0.0
+            
         return {
             "success": True,
-            "mse": float(mse),
-            "psnr": float(psnr),
+            "mse": mse_safe,
+            "psnr": psnr_safe,
             "quality": quality,
             "max_pixel_value": 255
         }

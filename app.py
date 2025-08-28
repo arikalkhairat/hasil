@@ -158,11 +158,11 @@ def calculate_metrics(original_docx_path, stego_docx_path):
 
         if not original_images or not stego_images:
             print("[!] Tidak dapat membandingkan gambar: Gagal mengekstrak gambar dari dokumen.")
-            return {"mse": None, "psnr": None, "error": "Gagal mengekstrak gambar dari dokumen."}
+            return {"mse": 0.0, "psnr": 0.0, "error": "Gagal mengekstrak gambar dari dokumen."}
 
         if len(original_images) != len(stego_images):
             print("[!] Tidak dapat membandingkan gambar: Jumlah gambar tidak sama.")
-            return {"mse": None, "psnr": None, "error": "Jumlah gambar tidak sama."}
+            return {"mse": 0.0, "psnr": 0.0, "error": "Jumlah gambar tidak sama."}
 
         total_mse = 0
         all_psnr_values = []
@@ -182,25 +182,45 @@ def calculate_metrics(original_docx_path, stego_docx_path):
                 mse = np.mean((original_array - watermarked_array) ** 2)
                 total_mse += mse
 
-                if mse == 0:
-                    psnr = float('inf')
-                else:
-                    max_pixel = 255.0
-                    psnr = 20 * np.log10(max_pixel / np.sqrt(mse))
-                all_psnr_values.append(psnr)
+                # Robust PSNR calculation with error handling
+                try:
+                    if mse == 0:
+                        psnr = 999.99  # Perfect quality
+                    else:
+                        max_pixel = 255.0
+                        sqrt_mse = np.sqrt(mse)
+                        if sqrt_mse == 0:
+                            psnr = 999.99
+                        else:
+                            log_val = max_pixel / sqrt_mse
+                            if log_val <= 0:
+                                psnr = 0  # Very poor quality
+                            else:
+                                psnr = 20 * np.log10(log_val)
+                                # Clamp PSNR to reasonable range
+                                psnr = max(0, min(psnr, 999.99))
+                    
+                    all_psnr_values.append(psnr)
+                except Exception as psnr_error:
+                    print(f"[!] Error calculating PSNR: {psnr_error}")
+                    all_psnr_values.append(0)  # Default to poor quality
 
             except Exception as e:
                 print(f"[!] Error memproses pasangan gambar: {e}")
 
-        final_mse = total_mse / len(original_images) if original_images else 0
-        # Rata-rata PSNR (hindari ZeroDivisionError jika daftar kosong)
-        final_psnr = sum(all_psnr_values) / len(all_psnr_values) if all_psnr_values else 0
-
-        # Convert infinite values to string for JSON serialization
-        if final_psnr == float('inf'):
-            final_psnr = "Infinity"
-        elif final_psnr == float('-inf'):
-            final_psnr = "-Infinity"
+        # Robust final calculations with error handling
+        try:
+            final_mse = total_mse / len(original_images) if original_images else 0
+            final_mse = max(0, final_mse)  # Ensure non-negative
+        except Exception:
+            final_mse = 0
+            
+        try:
+            final_psnr = sum(all_psnr_values) / len(all_psnr_values) if all_psnr_values else 0
+            # Ensure PSNR is in valid range
+            final_psnr = max(0, min(final_psnr, 999.99))
+        except Exception:
+            final_psnr = 0
 
         # Bersihkan direktori sementara
         if os.path.exists(original_images_dir):
@@ -212,7 +232,9 @@ def calculate_metrics(original_docx_path, stego_docx_path):
 
     except Exception as e:
         print(f"[!] Error keseluruhan dalam calculate_metrics: {e}")
-        return {"mse": None, "psnr": None, "error": str(e)}
+        import traceback
+        traceback.print_exc()
+        return {"mse": 0.0, "psnr": 0.0, "error": str(e)}
 
 
 @app.route('/')
@@ -272,6 +294,7 @@ def generate_qr_route():
 
 @app.route('/embed_docx', methods=['POST'])
 def embed_docx_route():
+    print(f"[DEBUG] /embed_docx called with files: {list(request.files.keys())}")
 
     if 'docxFileEmbed' not in request.files or 'qrFileEmbed' not in request.files:
         error_msg = "File Dokumen dan File QR Code diperlukan."
@@ -299,7 +322,8 @@ def embed_docx_route():
         print(f"[ERROR] /embed_docx: {error_msg}")
         return jsonify({"success": False, "message": error_msg}), 400
 
-    docx_filename = f"doc_embed_in_{uuid.uuid4().hex}.docx"
+    file_extension = docx_file.filename.rsplit('.', 1)[1].lower()
+    docx_filename = f"doc_embed_in_{uuid.uuid4().hex}.{file_extension}"
     qr_embed_filename = f"qr_embed_in_{uuid.uuid4().hex}.png"
     docx_temp_path = os.path.join(app.config['UPLOAD_FOLDER'], docx_filename)
     qr_temp_path = os.path.join(app.config['UPLOAD_FOLDER'], qr_embed_filename)
@@ -309,7 +333,6 @@ def embed_docx_route():
     # Simpan ukuran file asli sebelum diproses
     original_file_size = get_file_size_info(docx_temp_path)
 
-    file_extension = docx_file.filename.rsplit('.', 1)[1].lower()
     stego_docx_filename = f"stego_doc_{uuid.uuid4().hex}.{file_extension}"
     stego_docx_output_path = os.path.join(app.config['GENERATED_FOLDER'], stego_docx_filename)
     
@@ -322,15 +345,15 @@ def embed_docx_route():
     
     if is_pdf:
         # Proses PDF menggunakan pdf_utils
-        from pdf_utils import embed_watermark_to_pdf_images, create_watermarked_pdf
+        from pdf_utils import embed_watermark_to_pdf_real_images, create_watermarked_pdf
         print("[*] Memulai proses embed watermark ke PDF")
         
         # Buat direktori untuk proses PDF
         pdf_process_dir = os.path.join(app.config['GENERATED_FOLDER'], f"pdf_process_{uuid.uuid4().hex}")
         os.makedirs(pdf_process_dir, exist_ok=True)
         
-        # Embed watermark ke halaman PDF
-        pdf_result = embed_watermark_to_pdf_images(docx_temp_path, qr_temp_path, pdf_process_dir)
+        # Embed watermark ke gambar asli dalam PDF
+        pdf_result = embed_watermark_to_pdf_real_images(docx_temp_path, qr_temp_path, pdf_process_dir)
         
         if not pdf_result.get("success"):
             return jsonify({
@@ -339,10 +362,10 @@ def embed_docx_route():
                 "error_type": pdf_result.get("error_type", "PDF_PROCESSING_ERROR")
             }), 500
         
-        # Buat PDF baru dari gambar watermarked
+        # Buat PDF baru dari gambar watermarked  
         watermarked_pdf_created = create_watermarked_pdf(
             docx_temp_path, 
-            pdf_result["output_directories"]["watermarked_pages"], 
+            pdf_result["output_directories"]["watermarked_images"], 
             stego_docx_output_path
         )
         
@@ -377,9 +400,9 @@ def embed_docx_route():
             
             for img_info in raw_processed_images:
                 # Salin file ke direktori public untuk akses web
-                page_num = img_info.get("page_number", 1) - 1
-                original_filename = f"original_{page_num}.png"
-                watermarked_filename = f"watermarked_{page_num}.png"
+                img_index = img_info.get("image_index", 1) - 1
+                original_filename = img_info.get("original_filename", f"original_{img_index}.png")
+                watermarked_filename = img_info.get("watermarked_filename", f"watermarked_{img_index}.png")
                 
                 # Path untuk public access
                 original_public_path = os.path.join(app.config['GENERATED_FOLDER'], pdf_dir_name, original_filename)
@@ -394,13 +417,13 @@ def embed_docx_route():
                         
                     # Tambahkan ke processed_images dengan path relatif yang benar
                     processed_images.append({
-                        "index": page_num,
+                        "index": img_index,
                         "original": f"generated/{pdf_dir_name}/{original_filename}",
                         "watermarked": f"generated/{pdf_dir_name}/{watermarked_filename}",
                         "individual_metrics": img_info.get("metrics", {})
                     })
                 except Exception as e:
-                    print(f"[!] Error menyalin file untuk halaman {page_num + 1}: {e}")
+                    print(f"[!] Error menyalin file untuk gambar {img_index + 1}: {e}")
             
             # Salin QR Code ke direktori public juga
             qr_filename = "watermark_qr.png"
@@ -471,7 +494,11 @@ def embed_docx_route():
                 page_metrics = [p["metrics"] for p in process_result["analysis"]["page_analyses"] if p["metrics"].get("success")]
                 if page_metrics:
                     avg_mse = sum(m["mse"] for m in page_metrics) / len(page_metrics)
-                    avg_psnr = sum(m["psnr"] for m in page_metrics if m["psnr"] != float('inf')) / len([m for m in page_metrics if m["psnr"] != float('inf')]) if any(m["psnr"] != float('inf') for m in page_metrics) else float('inf')
+                    valid_psnr_values = [m["psnr"] for m in page_metrics if m["psnr"] != float('inf')]
+                    if valid_psnr_values:
+                        avg_psnr = sum(valid_psnr_values) / len(valid_psnr_values)
+                    else:
+                        avg_psnr = 999.99  # Use high value instead of infinity
                     metrics = {"mse": avg_mse, "psnr": avg_psnr}
                     print(f"[*] Metrik rata-rata PDF - MSE: {avg_mse}, PSNR: {avg_psnr}")
         
@@ -749,11 +776,11 @@ def extract_docx_route():
     is_pdf = file_extension == 'pdf'
     
     if is_pdf:
-        # Proses PDF menggunakan pdf_utils
-        from pdf_utils import extract_watermark_from_pdf
-        print("[*] Memulai proses extract watermark dari PDF")
+        # Proses PDF menggunakan pdf_utils  
+        from pdf_utils import extract_watermark_from_pdf_real_images
+        print("[*] Memulai proses extract watermark dari gambar asli PDF")
         
-        pdf_result = extract_watermark_from_pdf(docx_temp_path, output_extraction_dir_path)
+        pdf_result = extract_watermark_from_pdf_real_images(docx_temp_path, output_extraction_dir_path)
         
         if pdf_result.get("success"):
             result = {"success": True, "stdout": "PDF extraction berhasil", "stderr": ""}
@@ -1298,7 +1325,7 @@ def get_pixel_difference(dir1, img1, dir2, img2):
                 'changed_pixels': int(changed_pixels),
                 'change_percentage': float(changed_pixels / total_pixels * 100),
                 'mse': float(mse),
-                'psnr': float(psnr) if psnr != float('inf') else 'Infinity'
+                'psnr': float(psnr) if psnr != float('inf') else 999.99
             },
             'changed_positions': changed_positions[:500],  # Limit to first 500 untuk performa tapi cukup untuk visualisasi
             'total_changes': len(changed_positions)

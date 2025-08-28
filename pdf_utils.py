@@ -513,13 +513,24 @@ def create_watermarked_pdf(original_pdf_path: str, watermarked_images_dir: str, 
         # Ambil semua file gambar watermarked
         watermarked_files = {}
         for filename in os.listdir(watermarked_images_dir):
-            if filename.lower().endswith(('.png', '.jpg', '.jpeg')) and 'watermarked_pdf_image' in filename:
-                # Extract page dan image number dari filename
+            if filename.lower().endswith(('.png', '.jpg', '.jpeg')):
+                # Handle both patterns: watermarked_pdf_image and watermarked_page
                 import re
-                match = re.search(r'_p(\d+)_i(\d+)_', filename)
-                if match:
-                    page_num = int(match.group(1))
-                    img_num = int(match.group(2))
+                
+                # Pattern 1: watermarked_pdf_image_p{page}_i{img}_
+                match1 = re.search(r'watermarked_pdf_image_p(\d+)_i(\d+)_', filename)
+                # Pattern 2: watermarked_page_{page}_{uuid}
+                match2 = re.search(r'watermarked_page_(\d+)_', filename)
+                
+                if match1:
+                    page_num = int(match1.group(1))
+                    img_num = int(match1.group(2))
+                    if page_num not in watermarked_files:
+                        watermarked_files[page_num] = {}
+                    watermarked_files[page_num][img_num] = os.path.join(watermarked_images_dir, filename)
+                elif match2:
+                    page_num = int(match2.group(1))
+                    img_num = 1  # Default to image 1 for page-based watermarking
                     if page_num not in watermarked_files:
                         watermarked_files[page_num] = {}
                     watermarked_files[page_num][img_num] = os.path.join(watermarked_images_dir, filename)
@@ -606,10 +617,13 @@ def create_watermarked_pdf(original_pdf_path: str, watermarked_images_dir: str, 
                     watermarked_path = watermarked_files[page_index][img_num_in_page]
                     
                     try:
-                        # Insert watermarked image
-                        new_page.insert_image(img_rect, filename=watermarked_path)
+                        # Insert watermarked image with lossless settings to preserve LSB
+                        # Read image data manually to control compression
+                        with open(watermarked_path, 'rb') as img_file:
+                            img_data = img_file.read()
+                        new_page.insert_image(img_rect, stream=img_data, keep_proportion=True)
                         replaced_count += 1
-                        print(f"[*] Diganti gambar {img_num_in_page} di halaman {page_index}")
+                        print(f"[*] Diganti gambar {img_num_in_page} di halaman {page_index} (lossless)")
                     except Exception as e:
                         print(f"[!] Gagal insert watermarked image: {e}")
                         # Fallback: use original image
@@ -667,6 +681,7 @@ def extract_watermark_from_pdf_real_images(pdf_path: str, output_dir: str) -> Di
         # Ekstrak gambar asli dari PDF
         print("[*] Mengekstrak gambar asli dari PDF untuk mencari watermark...")
         extracted_images = extract_images_from_pdf(pdf_path, original_images_dir)
+        print(f"[DEBUG] Ditemukan {len(extracted_images) if extracted_images else 0} gambar dalam PDF")
         
         if not extracted_images:
             return {
@@ -694,10 +709,18 @@ def extract_watermark_from_pdf_real_images(pdf_path: str, output_dir: str) -> Di
                 
                 # Ekstrak menggunakan LSB
                 try:
+                    print(f"[DEBUG] Mencoba ekstraksi LSB dari: {image_path}")
                     extract_qr_from_image(image_path, qr_output_path)
                     success = os.path.exists(qr_output_path)
+                    if success:
+                        file_size = os.path.getsize(qr_output_path)
+                        print(f"[DEBUG] File QR hasil ekstraksi: {qr_output_path} ({file_size} bytes)")
+                    else:
+                        print(f"[DEBUG] File QR tidak terbuat: {qr_output_path}")
                 except Exception as e:
                     print(f"[!] Error ekstraksi gambar {i+1}: {e}")
+                    import traceback
+                    traceback.print_exc()
                     success = False
                 
                 if success and os.path.exists(qr_output_path):
