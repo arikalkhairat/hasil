@@ -36,10 +36,8 @@ def generate_qr(data: str, output_path: str):
         img = qr.make_image(fill_color="black", back_color="white")
         # Menyimpan citra ke file
         img.save(output_path)
-        print(f"[*] QR Code berhasil dibuat dan disimpan di: {output_path}")
     except Exception as e:
         # Menangani potensi error saat pembuatan atau penyimpanan
-        print(f"[!] Error saat membuat QR Code: {e}")
         raise # Melempar kembali error untuk ditangani di level lebih tinggi jika perlu
 
 def read_qr(image_path: str) -> list[str]:
@@ -86,11 +84,9 @@ def read_qr(image_path: str) -> list[str]:
 
         # Memberi informasi jika tidak ada QR Code yang terdeteksi
         if not data_list:
-            print(f"[!] Tidak ada QR Code yang terdeteksi di: {image_path}")
         return data_list
     except Exception as e:
         # Menangani potensi error saat membuka citra atau proses decoding
-        print(f"[!] Error saat membaca QR Code: {e}")
         raise # Melempar kembali error
 
 def add_crc32_checksum(data: str) -> dict:
@@ -114,7 +110,6 @@ def add_crc32_checksum(data: str) -> dict:
         
         return qr_data
     except Exception as e:
-        print(f"[!] Error menambahkan CRC32: {e}")
         return {"data": data, "crc32": None}
 
 def verify_crc32_checksum(qr_data_with_checksum: dict) -> dict:
@@ -154,7 +149,6 @@ def verify_crc32_checksum(qr_data_with_checksum: dict) -> dict:
         }
         
     except Exception as e:
-        print(f"[!] Error verifikasi CRC32: {e}")
         return {
             "valid": False,
             "error": str(e)
@@ -293,7 +287,6 @@ def calculate_mse_psnr(original_path: str, watermarked_path: str) -> dict:
                 mse = 0.0
             mse = float(mse)  # Convert to Python float
         except Exception as e:
-            print(f"[!] Error calculating MSE: {e}")
             mse = 0.0
         
         # Robust PSNR calculation with error handling
@@ -314,7 +307,6 @@ def calculate_mse_psnr(original_path: str, watermarked_path: str) -> dict:
                         # Clamp PSNR to reasonable range
                         psnr = max(0, min(psnr, 999.99))
             except Exception as e:
-                print(f"[!] Error calculating PSNR: {e}")
                 psnr = 0
         
         # Interpretasi kualitas berdasarkan PSNR

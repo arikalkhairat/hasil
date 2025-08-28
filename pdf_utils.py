@@ -42,13 +42,10 @@ def convert_pdf_to_images(pdf_path: str, output_dir: str, dpi: int = 300) -> Lis
             # Simpan sebagai PNG
             image.save(image_path, 'PNG')
             image_paths.append(image_path)
-            print(f"[*] Halaman {i+1} disimpan: {image_path}")
         
-        print(f"[*] PDF berhasil dikonversi ke {len(image_paths)} gambar")
         return image_paths
         
     except Exception as e:
-        print(f"[!] Error konversi PDF ke gambar: {e}")
         raise
 
 def extract_images_from_pdf(pdf_path: str, output_dir: str) -> List[str]:
@@ -70,7 +67,6 @@ def extract_images_from_pdf(pdf_path: str, output_dir: str) -> List[str]:
         pdf_document = fitz.open(pdf_path)
         extracted_images = []
         
-        print(f"[*] Mencari gambar di dalam PDF dengan {len(pdf_document)} halaman...")
         
         for page_num in range(len(pdf_document)):
             page = pdf_document[page_num]
@@ -79,7 +75,6 @@ def extract_images_from_pdf(pdf_path: str, output_dir: str) -> List[str]:
             image_list = page.get_images(full=True)
             
             if image_list:
-                print(f"[*] Ditemukan {len(image_list)} gambar di halaman {page_num + 1}")
             
             for img_index, img in enumerate(image_list):
                 try:
@@ -112,28 +107,22 @@ def extract_images_from_pdf(pdf_path: str, output_dir: str) -> List[str]:
                             image_path = png_path
                             
                         except Exception as e:
-                            print(f"[!] Warning: Gagal konversi ke PNG: {e}")
                     
                     extracted_images.append(image_path)
-                    print(f"[*] Gambar diekstrak: {os.path.basename(image_path)}")
                     
                 except Exception as e:
-                    print(f"[!] Error mengekstrak gambar {img_index + 1} dari halaman {page_num + 1}: {e}")
                     continue
         
         pdf_document.close()
         
         if not extracted_images:
-            print("[!] Tidak ada gambar ditemukan di dalam PDF")
             raise ValueError("NO_IMAGES_FOUND")
         
-        print(f"[*] Total {len(extracted_images)} gambar berhasil diekstrak dari PDF")
         return extracted_images
         
     except Exception as e:
         if str(e) == "NO_IMAGES_FOUND":
             raise
-        print(f"[!] Error ekstraksi gambar dari PDF: {e}")
         raise
 
 def get_pdf_info(pdf_path: str) -> Dict[str, Any]:
@@ -181,7 +170,6 @@ def get_pdf_info(pdf_path: str) -> Dict[str, Any]:
         return info
         
     except Exception as e:
-        print(f"[!] Error membaca info PDF: {e}")
         return {"error": str(e)}
 
 def embed_watermark_to_pdf_real_images(pdf_path: str, qr_path: str, output_dir: str) -> Dict[str, Any]:
@@ -207,7 +195,6 @@ def embed_watermark_to_pdf_real_images(pdf_path: str, qr_path: str, output_dir: 
         os.makedirs(watermarked_dir, exist_ok=True)
         
         # Ekstrak gambar asli dari PDF
-        print("[*] Mengekstrak gambar asli dari PDF...")
         extracted_images = extract_images_from_pdf(pdf_path, original_images_dir)
         
         if not extracted_images:
@@ -226,7 +213,6 @@ def embed_watermark_to_pdf_real_images(pdf_path: str, qr_path: str, output_dir: 
         
         for i, image_path in enumerate(extracted_images):
             try:
-                print(f"[*] Memproses watermark gambar {i+1}/{len(extracted_images)}...")
                 
                 # Generate path untuk gambar watermarked
                 original_filename = os.path.basename(image_path)
@@ -238,7 +224,6 @@ def embed_watermark_to_pdf_real_images(pdf_path: str, qr_path: str, output_dir: 
                     embed_qr_to_image(image_path, qr_path, watermarked_path)
                     embed_result = os.path.exists(watermarked_path)
                 except Exception as e:
-                    print(f"[!] Error embedding gambar {i+1}: {e}")
                     embed_result = False
                 
                 if embed_result and os.path.exists(watermarked_path):
@@ -247,7 +232,6 @@ def embed_watermark_to_pdf_real_images(pdf_path: str, qr_path: str, output_dir: 
                         # Quick test to ensure file is readable
                         file_size = os.path.getsize(watermarked_path)
                         if file_size == 0:
-                            print(f"[!] Warning: Watermarked file {watermarked_filename} is empty")
                             continue
                         
                         # Analisis pixel detail
@@ -283,16 +267,12 @@ def embed_watermark_to_pdf_real_images(pdf_path: str, qr_path: str, output_dir: 
                             "metrics": metrics
                         })
                         
-                        print(f"[*] Gambar {i+1} berhasil di-watermark (size: {file_size} bytes)")
                         
                     except Exception as e:
-                        print(f"[!] Error verifying watermarked file {watermarked_filename}: {e}")
                         continue
                 else:
-                    print(f"[!] Gagal watermark gambar {i+1} - file tidak ada atau gagal dibuat")
                     
             except Exception as e:
-                print(f"[!] Error memproses gambar {i+1}: {e}")
                 continue
         
         if not processed_images:
@@ -308,12 +288,10 @@ def embed_watermark_to_pdf_real_images(pdf_path: str, qr_path: str, output_dir: 
         # Buat PDF baru dari gambar-gambar yang sudah di-watermark
         output_pdf_path = None
         try:
-            print("[*] Membuat PDF baru dari gambar watermarked...")
             output_pdf_path = os.path.join(output_dir, "watermarked_output.pdf")
             pdf_created = create_watermarked_pdf(pdf_path, watermarked_dir, output_pdf_path)
             
             if pdf_created:
-                print(f"[*] PDF watermarked berhasil dibuat: {output_pdf_path}")
                 # Tambahkan info ukuran file
                 original_size = os.path.getsize(pdf_path) if os.path.exists(pdf_path) else 0
                 new_size = os.path.getsize(output_pdf_path) if os.path.exists(output_pdf_path) else 0
@@ -329,11 +307,9 @@ def embed_watermark_to_pdf_real_images(pdf_path: str, qr_path: str, output_dir: 
                     "watermarked_size_mb": new_size / (1024 * 1024)
                 }
             else:
-                print("[!] Gagal membuat PDF watermarked")
                 file_size_info = None
                 
         except Exception as e:
-            print(f"[!] Error membuat PDF baru: {e}")
             output_pdf_path = None
             file_size_info = None
         
@@ -359,7 +335,6 @@ def embed_watermark_to_pdf_real_images(pdf_path: str, qr_path: str, output_dir: 
     except Exception as e:
         if str(e) == "NO_IMAGES_FOUND":
             raise ValueError("NO_IMAGES_FOUND")
-        print(f"[!] Error dalam embed_watermark_to_pdf_real_images: {e}")
         return {
             "success": False,
             "message": f"Error memproses PDF: {str(e)}",
@@ -390,7 +365,6 @@ def embed_watermark_to_pdf_images(pdf_path: str, qr_path: str, output_dir: str, 
         os.makedirs(watermarked_dir, exist_ok=True)
         
         # Konversi PDF ke gambar
-        print("[*] Mengkonversi PDF ke gambar...")
         page_images = convert_pdf_to_images(pdf_path, pdf_images_dir, dpi)
         
         if not page_images:
@@ -409,7 +383,6 @@ def embed_watermark_to_pdf_images(pdf_path: str, qr_path: str, output_dir: str, 
         
         for i, page_path in enumerate(page_images):
             try:
-                print(f"[*] Memproses watermark halaman {i+1}...")
                 
                 # Generate path untuk gambar watermarked
                 watermarked_filename = f"watermarked_page_{i+1}_{uuid.uuid4().hex[:8]}.png"
@@ -420,7 +393,6 @@ def embed_watermark_to_pdf_images(pdf_path: str, qr_path: str, output_dir: str, 
                     embed_qr_to_image(page_path, qr_path, watermarked_path)
                     embed_result = os.path.exists(watermarked_path)
                 except Exception as e:
-                    print(f"[!] Error embedding halaman {i+1}: {e}")
                     embed_result = False
                 
                 if embed_result:
@@ -446,12 +418,9 @@ def embed_watermark_to_pdf_images(pdf_path: str, qr_path: str, output_dir: str, 
                         "metrics": metrics
                     })
                     
-                    print(f"[*] Halaman {i+1} berhasil di-watermark")
                 else:
-                    print(f"[!] Gagal watermark halaman {i+1}")
                     
             except Exception as e:
-                print(f"[!] Error memproses halaman {i+1}: {e}")
                 continue
         
         if not processed_images:
@@ -482,7 +451,6 @@ def embed_watermark_to_pdf_images(pdf_path: str, qr_path: str, output_dir: str, 
         }
         
     except Exception as e:
-        print(f"[!] Error dalam embed_watermark_to_pdf_images: {e}")
         return {
             "success": False,
             "message": f"Error memproses PDF: {str(e)}",
@@ -508,7 +476,6 @@ def create_watermarked_pdf(original_pdf_path: str, watermarked_images_dir: str, 
         
         # Buka PDF asli
         doc = fitz.open(original_pdf_path)
-        print(f"[*] Membuka PDF asli dengan {len(doc)} halaman")
         
         # Ambil semua file gambar watermarked
         watermarked_files = {}
@@ -536,10 +503,8 @@ def create_watermarked_pdf(original_pdf_path: str, watermarked_images_dir: str, 
                     watermarked_files[page_num][img_num] = os.path.join(watermarked_images_dir, filename)
         
         if not watermarked_files:
-            print("[!] Tidak ada gambar watermarked yang valid ditemukan")
             return False
         
-        print(f"[*] Ditemukan gambar watermarked untuk {len(watermarked_files)} halaman")
         
         # Buat PDF baru
         new_doc = fitz.open()
@@ -623,9 +588,7 @@ def create_watermarked_pdf(original_pdf_path: str, watermarked_images_dir: str, 
                             img_data = img_file.read()
                         new_page.insert_image(img_rect, stream=img_data, keep_proportion=True)
                         replaced_count += 1
-                        print(f"[*] Diganti gambar {img_num_in_page} di halaman {page_index} (lossless)")
                     except Exception as e:
-                        print(f"[!] Gagal insert watermarked image: {e}")
                         # Fallback: use original image
                         try:
                             img_data = doc.extract_image(img_xref)
@@ -638,7 +601,6 @@ def create_watermarked_pdf(original_pdf_path: str, watermarked_images_dir: str, 
                         img_data = doc.extract_image(img_xref)
                         new_page.insert_image(img_rect, stream=img_data["image"])
                     except Exception as e:
-                        print(f"[!] Gagal insert original image: {e}")
         
         # Save new document
         doc.close()
@@ -646,14 +608,11 @@ def create_watermarked_pdf(original_pdf_path: str, watermarked_images_dir: str, 
         new_doc.close()
         
         if replaced_count > 0:
-            print(f"[*] PDF watermarked berhasil dibuat dengan {replaced_count} gambar diganti: {output_pdf_path}")
             return True
         else:
-            print("[!] Tidak ada gambar yang berhasil diganti")
             return False
         
     except Exception as e:
-        print(f"[!] Error membuat PDF watermarked: {e}")
         import traceback
         traceback.print_exc()
         return False
@@ -679,9 +638,7 @@ def extract_watermark_from_pdf_real_images(pdf_path: str, output_dir: str) -> Di
         os.makedirs(extracted_qr_dir, exist_ok=True)
         
         # Ekstrak gambar asli dari PDF
-        print("[*] Mengekstrak gambar asli dari PDF untuk mencari watermark...")
         extracted_images = extract_images_from_pdf(pdf_path, original_images_dir)
-        print(f"[DEBUG] Ditemukan {len(extracted_images) if extracted_images else 0} gambar dalam PDF")
         
         if not extracted_images:
             return {
@@ -698,7 +655,6 @@ def extract_watermark_from_pdf_real_images(pdf_path: str, output_dir: str) -> Di
         
         for i, image_path in enumerate(extracted_images):
             try:
-                print(f"[*] Mengekstrak watermark dari gambar {i+1}/{len(extracted_images)}...")
                 
                 # Generate path untuk QR hasil ekstraksi
                 original_filename = os.path.basename(image_path)
@@ -709,16 +665,12 @@ def extract_watermark_from_pdf_real_images(pdf_path: str, output_dir: str) -> Di
                 
                 # Ekstrak menggunakan LSB
                 try:
-                    print(f"[DEBUG] Mencoba ekstraksi LSB dari: {image_path}")
                     extract_qr_from_image(image_path, qr_output_path)
                     success = os.path.exists(qr_output_path)
                     if success:
                         file_size = os.path.getsize(qr_output_path)
-                        print(f"[DEBUG] File QR hasil ekstraksi: {qr_output_path} ({file_size} bytes)")
                     else:
-                        print(f"[DEBUG] File QR tidak terbuat: {qr_output_path}")
                 except Exception as e:
-                    print(f"[!] Error ekstraksi gambar {i+1}: {e}")
                     import traceback
                     traceback.print_exc()
                     success = False
@@ -744,19 +696,14 @@ def extract_watermark_from_pdf_real_images(pdf_path: str, output_dir: str) -> Di
                                 "file_size": file_size,
                                 "exists": True
                             })
-                            print(f"[*] QR Code berhasil diekstrak dari gambar {i+1} (size: {file_size} bytes)")
                         else:
-                            print(f"[!] QR Code kosong dari gambar {i+1}")
                             os.remove(qr_output_path)
                     except Exception as e:
-                        print(f"[!] File hasil ekstraksi tidak valid untuk gambar {i+1}: {e}")
                         if os.path.exists(qr_output_path):
                             os.remove(qr_output_path)
                 else:
-                    print(f"[*] Tidak ada watermark ditemukan di gambar {i+1}")
                     
             except Exception as e:
-                print(f"[!] Error mengekstrak gambar {i+1}: {e}")
                 continue
         
         return {
@@ -771,7 +718,6 @@ def extract_watermark_from_pdf_real_images(pdf_path: str, output_dir: str) -> Di
     except Exception as e:
         if str(e) == "NO_IMAGES_FOUND":
             raise ValueError("NO_IMAGES_FOUND")
-        print(f"[!] Error dalam extract_watermark_from_pdf_real_images: {e}")
         return {
             "success": False,
             "message": f"Error mengekstrak watermark dari PDF: {str(e)}",
@@ -800,7 +746,6 @@ def extract_watermark_from_pdf(pdf_path: str, output_dir: str, dpi: int = 300) -
         os.makedirs(extracted_dir, exist_ok=True)
         
         # Konversi PDF ke gambar
-        print("[*] Mengkonversi PDF ke gambar untuk ekstraksi...")
         page_images = convert_pdf_to_images(pdf_path, pdf_images_dir, dpi)
         
         if not page_images:
@@ -818,7 +763,6 @@ def extract_watermark_from_pdf(pdf_path: str, output_dir: str, dpi: int = 300) -
         
         for i, page_path in enumerate(page_images):
             try:
-                print(f"[*] Mengekstrak watermark dari halaman {i+1}...")
                 
                 # Generate path untuk QR hasil ekstraksi
                 qr_filename = f"extracted_qr_page_{i+1}_{uuid.uuid4().hex[:8]}.png"
@@ -829,7 +773,6 @@ def extract_watermark_from_pdf(pdf_path: str, output_dir: str, dpi: int = 300) -
                     extract_qr_from_image(page_path, qr_output_path)
                     success = os.path.exists(qr_output_path)
                 except Exception as e:
-                    print(f"[!] Error ekstraksi halaman {i+1}: {e}")
                     success = False
                 
                 if success and os.path.exists(qr_output_path):
@@ -844,18 +787,14 @@ def extract_watermark_from_pdf(pdf_path: str, output_dir: str, dpi: int = 300) -
                                 "url": f"/static/generated/{os.path.basename(output_dir)}/extracted_qr/{qr_filename}",
                                 "path": qr_output_path
                             })
-                            print(f"[*] QR Code berhasil diekstrak dari halaman {i+1}")
                         else:
                             os.remove(qr_output_path)
                     except Exception as e:
-                        print(f"[!] File hasil ekstraksi tidak valid untuk halaman {i+1}: {e}")
                         if os.path.exists(qr_output_path):
                             os.remove(qr_output_path)
                 else:
-                    print(f"[*] Tidak ada watermark ditemukan di halaman {i+1}")
                     
             except Exception as e:
-                print(f"[!] Error mengekstrak halaman {i+1}: {e}")
                 continue
         
         return {
@@ -868,7 +807,6 @@ def extract_watermark_from_pdf(pdf_path: str, output_dir: str, dpi: int = 300) -
         }
         
     except Exception as e:
-        print(f"[!] Error dalam extract_watermark_from_pdf: {e}")
         return {
             "success": False,
             "message": f"Error mengekstrak watermark dari PDF: {str(e)}",
@@ -889,7 +827,6 @@ def convert_pdf_to_docx(pdf_path: str, docx_output_path: str) -> Dict[str, Any]:
     try:
         from pdf2docx import Converter
         
-        print(f"[*] Mengkonversi PDF ke DOCX: {pdf_path} -> {docx_output_path}")
         
         # Buat converter
         cv = Converter(pdf_path)
@@ -901,7 +838,6 @@ def convert_pdf_to_docx(pdf_path: str, docx_output_path: str) -> Dict[str, Any]:
         # Verifikasi file hasil
         if os.path.exists(docx_output_path):
             file_size = os.path.getsize(docx_output_path)
-            print(f"[*] Konversi berhasil. File DOCX: {file_size} bytes")
             
             return {
                 "success": True,
@@ -917,7 +853,6 @@ def convert_pdf_to_docx(pdf_path: str, docx_output_path: str) -> Dict[str, Any]:
             }
             
     except Exception as e:
-        print(f"[!] Error konversi PDF ke DOCX: {e}")
         return {
             "success": False,
             "message": f"Gagal konversi PDF ke DOCX: {str(e)}",
@@ -939,7 +874,6 @@ def convert_docx_to_pdf(docx_path: str, pdf_output_path: str) -> Dict[str, Any]:
     try:
         from docx2pdf import convert
         
-        print(f"[*] Mengkonversi DOCX ke PDF: {docx_path} -> {pdf_output_path}")
         
         # Konversi DOCX ke PDF
         convert(docx_path, pdf_output_path)
@@ -947,7 +881,6 @@ def convert_docx_to_pdf(docx_path: str, pdf_output_path: str) -> Dict[str, Any]:
         # Verifikasi file hasil
         if os.path.exists(pdf_output_path):
             file_size = os.path.getsize(pdf_output_path)
-            print(f"[*] Konversi berhasil. File PDF: {file_size} bytes")
             
             return {
                 "success": True,
@@ -963,7 +896,6 @@ def convert_docx_to_pdf(docx_path: str, pdf_output_path: str) -> Dict[str, Any]:
             }
             
     except Exception as e:
-        print(f"[!] Error konversi DOCX ke PDF: {e}")
         return {
             "success": False,
             "message": f"Gagal konversi DOCX ke PDF: {str(e)}",
@@ -990,10 +922,8 @@ def embed_watermark_to_pdf_via_docx(pdf_path: str, qr_path: str, output_pdf_path
         temp_docx_path = pdf_path.replace('.pdf', '_temp.docx')
         watermarked_docx_path = pdf_path.replace('.pdf', '_watermarked.docx')
         
-        print("[*] Memulai proses watermark PDF via DOCX...")
         
         # Step 1: PDF -> DOCX
-        print("[*] Step 1: Konversi PDF ke DOCX")
         pdf_to_docx_result = convert_pdf_to_docx(pdf_path, temp_docx_path)
         
         if not pdf_to_docx_result.get("success"):
@@ -1005,7 +935,6 @@ def embed_watermark_to_pdf_via_docx(pdf_path: str, qr_path: str, output_pdf_path
             }
         
         # Step 2: Embed watermark ke DOCX
-        print("[*] Step 2: Embed watermark ke DOCX")
         try:
             watermark_result = embed_watermark_to_docx(temp_docx_path, qr_path, watermarked_docx_path)
             
@@ -1034,7 +963,6 @@ def embed_watermark_to_pdf_via_docx(pdf_path: str, qr_path: str, output_pdf_path
                 }
         
         # Step 3: DOCX -> PDF
-        print("[*] Step 3: Konversi DOCX watermarked ke PDF")
         docx_to_pdf_result = convert_docx_to_pdf(watermarked_docx_path, output_pdf_path)
         
         if not docx_to_pdf_result.get("success"):
@@ -1052,7 +980,6 @@ def embed_watermark_to_pdf_via_docx(pdf_path: str, qr_path: str, output_pdf_path
             if os.path.exists(watermarked_docx_path):
                 os.remove(watermarked_docx_path)
         except Exception as e:
-            print(f"[!] Warning: Gagal hapus file temporary: {e}")
         
         # Get file size info
         original_size = os.path.getsize(pdf_path)
@@ -1080,7 +1007,6 @@ def embed_watermark_to_pdf_via_docx(pdf_path: str, qr_path: str, output_pdf_path
         }
         
     except Exception as e:
-        print(f"[!] Error dalam embed_watermark_to_pdf_via_docx: {e}")
         
         # Cleanup on error
         try:
@@ -1121,10 +1047,8 @@ def extract_watermark_from_pdf_via_docx(pdf_path: str, output_dir: str) -> Dict[
         os.makedirs(extracted_images_dir, exist_ok=True)
         os.makedirs(extracted_qr_dir, exist_ok=True)
         
-        print("[*] Memulai proses ekstraksi PDF via DOCX...")
         
         # Step 1: PDF -> DOCX
-        print("[*] Step 1: Konversi PDF ke DOCX")
         pdf_to_docx_result = convert_pdf_to_docx(pdf_path, temp_docx_path)
         
         if not pdf_to_docx_result.get("success"):
@@ -1135,7 +1059,6 @@ def extract_watermark_from_pdf_via_docx(pdf_path: str, output_dir: str) -> Dict[
             }
         
         # Step 2: Ekstrak gambar dari DOCX
-        print("[*] Step 2: Ekstrak gambar dari DOCX")
         extracted_images = extract_images_from_docx(temp_docx_path, extracted_images_dir)
         
         if not extracted_images:
@@ -1150,7 +1073,6 @@ def extract_watermark_from_pdf_via_docx(pdf_path: str, output_dir: str) -> Dict[
             }
         
         # Step 3: Ekstrak watermark dari setiap gambar
-        print(f"[*] Step 3: Ekstrak watermark dari {len(extracted_images)} gambar")
         extracted_qrs = []
         
         for i, image_path in enumerate(extracted_images):
@@ -1172,18 +1094,14 @@ def extract_watermark_from_pdf_via_docx(pdf_path: str, output_dir: str) -> Dict[
                                 "url": f"/static/generated/{os.path.basename(output_dir)}/extracted_qr/{qr_filename}",
                                 "path": qr_output_path
                             })
-                            print(f"[*] QR Code berhasil diekstrak dari gambar {i+1}")
                         else:
                             os.remove(qr_output_path)
                     except Exception as e:
-                        print(f"[!] File hasil ekstraksi tidak valid untuk gambar {i+1}: {e}")
                         if os.path.exists(qr_output_path):
                             os.remove(qr_output_path)
                 else:
-                    print(f"[*] Tidak ada watermark ditemukan di gambar {i+1}")
                     
             except Exception as e:
-                print(f"[!] Error mengekstrak gambar {i+1}: {e}")
                 continue
         
         # Cleanup temporary DOCX
@@ -1204,7 +1122,6 @@ def extract_watermark_from_pdf_via_docx(pdf_path: str, output_dir: str) -> Dict[
         }
         
     except Exception as e:
-        print(f"[!] Error dalam extract_watermark_from_pdf_via_docx: {e}")
         
         # Cleanup on error
         try:
